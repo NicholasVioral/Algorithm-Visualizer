@@ -1,14 +1,8 @@
-import { useState } from 'react'
-import './App.css'
-import CodeExplainer from './CodeExplainer'
+import React from "react";
+import AlgorithmVisualizer from "./AlgorithmVisualizer";
 
 function App() {
-
-  return (
-    <>
-      <CodeExplainer />
-    </>
-  )
+  return <AlgorithmVisualizer />;
 }
 
-export default App
+export default App;
