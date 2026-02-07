@@ -1621,6 +1621,108 @@ const AlgorithmVisualizer = () => {
           </div>
         )}
 
+        <div className="code-detection-section" style={{ 
+          marginBottom: '1.5rem', 
+          padding: '1.5rem', 
+          backgroundColor: '#f9fafb', 
+          borderRadius: '0.5rem',
+          border: '2px dashed #d1d5db'
+        }}>
+          <h3 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#374151' }}>
+            🔍 Paste Your Code to Detect Algorithm
+          </h3>
+          <textarea
+            value={userCode}
+            onChange={(e) => setUserCode(e.target.value)}
+            rows={8}
+            placeholder="Paste your algorithm code here..."
+            style={{ 
+              width: '100%', 
+              fontFamily: 'monospace',
+              padding: '0.75rem',
+              fontSize: '0.875rem',
+              borderRadius: '0.375rem',
+              border: '1px solid #d1d5db',
+              resize: 'vertical'
+            }}
+          />
+          <button 
+            onClick={handleDetectAlgorithm}
+            style={{
+              marginTop: '0.75rem',
+              padding: '0.625rem 1.25rem',
+              backgroundColor: '#8b5cf6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              fontSize: '0.875rem'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#7c3aed'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#8b5cf6'}
+          >
+            Detect Algorithm
+          </button>
+
+          {detected && (
+            <div style={{ 
+              marginTop: '1rem', 
+              padding: '1rem', 
+              backgroundColor: detected.confidence > 60 ? '#d1fae5' : '#fef3c7',
+              borderRadius: '0.375rem',
+              border: `2px solid ${detected.confidence > 60 ? '#6ee7b7' : '#fcd34d'}`
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem' }}>
+                  {detected.confidence > 80 ? '✅' : detected.confidence > 60 ? '✓' : '⚠️'}
+                </span>
+                <strong style={{ fontSize: '1.125rem', color: '#1f2937' }}>
+                  {detected.name}
+                </strong>
+              </div>
+              <div style={{ marginBottom: '0.5rem' }}>
+                <strong>Confidence:</strong> 
+                <span style={{ 
+                  marginLeft: '0.5rem',
+                  padding: '0.25rem 0.5rem',
+                  backgroundColor: detected.confidence > 80 ? '#10b981' : detected.confidence > 60 ? '#f59e0b' : '#ef4444',
+                  color: 'white',
+                  borderRadius: '0.25rem',
+                  fontWeight: 'bold',
+                  fontSize: '0.875rem'
+                }}>
+                  {detected.confidence}%
+                </span>
+              </div>
+              <div style={{ fontSize: '0.875rem', color: '#4b5563', fontStyle: 'italic' }}>
+                {detected.explanation}
+              </div>
+              {detected.allMatches && detected.allMatches.length > 1 && (
+                <div style={{ marginTop: '0.75rem', fontSize: '0.875rem' }}>
+                  <strong>Other possibilities:</strong>
+                  <div style={{ marginTop: '0.25rem' }}>
+                    {detected.allMatches.slice(1).map((match, idx) => (
+                      <span key={idx} style={{ 
+                        display: 'inline-block',
+                        marginRight: '0.5rem',
+                        marginTop: '0.25rem',
+                        padding: '0.25rem 0.5rem',
+                        backgroundColor: '#e5e7eb',
+                        borderRadius: '0.25rem',
+                        fontSize: '0.75rem'
+                      }}>
+                        {match.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 👇 THEN THE GENERATE BUTTON */}
         <button onClick={handleVisualize} className="btn-primary">
           Generate Visualization
         </button>
