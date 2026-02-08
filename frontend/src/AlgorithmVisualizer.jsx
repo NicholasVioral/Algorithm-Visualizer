@@ -91,6 +91,11 @@ const algorithmSummaries = {
     description: "Dijkstra's algorithm finds the shortest path from a starting node to all other nodes in a weighted graph. It maintains a set of unvisited nodes and their tentative distances, always selecting the node with the smallest distance to visit next. It updates distances to neighbors and repeats until all nodes are visited.",
     complexity: "Time: O((V + E) log V) | Space: O(V)"
   },
+  bellmanford: {
+    title: "Bellman-Ford Algorithm",
+    description: "Bellman-Ford finds the shortest path from a source to all other vertices in a weighted graph. Unlike Dijkstra's algorithm, it can handle negative edge weights. The algorithm relaxes all edges V-1 times (or K times with constraints), updating distances when a shorter path is found. It's commonly used in problems with limited steps or negative weights.",
+    complexity: "Time: O(V × E) | Space: O(V)"
+  },
   'bst-insert': {
     title: "Binary Search Tree - Insert",
     description: "BST Insert adds a new value to a binary search tree while maintaining the BST property: left children are smaller, right children are larger. Starting at the root, it compares the value with each node and traverses left or right accordingly until finding an empty spot to insert the new node.",
@@ -1729,34 +1734,6 @@ const AlgorithmVisualizer = () => {
 
         {steps.length > 0 && (
           <>
-            <div className="visualization-container">
-              <div style={{ marginBottom: "20px" }}>
-                <h3>Paste Algorithm Code</h3>
-
-                <textarea
-                  value={userCode}
-                  onChange={(e) => setUserCode(e.target.value)}
-                  rows={10}
-                  placeholder="Paste your algorithm code here..."
-                  style={{ width: "100%", fontFamily: "monospace" }}
-                />
-
-                <button onClick={handleDetectAlgorithm}>
-                  Detect Algorithm
-                </button>
-
-                {detected && (
-                  <div style={{ marginTop: "10px" }}>
-                    <strong>Detected:</strong> {detected.name}<br />
-                    <strong>Confidence:</strong> {detected.confidence}%<br />
-                    <em>{detected.explanation}</em>
-                  </div>
-                )}
-              </div>
-
-              {renderVisualization()}
-            </div>
-
             <div className="description-box">
               <p className="description-text">{steps[currentStep]?.description || ''}</p>
             </div>
