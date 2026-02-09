@@ -125,104 +125,250 @@ const algorithmSummaries = {
     title: "Tower of Hanoi",
     description: "Tower of Hanoi is a classic recursion problem with three pegs and n disks. The goal is to move all disks from the source peg to the destination peg, using the auxiliary peg, while never placing a larger disk on a smaller one. The recursive solution moves n-1 disks to auxiliary, moves the largest disk to destination, then moves n-1 disks from auxiliary to destination.",
     complexity: "Time: O(2ⁿ) | Space: O(n) for call stack"
+  },
+  'two-pointers': {
+    title: "Two Pointers",
+    description: "Two Pointers technique uses two pointers that traverse the array from different positions or directions. Common patterns include: converging pointers (start and end moving toward each other), same-direction pointers (both moving forward at different speeds), or opposite-direction pointers. This technique is often used for array problems, palindromes, and pair-finding problems.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  'sliding-window': {
+    title: "Sliding Window",
+    description: "Sliding Window maintains a window (subarray/substring) that slides through the array. It uses two pointers (left and right) to define the window boundaries. The window expands by moving right pointer and shrinks by moving left pointer based on conditions. This technique efficiently solves subarray/substring problems by avoiding recalculation of the entire window each time.",
+    complexity: "Time: O(n) | Space: O(k) where k is window size"
+  },
+  'fast-slow-pointers': {
+    title: "Fast & Slow Pointers (Floyd's Cycle)",
+    description: "Floyd's Cycle Detection uses two pointers moving at different speeds through a linked list or sequence. The slow pointer moves one step at a time while the fast pointer moves two steps. If there's a cycle, they will eventually meet. This technique is also used to find middle elements, detect cycles, and find cycle start positions.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  'kadane': {
+    title: "Kadane's Algorithm (Max Subarray)",
+    description: "Kadane's Algorithm finds the maximum sum of a contiguous subarray in linear time. It maintains a running sum (currentSum) and tracks the maximum sum seen so far. At each element, it decides whether to extend the current subarray or start a new one by taking the maximum of (current element) vs (current element + previous sum).",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  'topological-sort': {
+    title: "Topological Sort",
+    description: "Topological Sort orders vertices in a directed acyclic graph (DAG) such that for every directed edge u→v, vertex u comes before v. Kahn's algorithm uses in-degrees: start with nodes having in-degree 0, process them, reduce in-degrees of neighbors, and repeat. Commonly used for task scheduling, course prerequisites, and dependency resolution.",
+    complexity: "Time: O(V + E) | Space: O(V)"
+  },
+  'union-find': {
+    title: "Union Find (Disjoint Set)",
+    description: "Union Find efficiently manages disjoint sets with two main operations: Find (determine which set an element belongs to) and Union (merge two sets). Path compression optimizes Find by flattening the tree structure, and union by rank keeps trees balanced. Used for connected components, cycle detection, and network connectivity problems.",
+    complexity: "Time: O(α(n)) amortized per operation | Space: O(n)"
+  },
+  'knapsack': {
+    title: "0/1 Knapsack (DP)",
+    description: "0/1 Knapsack solves the problem of selecting items with given weights and values to maximize total value without exceeding capacity. Each item can be taken or not (0/1 choice). Uses dynamic programming with a 2D table where dp[i][w] represents maximum value using first i items with capacity w. For each item, choose max of (taking it) or (skipping it).",
+    complexity: "Time: O(n × W) | Space: O(n × W) or O(W) optimized"
+  },
+  'lis': {
+    title: "Longest Increasing Subsequence",
+    description: "Longest Increasing Subsequence (LIS) finds the length of the longest subsequence where elements are in increasing order. The DP approach uses dp[i] to store LIS length ending at index i, checking all previous elements. A more efficient approach uses binary search with a tails array, replacing elements to maintain the smallest possible tail values.",
+    complexity: "Time: O(n²) DP or O(n log n) binary search | Space: O(n)"
+  },
+  'monotonic-stack': {
+    title: "Monotonic Stack",
+    description: "Monotonic Stack maintains elements in monotonically increasing or decreasing order. When adding a new element, it pops elements that violate the monotonic property. This technique efficiently solves 'next greater/smaller element' problems, stock span, histogram areas, and temperature problems by processing each element once.",
+    complexity: "Time: O(n) | Space: O(n)"
+  },
+  'backtracking': {
+    title: "Backtracking",
+    description: "Backtracking explores all possible solutions by incrementally building candidates and abandoning them ('backtracking') when they cannot lead to a valid solution. It follows a 'choose-explore-unchoose' pattern: make a choice, recursively explore that path, then undo the choice (backtrack) to try other options. Used for permutations, combinations, N-Queens, Sudoku, and constraint satisfaction problems.",
+    complexity: "Time: Varies (often exponential) | Space: O(depth of recursion)"
+  },
+  'prefix-sum': {
+    title: "Prefix Sum",
+    description: "Prefix Sum creates an array where each index stores the cumulative sum of all elements up to that index. This preprocessing enables O(1) range sum queries: sum(l, r) = prefix[r] - prefix[l-1]. Often combined with hash maps to solve subarray sum problems efficiently. Used for range queries, subarray sums, and 2D matrix sums.",
+    complexity: "Time: O(n) preprocessing, O(1) per query | Space: O(n)"
   }
 };
 
 // Algorithm Functions
 const generateBubbleSortSteps = (arr) => {
-  const steps = [{ array: [...arr], comparing: [], swapped: false, description: 'Initial array' }];
+  const steps = [{
+    array: [...arr],
+    comparing: [],
+    swapped: false,
+    description: 'Initial array - Starting bubble sort',
+    variables: {},
+    operations: { comparisons: 0, swaps: 0 },
+    phase: 'Starting',
+    insight: 'Bubble sort repeatedly compares adjacent elements and swaps them if they are in the wrong order.'
+  }];
   const n = arr.length;
-  
+  let totalComparisons = 0;
+  let totalSwaps = 0;
+
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - i - 1; j++) {
+      totalComparisons++;
       steps.push({
         array: [...arr],
         comparing: [j, j + 1],
         swapped: false,
-        description: `Comparing ${arr[j]} and ${arr[j + 1]}`
+        description: `Comparing ${arr[j]} and ${arr[j + 1]} (Pass ${i + 1})`,
+        variables: { i, j, 'n-i-1': n - i - 1 },
+        operations: { comparisons: totalComparisons, swaps: totalSwaps },
+        phase: `Pass ${i + 1} of ${n - 1}`,
+        insight: j === n - i - 2 ? `Largest element in unsorted portion will "bubble" to position ${n - i - 1}` : 'Comparing adjacent elements'
       });
-      
+
       if (arr[j] > arr[j + 1]) {
         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+        totalSwaps++;
         steps.push({
           array: [...arr],
           comparing: [j, j + 1],
           swapped: true,
-          description: `Swapped ${arr[j + 1]} and ${arr[j]}`
+          description: `Swapped ${arr[j + 1]} and ${arr[j]} because ${arr[j + 1]} > ${arr[j]}`,
+          variables: { i, j, 'n-i-1': n - i - 1 },
+          operations: { comparisons: totalComparisons, swaps: totalSwaps },
+          phase: `Pass ${i + 1} of ${n - 1}`,
+          insight: 'Larger element moves right (towards the end)'
         });
       }
     }
   }
-  
-  steps.push({ array: [...arr], comparing: [], swapped: false, description: 'Sorted!' });
+
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    swapped: false,
+    description: `Sorted! Completed in ${totalComparisons} comparisons and ${totalSwaps} swaps`,
+    variables: {},
+    operations: { comparisons: totalComparisons, swaps: totalSwaps },
+    phase: 'Complete',
+    insight: `Bubble sort made ${n - 1} passes through the array. Time complexity: O(n²)`
+  });
   return steps;
 };
 
 const generateInsertionSortSteps = (arr) => {
-  const steps = [{ array: [...arr], sorted: [], current: -1, description: 'Initial array' }];
-  
+  const steps = [{
+    array: [...arr],
+    sorted: [],
+    current: -1,
+    description: 'Starting Insertion Sort - Building sorted array one element at a time',
+    variables: {},
+    operations: { comparisons: 0, shifts: 0 },
+    phase: 'Starting',
+    insight: 'Insertion sort builds a sorted array by inserting each element into its correct position in the sorted portion'
+  }];
+  let totalComparisons = 0;
+  let totalShifts = 0;
+
   for (let i = 1; i < arr.length; i++) {
     const key = arr[i];
     let j = i - 1;
-    
+
     steps.push({
       array: [...arr],
       sorted: Array.from({ length: i }, (_, idx) => idx),
       current: i,
-      description: `Select element ${key} to insert`
+      description: `Pick element ${key} at index ${i} to insert into sorted portion`,
+      variables: { i, 'key': key, j, 'sorted size': i },
+      operations: { comparisons: totalComparisons, shifts: totalShifts },
+      phase: `Inserting element ${i} of ${arr.length}`,
+      insight: `First ${i} elements are sorted. Now inserting ${key} into its correct position by shifting larger elements.`
     });
-    
+
+    let shifted = false;
     while (j >= 0 && arr[j] > key) {
+      totalComparisons++;
       steps.push({
         array: [...arr],
         sorted: Array.from({ length: i }, (_, idx) => idx),
         current: i,
         comparing: [j, j + 1],
-        description: `Shift ${arr[j]} to the right`
+        description: `${arr[j]} > ${key}, shift ${arr[j]} right`,
+        variables: { i, 'key': key, j, 'comparing': arr[j] },
+        operations: { comparisons: totalComparisons, shifts: totalShifts },
+        phase: `Inserting element ${i} of ${arr.length}`,
+        insight: `Element ${arr[j]} is larger than ${key}, so shift it right to make space`
       });
-      
+
       arr[j + 1] = arr[j];
+      totalShifts++;
       j--;
+      shifted = true;
     }
-    
+
+    if (j >= 0) totalComparisons++; // Final comparison that broke the loop
+
     arr[j + 1] = key;
     steps.push({
       array: [...arr],
       sorted: Array.from({ length: i + 1 }, (_, idx) => idx),
       current: j + 1,
-      description: `Insert ${key} at correct position`
+      description: `Inserted ${key} at index ${j + 1}${shifted ? ' after shifting' : ''}`,
+      variables: { i, 'key': key, 'final position': j + 1 },
+      operations: { comparisons: totalComparisons, shifts: totalShifts },
+      phase: `Inserting element ${i} of ${arr.length}`,
+      insight: shifted
+        ? `${key} inserted at position ${j + 1}. Elements shifted right to make room. Sorted portion grows!`
+        : `${key} was already in correct position! No shifting needed.`
     });
   }
-  
-  steps.push({ array: [...arr], sorted: Array.from({ length: arr.length }, (_, idx) => idx), current: -1, description: 'Sorted!' });
+
+  steps.push({
+    array: [...arr],
+    sorted: Array.from({ length: arr.length }, (_, idx) => idx),
+    current: -1,
+    description: `Sorted! Total: ${totalComparisons} comparisons, ${totalShifts} shifts`,
+    variables: { 'total elements': arr.length },
+    operations: { comparisons: totalComparisons, shifts: totalShifts },
+    phase: 'Complete',
+    insight: `Insertion sort efficient for small or nearly-sorted arrays! Time: O(n²) worst case, O(n) best case (already sorted)`
+  });
   return steps;
 };
 
 const generateSelectionSortSteps = (arr) => {
-  const steps = [{ array: [...arr], sorted: [], current: -1, minIdx: -1, description: 'Initial array' }];
+  const steps = [{
+    array: [...arr],
+    sorted: [],
+    current: -1,
+    minIdx: -1,
+    description: 'Starting Selection Sort - Finding minimum elements',
+    variables: {},
+    operations: { comparisons: 0, swaps: 0 },
+    phase: 'Starting',
+    insight: 'Selection sort divides the array into sorted and unsorted regions, repeatedly finding the minimum from unsorted portion'
+  }];
   const n = arr.length;
-  
+  let totalComparisons = 0;
+  let totalSwaps = 0;
+
   for (let i = 0; i < n - 1; i++) {
     let minIdx = i;
-    
+
     steps.push({
       array: [...arr],
       sorted: Array.from({ length: i }, (_, idx) => idx),
       current: i,
       minIdx: i,
-      description: `Start finding minimum from index ${i}`
+      description: `Position ${i}: Search for minimum in unsorted portion`,
+      variables: { i, minIdx, 'sorted count': i, 'remaining': n - i },
+      operations: { comparisons: totalComparisons, swaps: totalSwaps },
+      phase: `Round ${i + 1} of ${n - 1}`,
+      insight: `First ${i} elements are sorted. Finding minimum from remaining ${n - i} elements.`
     });
-    
+
     for (let j = i + 1; j < n; j++) {
+      totalComparisons++;
       steps.push({
         array: [...arr],
         sorted: Array.from({ length: i }, (_, idx) => idx),
         current: i,
         comparing: [minIdx, j],
         minIdx,
-        description: `Comparing ${arr[minIdx]} and ${arr[j]}`
+        description: `Comparing: ${arr[minIdx]} vs ${arr[j]}`,
+        variables: { i, j, minIdx, 'min value': arr[minIdx] },
+        operations: { comparisons: totalComparisons, swaps: totalSwaps },
+        phase: `Round ${i + 1} of ${n - 1}`,
+        insight: `Searching for minimum. Current minimum is ${arr[minIdx]} at index ${minIdx}`
       });
-      
+
       if (arr[j] < arr[minIdx]) {
         minIdx = j;
         steps.push({
@@ -230,24 +376,57 @@ const generateSelectionSortSteps = (arr) => {
           sorted: Array.from({ length: i }, (_, idx) => idx),
           current: i,
           minIdx,
-          description: `New minimum: ${arr[minIdx]}`
+          description: `Found new minimum: ${arr[minIdx]} at index ${minIdx}`,
+          variables: { i, j, minIdx, 'min value': arr[minIdx] },
+          operations: { comparisons: totalComparisons, swaps: totalSwaps },
+          phase: `Round ${i + 1} of ${n - 1}`,
+          insight: `Updated minimum! ${arr[minIdx]} is smaller than previous minimum`
         });
       }
     }
-    
+
     if (minIdx !== i) {
+      const temp1 = arr[i];
+      const temp2 = arr[minIdx];
       [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+      totalSwaps++;
       steps.push({
         array: [...arr],
         sorted: Array.from({ length: i + 1 }, (_, idx) => idx),
         current: i,
         minIdx: -1,
-        description: `Swapped ${arr[minIdx]} with ${arr[i]}`
+        description: `Swapped ${temp2} (from index ${minIdx}) with ${temp1} (from index ${i})`,
+        variables: { i, minIdx, 'swapped': temp2 },
+        operations: { comparisons: totalComparisons, swaps: totalSwaps },
+        phase: `Round ${i + 1} of ${n - 1}`,
+        insight: `Minimum element ${temp2} moved to sorted position ${i}. Sorted region grows!`
+      });
+    } else {
+      steps.push({
+        array: [...arr],
+        sorted: Array.from({ length: i + 1 }, (_, idx) => idx),
+        current: i,
+        minIdx: -1,
+        description: `Element ${arr[i]} already in correct position`,
+        variables: { i, 'sorted count': i + 1 },
+        operations: { comparisons: totalComparisons, swaps: totalSwaps },
+        phase: `Round ${i + 1} of ${n - 1}`,
+        insight: `No swap needed! Element was already the minimum.`
       });
     }
   }
-  
-  steps.push({ array: [...arr], sorted: Array.from({ length: arr.length }, (_, idx) => idx), current: -1, minIdx: -1, description: 'Sorted!' });
+
+  steps.push({
+    array: [...arr],
+    sorted: Array.from({ length: arr.length }, (_, idx) => idx),
+    current: -1,
+    minIdx: -1,
+    description: `Sorted! Completed with ${totalComparisons} comparisons and ${totalSwaps} swaps`,
+    variables: { 'total elements': n },
+    operations: { comparisons: totalComparisons, swaps: totalSwaps },
+    phase: 'Complete',
+    insight: `Selection sort always performs n(n-1)/2 comparisons but minimizes swaps. Time: O(n²), Swaps: O(n)`
+  });
   return steps;
 };
 
@@ -449,21 +628,42 @@ const generateQuickSortSteps = (arr) => {
 
 const generateBinarySearchSteps = (arr, target) => {
   const sorted = [...arr].sort((a, b) => a - b);
-  const steps = [{ array: sorted, left: 0, right: sorted.length - 1, mid: -1, description: 'Searching for ' + target }];
-  
+  const steps = [{
+    array: sorted,
+    left: 0,
+    right: sorted.length - 1,
+    mid: -1,
+    description: `Binary search for ${target} in sorted array`,
+    variables: { target, 'array size': sorted.length },
+    operations: { comparisons: 0, steps: 0 },
+    phase: 'Starting',
+    insight: 'Binary search works on sorted arrays, eliminating half the search space each step'
+  }];
+
   let left = 0;
   let right = sorted.length - 1;
-  
+  let totalComparisons = 0;
+  let searchSteps = 0;
+
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
+    searchSteps++;
+    const searchSpaceSize = right - left + 1;
+
     steps.push({
       array: sorted,
       left,
       right,
       mid,
-      description: `Checking middle element: ${sorted[mid]}`
+      description: `Checking middle element at index ${mid}: ${sorted[mid]}`,
+      variables: { left, right, mid, 'search space': searchSpaceSize },
+      operations: { comparisons: totalComparisons, steps: searchSteps },
+      phase: `Step ${searchSteps}`,
+      insight: `Search space reduced to ${searchSpaceSize} elements. Middle element divides the space in half.`
     });
-    
+
+    totalComparisons++;
+
     if (sorted[mid] === target) {
       steps.push({
         array: sorted,
@@ -471,11 +671,15 @@ const generateBinarySearchSteps = (arr, target) => {
         right,
         mid,
         found: true,
-        description: `Found ${target} at index ${mid}!`
+        description: `✓ Found ${target} at index ${mid}!`,
+        variables: { left, right, mid, target },
+        operations: { comparisons: totalComparisons, steps: searchSteps },
+        phase: 'Found',
+        insight: `Binary search found the target in ${searchSteps} steps! Time complexity: O(log n) - Much faster than linear O(n)!`
       });
       return steps;
     }
-    
+
     if (sorted[mid] < target) {
       left = mid + 1;
       steps.push({
@@ -483,7 +687,11 @@ const generateBinarySearchSteps = (arr, target) => {
         left,
         right,
         mid,
-        description: `${sorted[mid]} < ${target}, search right half`
+        description: `${sorted[mid]} < ${target}, eliminating left half. Search right →`,
+        variables: { left, right, mid, 'eliminated': mid + 1 },
+        operations: { comparisons: totalComparisons, steps: searchSteps },
+        phase: `Step ${searchSteps}`,
+        insight: `Target is larger, so it must be in the right half. Left half is eliminated!`
       });
     } else {
       right = mid - 1;
@@ -492,18 +700,26 @@ const generateBinarySearchSteps = (arr, target) => {
         left,
         right,
         mid,
-        description: `${sorted[mid]} > ${target}, search left half`
+        description: `${sorted[mid]} > ${target}, eliminating right half. Search left ←`,
+        variables: { left, right, mid, 'eliminated': sorted.length - mid },
+        operations: { comparisons: totalComparisons, steps: searchSteps },
+        phase: `Step ${searchSteps}`,
+        insight: `Target is smaller, so it must be in the left half. Right half is eliminated!`
       });
     }
   }
-  
+
   steps.push({
     array: sorted,
     left,
     right,
     mid: -1,
     found: false,
-    description: `${target} not found in array`
+    description: `✗ ${target} not found in array after ${searchSteps} steps`,
+    variables: { left, right, target },
+    operations: { comparisons: totalComparisons, steps: searchSteps },
+    phase: 'Not Found',
+    insight: `Search space exhausted. Target does not exist in the array. Still only took ${searchSteps} steps!`
   });
   return steps;
 };
@@ -518,26 +734,46 @@ const generateBFSSteps = (edges, start) => {
     graph[to].push(from);
   });
 
-  const steps = [{ graph, queue: [parseInt(start)], visited: new Set(), current: null, description: 'Initialize BFS with start node' }];
+  const steps = [{
+    graph,
+    queue: [parseInt(start)],
+    visited: new Set(),
+    current: null,
+    description: 'Initialize BFS with start node',
+    variables: { 'start node': parseInt(start) },
+    operations: { 'nodes visited': 0, 'edges traversed': 0 },
+    phase: 'Starting',
+    insight: 'BFS explores graph level by level using a queue. We start by adding the initial node to the queue.'
+  }];
+
   const visited = new Set();
   const queue = [parseInt(start)];
+  let nodesVisited = 0;
+  let edgesTraversed = 0;
 
   while (queue.length > 0) {
     const current = queue.shift();
-    
+
     if (visited.has(current)) continue;
-    
+
     visited.add(current);
+    nodesVisited++;
+
     steps.push({
       graph,
       queue: [...queue],
       visited: new Set(visited),
       current,
-      description: `Visit node ${current}`
+      description: `Visit node ${current}`,
+      variables: { 'current node': current, 'queue size': queue.length, 'visited count': visited.size },
+      operations: { 'nodes visited': nodesVisited, 'edges traversed': edgesTraversed },
+      phase: `Visiting node ${current}`,
+      insight: `Processing node ${current}. BFS visits all neighbors at current level before moving deeper. Queue ensures level-by-level exploration.`
     });
 
     const neighbors = graph[current] || [];
     for (const neighbor of neighbors) {
+      edgesTraversed++;
       if (!visited.has(neighbor) && !queue.includes(neighbor)) {
         queue.push(neighbor);
         steps.push({
@@ -545,13 +781,28 @@ const generateBFSSteps = (edges, start) => {
           queue: [...queue],
           visited: new Set(visited),
           current,
-          description: `Add node ${neighbor} to queue`
+          description: `Add node ${neighbor} to queue`,
+          variables: { 'current node': current, 'adding': neighbor, 'queue size': queue.length, 'visited count': visited.size },
+          operations: { 'nodes visited': nodesVisited, 'edges traversed': edgesTraversed },
+          phase: `Exploring neighbors of ${current}`,
+          insight: `Found unvisited neighbor ${neighbor}. Adding to back of queue to visit later. This ensures breadth-first order.`
         });
       }
     }
   }
 
-  steps.push({ graph, queue: [], visited, current: null, description: 'BFS complete!' });
+  steps.push({
+    graph,
+    queue: [],
+    visited,
+    current: null,
+    description: 'BFS complete!',
+    variables: { 'total nodes': visited.size },
+    operations: { 'nodes visited': nodesVisited, 'edges traversed': edgesTraversed },
+    phase: 'Complete',
+    insight: `BFS visited all ${nodesVisited} reachable nodes level by level. Time complexity: O(V + E) where V is vertices and E is edges.`
+  });
+
   return steps;
 };
 
@@ -565,26 +816,46 @@ const generateDFSSteps = (edges, start) => {
     graph[to].push(from);
   });
 
-  const steps = [{ graph, stack: [parseInt(start)], visited: new Set(), current: null, description: 'Initialize DFS with start node' }];
+  const steps = [{
+    graph,
+    stack: [parseInt(start)],
+    visited: new Set(),
+    current: null,
+    description: 'Initialize DFS with start node',
+    variables: { 'start node': parseInt(start) },
+    operations: { 'nodes visited': 0, 'edges traversed': 0 },
+    phase: 'Starting',
+    insight: 'DFS explores as deep as possible along each branch using a stack. We start by pushing the initial node onto the stack.'
+  }];
+
   const visited = new Set();
   const stack = [parseInt(start)];
+  let nodesVisited = 0;
+  let edgesTraversed = 0;
 
   while (stack.length > 0) {
     const current = stack.pop();
-    
+
     if (visited.has(current)) continue;
-    
+
     visited.add(current);
+    nodesVisited++;
+
     steps.push({
       graph,
       stack: [...stack],
       visited: new Set(visited),
       current,
-      description: `Visit node ${current}`
+      description: `Visit node ${current}`,
+      variables: { 'current node': current, 'stack size': stack.length, 'visited count': visited.size },
+      operations: { 'nodes visited': nodesVisited, 'edges traversed': edgesTraversed },
+      phase: `Visiting node ${current}`,
+      insight: `Processing node ${current}. DFS goes deep first before backtracking. Stack (LIFO) ensures we explore deepest unvisited neighbor first.`
     });
 
     const neighbors = (graph[current] || []).reverse();
     for (const neighbor of neighbors) {
+      edgesTraversed++;
       if (!visited.has(neighbor)) {
         stack.push(neighbor);
         steps.push({
@@ -592,13 +863,28 @@ const generateDFSSteps = (edges, start) => {
           stack: [...stack],
           visited: new Set(visited),
           current,
-          description: `Push node ${neighbor} to stack`
+          description: `Push node ${neighbor} to stack`,
+          variables: { 'current node': current, 'pushing': neighbor, 'stack size': stack.length, 'visited count': visited.size },
+          operations: { 'nodes visited': nodesVisited, 'edges traversed': edgesTraversed },
+          phase: `Exploring neighbors of ${current}`,
+          insight: `Found unvisited neighbor ${neighbor}. Pushing to top of stack to visit next. This ensures depth-first exploration.`
         });
       }
     }
   }
 
-  steps.push({ graph, stack: [], visited, current: null, description: 'DFS complete!' });
+  steps.push({
+    graph,
+    stack: [],
+    visited,
+    current: null,
+    description: 'DFS complete!',
+    variables: { 'total nodes': visited.size },
+    operations: { 'nodes visited': nodesVisited, 'edges traversed': edgesTraversed },
+    phase: 'Complete',
+    insight: `DFS visited all ${nodesVisited} reachable nodes by exploring each branch fully before backtracking. Time complexity: O(V + E).`
+  });
+
   return steps;
 };
 
@@ -1183,7 +1469,7 @@ const AlgorithmVisualizer = () => {
 
   const renderGraphVisualization = (step) => {
     if (!step || !step.graph) return null;
-    
+
     const allNodes = new Set();
     Object.keys(step.graph).forEach(node => {
       allNodes.add(parseInt(node));
@@ -1192,26 +1478,67 @@ const AlgorithmVisualizer = () => {
       }
     });
 
-    const nodeArray = Array.from(allNodes);
-    
+    const nodeArray = Array.from(allNodes).sort((a, b) => a - b);
+
+    // Calculate node positions
+    const nodePositions = {};
+    nodeArray.forEach((node, i) => {
+      const angle = (i / nodeArray.length) * 2 * Math.PI - Math.PI / 2; // Start from top
+      nodePositions[node] = {
+        x: 50 + 35 * Math.cos(angle),
+        y: 50 + 35 * Math.sin(angle)
+      };
+    });
+
     return (
       <>
         <div className="graph-container">
-          {nodeArray.map((node, i) => {
-            const angle = (i / nodeArray.length) * 2 * Math.PI;
-            const x = 50 + 35 * Math.cos(angle);
-            const y = 50 + 35 * Math.sin(angle);
-            
+          {/* Draw edges first (behind nodes) */}
+          <svg style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0 }}>
+            {Object.keys(step.graph).map(fromNode => {
+              const from = parseInt(fromNode);
+              if (!step.graph[from]) return null;
+
+              return step.graph[from].map(toNode => {
+                const to = parseInt(toNode);
+                // Only draw each edge once (from lower to higher node number)
+                if (from >= to) return null;
+
+                const fromPos = nodePositions[from];
+                const toPos = nodePositions[to];
+
+                return (
+                  <line
+                    key={`${from}-${to}`}
+                    x1={`${fromPos.x}%`}
+                    y1={`${fromPos.y}%`}
+                    x2={`${toPos.x}%`}
+                    y2={`${toPos.y}%`}
+                    stroke="#60a5fa"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    opacity="0.9"
+                    filter="drop-shadow(0 0 8px rgba(96, 165, 250, 0.8))"
+                  />
+                );
+              });
+            })}
+          </svg>
+
+          {/* Draw nodes on top */}
+          {nodeArray.map((node) => {
+            const pos = nodePositions[node];
+
             let colorClass = 'node-gray';
             if (step.current === node) colorClass = 'node-yellow';
             else if (step.visited.has(node)) colorClass = 'node-green';
             else if (step.queue?.includes(node) || step.stack?.includes(node)) colorClass = 'node-blue';
-            
+
             return (
               <div
                 key={node}
                 className={`graph-node ${colorClass}`}
-                style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, -50%)' }}
+                style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)' }}
               >
                 {node}
               </div>
@@ -1247,7 +1574,7 @@ const AlgorithmVisualizer = () => {
 
   const renderDijkstraVisualization = (step) => {
     if (!step || !step.graph) return null;
-    
+
     const allNodes = new Set();
     Object.keys(step.graph).forEach(node => {
       allNodes.add(parseInt(node));
@@ -1256,29 +1583,94 @@ const AlgorithmVisualizer = () => {
       }
     });
 
-    const nodeArray = Array.from(allNodes);
-    
+    const nodeArray = Array.from(allNodes).sort((a, b) => a - b);
+
+    // Calculate node positions
+    const nodePositions = {};
+    nodeArray.forEach((node, i) => {
+      const angle = (i / nodeArray.length) * 2 * Math.PI - Math.PI / 2; // Start from top
+      nodePositions[node] = {
+        x: 50 + 35 * Math.cos(angle),
+        y: 50 + 35 * Math.sin(angle)
+      };
+    });
+
     return (
       <>
         <div className="graph-container">
-          {nodeArray.map((node, i) => {
-            const angle = (i / nodeArray.length) * 2 * Math.PI;
-            const x = 50 + 35 * Math.cos(angle);
-            const y = 50 + 35 * Math.sin(angle);
-            
+          {/* Draw edges with weights */}
+          <svg style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0 }}>
+            {Object.keys(step.graph).map(fromNode => {
+              const from = parseInt(fromNode);
+              if (!step.graph[from]) return null;
+
+              return step.graph[from].map(({ node: toNode, weight }) => {
+                const to = parseInt(toNode);
+                // Only draw each edge once
+                if (from >= to) return null;
+
+                const fromPos = nodePositions[from];
+                const toPos = nodePositions[to];
+                const midX = (fromPos.x + toPos.x) / 2;
+                const midY = (fromPos.y + toPos.y) / 2;
+
+                return (
+                  <g key={`${from}-${to}`}>
+                    <line
+                      x1={`${fromPos.x}%`}
+                      y1={`${fromPos.y}%`}
+                      x2={`${toPos.x}%`}
+                      y2={`${toPos.y}%`}
+                      stroke="rgba(147, 197, 253, 0.5)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                    {/* Edge weight label */}
+                    <circle
+                      cx={`${midX}%`}
+                      cy={`${midY}%`}
+                      r="14"
+                      fill="rgba(251, 191, 36, 0.9)"
+                      stroke="rgba(245, 158, 11, 0.8)"
+                      strokeWidth="2"
+                    />
+                    <text
+                      x={`${midX}%`}
+                      y={`${midY}%`}
+                      fill="#000000"
+                      fontSize="14"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      style={{
+                        pointerEvents: 'none'
+                      }}
+                    >
+                      {weight}
+                    </text>
+                  </g>
+                );
+              });
+            })}
+          </svg>
+
+          {/* Draw nodes on top */}
+          {nodeArray.map((node) => {
+            const pos = nodePositions[node];
+
             let colorClass = 'node-gray';
             if (step.current === node) colorClass = 'node-yellow';
             else if (step.visited.has(node)) colorClass = 'node-green';
             else if (step.updating === node) colorClass = 'node-blue';
-            
+
             const distance = step.distances[node];
             const displayDist = distance === Infinity ? '∞' : distance;
-            
+
             return (
               <div
                 key={node}
                 className={`graph-node ${colorClass}`}
-                style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, -50%)' }}
+                style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)' }}
               >
                 <div>{node}</div>
                 <div style={{ fontSize: '0.7rem' }}>({displayDist})</div>
@@ -1287,7 +1679,7 @@ const AlgorithmVisualizer = () => {
           })}
         </div>
         <div className="graph-info">
-          <div>Distances from start node</div>
+          <div>Distances from start node (numbers show shortest path distance)</div>
         </div>
       </>
     );
@@ -1548,7 +1940,9 @@ const AlgorithmVisualizer = () => {
         <div className="algorithm-summary">
           <h3 className="summary-title">{algorithmSummaries[algorithm].title}</h3>
           <p className="summary-description">{algorithmSummaries[algorithm].description}</p>
-          <p className="summary-complexity">{algorithmSummaries[algorithm].complexity}</p>
+          <div className="complexity-badges">
+            <span className="summary-complexity">{algorithmSummaries[algorithm].complexity}</span>
+          </div>
         </div>
 
         {isArrayAlgorithm && (
@@ -1734,8 +2128,114 @@ const AlgorithmVisualizer = () => {
 
         {steps.length > 0 && (
           <>
+            {/* Phase Indicator */}
+            {steps[currentStep]?.phase && (
+              <div className="phase-indicator">
+                <span className="phase-label">Phase:</span>
+                <span className="phase-value">{steps[currentStep].phase}</span>
+              </div>
+            )}
+
+            {/* Main Description */}
             <div className="description-box">
               <p className="description-text">{steps[currentStep]?.description || ''}</p>
+            </div>
+
+            {/* Educational Panels Grid */}
+            <div className="educational-grid">
+              {/* Variables Tracker */}
+              {steps[currentStep]?.variables && Object.keys(steps[currentStep].variables).length > 0 && (
+                <div className="edu-panel variables-panel">
+                  <h4 className="edu-panel-title">📊 Variables</h4>
+                  <div className="variables-grid">
+                    {Object.entries(steps[currentStep].variables).map(([key, value]) => (
+                      <div key={key} className="variable-item">
+                        <span className="variable-name">{key}:</span>
+                        <span className="variable-value">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Operations Counter */}
+              {steps[currentStep]?.operations && (
+                <div className="edu-panel operations-panel">
+                  <h4 className="edu-panel-title">🔢 Operations</h4>
+                  <div className="operations-grid">
+                    {Object.entries(steps[currentStep].operations).map(([key, value]) => (
+                      <div key={key} className="operation-item">
+                        <span className="operation-name">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                        <span className="operation-value">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Color Legend */}
+              {isArrayAlgorithm && (
+                <div className="edu-panel legend-panel">
+                  <h4 className="edu-panel-title">🎨 Color Guide</h4>
+                  <div className="legend-grid">
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)' }}></div>
+                      <span className="legend-label">Unsorted</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%)' }}></div>
+                      <span className="legend-label">Comparing</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(180deg, #f87171 0%, #ef4444 100%)' }}></div>
+                      <span className="legend-label">Swapping</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(180deg, #34d399 0%, #10b981 100%)' }}></div>
+                      <span className="legend-label">Sorted</span>
+                    </div>
+                    {algorithm === 'quick' && (
+                      <div className="legend-item">
+                        <div className="legend-color" style={{ background: 'linear-gradient(180deg, #a78bfa 0%, #8b5cf6 100%)' }}></div>
+                        <span className="legend-label">Pivot</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Graph Color Legend */}
+              {isGraphAlgorithm && (
+                <div className="edu-panel legend-panel">
+                  <h4 className="edu-panel-title">🎨 Node Color Guide</h4>
+                  <div className="legend-grid">
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)' }}></div>
+                      <span className="legend-label">Unvisited</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' }}></div>
+                      <span className="legend-label">Current Node</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)' }}></div>
+                      <span className="legend-label">{algorithm === 'bfs' ? 'In Queue' : algorithm === 'dfs' ? 'In Stack' : 'Updating'}</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color" style={{ background: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)' }}></div>
+                      <span className="legend-label">Visited</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Key Insight */}
+              {steps[currentStep]?.insight && (
+                <div className="edu-panel insight-panel">
+                  <h4 className="edu-panel-title">💡 Key Insight</h4>
+                  <p className="insight-text">{steps[currentStep].insight}</p>
+                </div>
+              )}
             </div>
 
             <div className="controls-container">
@@ -1801,6 +2301,18 @@ const AlgorithmVisualizer = () => {
                 style={{ width: '200px' }}
               />
               <span className="speed-value">{speed}ms</span>
+            </div>
+
+            {/* Learning Tips */}
+            <div className="learning-tips">
+              <h4 className="tips-title">💡 Learning Tips</h4>
+              <ul className="tips-list">
+                <li>Use the <strong>step controls</strong> to go through the algorithm at your own pace</li>
+                <li>Watch the <strong>variables panel</strong> to understand loop indices and values</li>
+                <li>Check the <strong>operations counter</strong> to see algorithm efficiency in action</li>
+                <li>Read the <strong>key insights</strong> at each step to understand the "why" behind each operation</li>
+                <li>The <strong>color legend</strong> helps you track what's happening visually</li>
+              </ul>
             </div>
           </>
         )}
