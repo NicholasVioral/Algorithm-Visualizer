@@ -431,188 +431,404 @@ const generateSelectionSortSteps = (arr) => {
 };
 
 const generateHeapSortSteps = (arr) => {
-  const steps = [{ array: [...arr], heapSize: arr.length, highlight: [], description: 'Initial array' }];
+  let totalSwaps = 0;
+  let totalHeapifies = 0;
   const n = arr.length;
-  
+
+  const steps = [{
+    array: [...arr],
+    comparing: [],
+    heapSize: n,
+    description: 'Starting Heap Sort',
+    variables: { 'array length': n, 'heap size': n },
+    operations: { swaps: 0, heapifies: 0 },
+    phase: 'Initialize',
+    insight: 'Heap sort first builds a max heap where parent nodes are larger than children, then repeatedly extracts the maximum element.'
+  }];
+
   const heapify = (heapSize, i) => {
+    totalHeapifies++;
     let largest = i;
     const left = 2 * i + 1;
     const right = 2 * i + 2;
-    
+
     if (left < heapSize && arr[left] > arr[largest]) largest = left;
     if (right < heapSize && arr[right] > arr[largest]) largest = right;
-    
+
     if (largest !== i) {
+      totalSwaps++;
+      const temp1 = arr[i];
+      const temp2 = arr[largest];
+
       steps.push({
         array: [...arr],
+        comparing: [i, largest],
+        swapped: true,
         heapSize,
-        highlight: [i, largest],
-        description: `Swap ${arr[i]} with ${arr[largest]} to maintain heap`
+        description: `Swap ${temp1} with ${temp2} to maintain max heap property`,
+        variables: { parent: i, child: largest, 'parent value': temp1, 'child value': temp2, 'heap size': heapSize },
+        operations: { swaps: totalSwaps, heapifies: totalHeapifies },
+        phase: 'Building Heap',
+        insight: `Child ${temp2} is larger than parent ${temp1}, so swap them to maintain max heap property (parent ≥ children).`
       });
-      
+
       [arr[i], arr[largest]] = [arr[largest], arr[i]];
       heapify(heapSize, largest);
     }
   };
-  
+
   // Build max heap
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    heapSize: n,
+    description: 'Building max heap from bottom up',
+    variables: { 'heap size': n, 'starting from': Math.floor(n / 2) - 1 },
+    operations: { swaps: totalSwaps, heapifies: totalHeapifies },
+    phase: 'Build Heap Phase',
+    insight: 'Start from last non-leaf node and heapify each subtree. This ensures max heap property throughout the tree.'
+  });
+
   for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
     steps.push({
       array: [...arr],
+      comparing: [i],
       heapSize: n,
-      highlight: [i],
-      description: `Heapify subtree rooted at index ${i}`
+      description: `Heapify subtree rooted at index ${i} (value: ${arr[i]})`,
+      variables: { 'heapifying': i, value: arr[i], 'heap size': n },
+      operations: { swaps: totalSwaps, heapifies: totalHeapifies },
+      phase: 'Build Heap Phase',
+      insight: `Check if node ${arr[i]} at index ${i} is larger than its children. If not, swap with largest child.`
     });
     heapify(n, i);
   }
-  
+
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    heapSize: n,
+    description: 'Max heap built! Root has largest element',
+    variables: { 'max element': arr[0], 'heap size': n },
+    operations: { swaps: totalSwaps, heapifies: totalHeapifies },
+    phase: 'Heap Built',
+    insight: `Heap is complete! The root (${arr[0]}) is the maximum element. Now extract it repeatedly to sort.`
+  });
+
   // Extract elements from heap
   for (let i = n - 1; i > 0; i--) {
+    totalSwaps++;
+    const maxElement = arr[0];
+
     steps.push({
       array: [...arr],
+      comparing: [0, i],
+      swapped: true,
       heapSize: i + 1,
-      highlight: [0, i],
-      description: `Swap root ${arr[0]} with last element ${arr[i]}`
+      description: `Extract max ${maxElement}, swap with last element ${arr[i]}`,
+      variables: { max: maxElement, 'last element': arr[i], 'heap size': i + 1, 'sorted count': n - i },
+      operations: { swaps: totalSwaps, heapifies: totalHeapifies },
+      phase: `Extracting (${n - i}/${n})`,
+      insight: `Root ${maxElement} is the maximum. Swap it to end of array (sorted position), then restore heap property.`
     });
-    
+
     [arr[0], arr[i]] = [arr[i], arr[0]];
-    
+
     steps.push({
       array: [...arr],
+      comparing: [0],
       heapSize: i,
-      highlight: [0],
-      description: `Heapify root with reduced heap size`
+      description: `Restore heap property with reduced heap size ${i}`,
+      variables: { 'heap size': i, 'sorted elements': n - i },
+      operations: { swaps: totalSwaps, heapifies: totalHeapifies },
+      phase: `Extracting (${n - i}/${n})`,
+      insight: `New root might violate heap property. Heapify to restore it, then repeat extraction.`
     });
-    
+
     heapify(i, 0);
   }
-  
-  steps.push({ array: [...arr], heapSize: 0, highlight: [], description: 'Sorted!' });
+
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    heapSize: 0,
+    description: 'Heap Sort complete!',
+    variables: { 'total elements': n },
+    operations: { swaps: totalSwaps, heapifies: totalHeapifies },
+    phase: 'Complete',
+    insight: `Sorted ${n} elements with ${totalSwaps} swaps. Time: O(n log n) always, Space: O(1). Great for consistent performance!`
+  });
+
   return steps;
 };
 
 const generateLinearSearchSteps = (arr, target) => {
-  const steps = [{ array: [...arr], current: -1, found: false, description: `Searching for ${target}` }];
-  
+  const steps = [{
+    array: [...arr],
+    comparing: [],
+    current: -1,
+    found: false,
+    description: `Starting linear search for ${target}`,
+    variables: { target, 'array length': arr.length },
+    operations: { comparisons: 0 },
+    phase: 'Initialize',
+    insight: 'Linear search checks each element sequentially from left to right until the target is found or we reach the end.'
+  }];
+
+  let comparisons = 0;
+
   for (let i = 0; i < arr.length; i++) {
+    comparisons++;
+
     steps.push({
       array: [...arr],
+      comparing: [i],
       current: i,
       found: false,
-      description: `Checking index ${i}: ${arr[i]}`
+      description: `Checking element at index ${i}: Is ${arr[i]} equal to ${target}?`,
+      variables: { target, 'current index': i, 'current value': arr[i] },
+      operations: { comparisons },
+      phase: `Searching (${i + 1}/${arr.length})`,
+      insight: arr[i] === target ?
+        `Found it! ${arr[i]} matches our target ${target}.` :
+        `${arr[i]} ≠ ${target}, continue searching...`
     });
-    
+
     if (arr[i] === target) {
       steps.push({
         array: [...arr],
+        comparing: [i],
         current: i,
         found: true,
-        description: `Found ${target} at index ${i}!`
+        description: `Found ${target} at index ${i}!`,
+        variables: { target, 'found at': i },
+        operations: { comparisons },
+        phase: 'Complete - Found',
+        insight: `Success! Found target in ${comparisons} comparison(s). Best case: O(1), Worst case: O(n), Average: O(n/2).`
       });
       return steps;
     }
   }
-  
+
   steps.push({
     array: [...arr],
+    comparing: [],
     current: -1,
     found: false,
-    description: `${target} not found in array`
+    description: `${target} not found in array`,
+    variables: { target, 'elements checked': arr.length },
+    operations: { comparisons },
+    phase: 'Complete - Not Found',
+    insight: `Target not found after checking all ${arr.length} elements. Time complexity: O(n) where n is array length.`
   });
   return steps;
 };
 
 const generateMergeSortSteps = (arr) => {
-  const steps = [{ array: [...arr], highlight: [], description: 'Initial array' }];
-  
-  const merge = (left, right) => {
+  let totalComparisons = 0;
+  let totalMerges = 0;
+  let divideCount = 0;
+
+  const steps = [{
+    array: [...arr],
+    comparing: [],
+    description: 'Starting Merge Sort',
+    variables: { 'array length': arr.length },
+    operations: { comparisons: 0, merges: 0, divides: 0 },
+    phase: 'Initialize',
+    insight: 'Merge sort uses divide-and-conquer: recursively divide array in half, sort each half, then merge them back together.'
+  }];
+
+  const merge = (left, right, start) => {
+    totalMerges++;
     const result = [];
     let i = 0, j = 0;
-    
+
+    steps.push({
+      array: [...arr],
+      comparing: [],
+      description: `Merging two sorted subarrays of size ${left.length} and ${right.length}`,
+      variables: { 'left size': left.length, 'right size': right.length },
+      operations: { comparisons: totalComparisons, merges: totalMerges, divides: divideCount },
+      phase: `Merging ${totalMerges}`,
+      insight: `Merging combines two sorted arrays into one. We compare elements and take the smaller one each time.`
+    });
+
     while (i < left.length && j < right.length) {
+      totalComparisons++;
+
       if (left[i] <= right[j]) {
-        result.push(left[i++]);
+        result.push(left[i]);
+        steps.push({
+          array: [...arr],
+          comparing: [],
+          description: `Take ${left[i]} from left subarray (${left[i]} ≤ ${right[j]})`,
+          variables: { 'comparing': `${left[i]} vs ${right[j]}`, 'chose': left[i] },
+          operations: { comparisons: totalComparisons, merges: totalMerges, divides: divideCount },
+          phase: `Merging ${totalMerges}`,
+          insight: `${left[i]} ≤ ${right[j]}, so take from left. This maintains sorted order.`
+        });
+        i++;
       } else {
-        result.push(right[j++]);
+        result.push(right[j]);
+        steps.push({
+          array: [...arr],
+          comparing: [],
+          description: `Take ${right[j]} from right subarray (${right[j]} < ${left[i]})`,
+          variables: { 'comparing': `${left[i]} vs ${right[j]}`, 'chose': right[j] },
+          operations: { comparisons: totalComparisons, merges: totalMerges, divides: divideCount },
+          phase: `Merging ${totalMerges}`,
+          insight: `${right[j]} < ${left[i]}, so take from right. This maintains sorted order.`
+        });
+        j++;
       }
     }
-    
-    return result.concat(left.slice(i)).concat(right.slice(j));
+
+    const finalResult = result.concat(left.slice(i)).concat(right.slice(j));
+
+    for (let k = 0; k < finalResult.length; k++) {
+      arr[start + k] = finalResult[k];
+    }
+
+    steps.push({
+      array: [...arr],
+      comparing: Array.from({ length: finalResult.length }, (_, idx) => start + idx),
+      description: `Merged into sorted subarray: [${finalResult.join(', ')}]`,
+      variables: { 'merged size': finalResult.length },
+      operations: { comparisons: totalComparisons, merges: totalMerges, divides: divideCount },
+      phase: `Merge ${totalMerges} Complete`,
+      insight: `Subarray is now sorted and merged back into the main array.`
+    });
+
+    return finalResult;
   };
-  
+
   const mergeSortHelper = (array, start = 0) => {
     if (array.length <= 1) return array;
-    
+
+    divideCount++;
     const mid = Math.floor(array.length / 2);
     const left = array.slice(0, mid);
     const right = array.slice(mid);
-    
+
     steps.push({
       array: [...arr],
-      highlight: Array.from({ length: array.length }, (_, i) => start + i),
-      description: `Dividing array at position ${start + mid}`
+      comparing: Array.from({ length: array.length }, (_, i) => start + i),
+      description: `Divide array at position ${start + mid} into [${left.join(', ')}] and [${right.join(', ')}]`,
+      variables: { 'divide #': divideCount, 'left size': left.length, 'right size': right.length },
+      operations: { comparisons: totalComparisons, merges: totalMerges, divides: divideCount },
+      phase: `Dividing ${divideCount}`,
+      insight: `Split array in half. Each half will be sorted independently, then merged.`
     });
-    
+
     const sortedLeft = mergeSortHelper(left, start);
     const sortedRight = mergeSortHelper(right, start + mid);
-    const merged = merge(sortedLeft, sortedRight);
-    
-    for (let i = 0; i < merged.length; i++) {
-      arr[start + i] = merged[i];
-    }
-    
-    steps.push({
-      array: [...arr],
-      highlight: Array.from({ length: merged.length }, (_, i) => start + i),
-      description: `Merged segments`
-    });
-    
-    return merged;
+    return merge(sortedLeft, sortedRight, start);
   };
-  
+
   mergeSortHelper([...arr]);
-  steps.push({ array: [...arr], highlight: [], description: 'Sorted!' });
+
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    description: `Merge Sort complete!`,
+    variables: { 'total elements': arr.length },
+    operations: { comparisons: totalComparisons, merges: totalMerges, divides: divideCount },
+    phase: 'Complete',
+    insight: `Sorted ${arr.length} elements with ${totalComparisons} comparisons and ${totalMerges} merges. Time complexity: O(n log n) always, Space: O(n).`
+  });
+
   return steps;
 };
 
 const generateQuickSortSteps = (arr) => {
-  const steps = [{ array: [...arr], pivot: -1, highlight: [], description: 'Initial array' }];
-  
+  let totalComparisons = 0;
+  let totalSwaps = 0;
+  let partitionCount = 0;
+
+  const steps = [{
+    array: [...arr],
+    comparing: [],
+    pivot: -1,
+    description: 'Starting Quick Sort',
+    variables: { 'array length': arr.length },
+    operations: { comparisons: 0, swaps: 0, partitions: 0 },
+    phase: 'Initialize',
+    insight: 'Quick sort uses divide-and-conquer: pick a pivot, partition around it, then recursively sort both sides.'
+  }];
+
   const partition = (low, high) => {
+    partitionCount++;
     const pivot = arr[high];
+    const pivotValue = pivot;
+
     steps.push({
       array: [...arr],
+      comparing: [high],
       pivot: high,
-      highlight: Array.from({ length: high - low + 1 }, (_, i) => low + i),
-      description: `Pivot: ${pivot}`
+      description: `Select pivot: ${pivot} at index ${high}`,
+      variables: { pivot: pivotValue, low, high, 'partition #': partitionCount },
+      operations: { comparisons: totalComparisons, swaps: totalSwaps, partitions: partitionCount },
+      phase: `Partitioning ${partitionCount}`,
+      insight: `Pivot ${pivot} will be placed in its final sorted position. All elements < ${pivot} go left, all ≥ ${pivot} go right.`
     });
-    
+
     let i = low - 1;
-    
+
     for (let j = low; j < high; j++) {
+      totalComparisons++;
+
+      steps.push({
+        array: [...arr],
+        comparing: [j, high],
+        pivot: high,
+        description: `Compare ${arr[j]} with pivot ${pivot}`,
+        variables: { pivot: pivotValue, i, j, 'arr[j]': arr[j] },
+        operations: { comparisons: totalComparisons, swaps: totalSwaps, partitions: partitionCount },
+        phase: `Partitioning ${partitionCount}`,
+        insight: arr[j] < pivot ?
+          `${arr[j]} < ${pivot}, so swap it to the left side` :
+          `${arr[j]} ≥ ${pivot}, keep it on the right side`
+      });
+
       if (arr[j] < pivot) {
         i++;
+        totalSwaps++;
+        const temp1 = arr[i];
+        const temp2 = arr[j];
         [arr[i], arr[j]] = [arr[j], arr[i]];
+
         steps.push({
           array: [...arr],
+          comparing: [i, j],
+          swapped: true,
           pivot: high,
-          highlight: [i, j],
-          description: `Swapped ${arr[i]} and ${arr[j]}`
+          description: `Swapped ${temp2} with ${temp1}`,
+          variables: { pivot: pivotValue, i, j },
+          operations: { comparisons: totalComparisons, swaps: totalSwaps, partitions: partitionCount },
+          phase: `Partitioning ${partitionCount}`,
+          insight: `Moved ${temp2} to left partition (elements < pivot).`
         });
       }
     }
-    
+
+    totalSwaps++;
     [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+
     steps.push({
       array: [...arr],
+      comparing: [i + 1],
+      swapped: true,
       pivot: i + 1,
-      highlight: [i + 1, high],
-      description: `Placed pivot in correct position`
+      description: `Placed pivot ${pivotValue} in correct position at index ${i + 1}`,
+      variables: { 'pivot position': i + 1, pivot: pivotValue },
+      operations: { comparisons: totalComparisons, swaps: totalSwaps, partitions: partitionCount },
+      phase: `Partition ${partitionCount} Complete`,
+      insight: `Pivot ${pivotValue} is now in its final sorted position. Left side has elements < ${pivotValue}, right side has elements ≥ ${pivotValue}.`
     });
-    
+
     return i + 1;
   };
-  
+
   const quickSortHelper = (low, high) => {
     if (low < high) {
       const pi = partition(low, high);
@@ -620,9 +836,20 @@ const generateQuickSortSteps = (arr) => {
       quickSortHelper(pi + 1, high);
     }
   };
-  
+
   quickSortHelper(0, arr.length - 1);
-  steps.push({ array: [...arr], pivot: -1, highlight: [], description: 'Sorted!' });
+
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    pivot: -1,
+    description: `Quick Sort complete!`,
+    variables: { 'total elements': arr.length },
+    operations: { comparisons: totalComparisons, swaps: totalSwaps, partitions: partitionCount },
+    phase: 'Complete',
+    insight: `Sorted ${arr.length} elements with ${totalComparisons} comparisons and ${totalSwaps} swaps. Average time: O(n log n), Worst case: O(n²).`
+  });
+
   return steps;
 };
 
@@ -892,143 +1119,249 @@ const generateDijkstraSteps = (edges, start) => {
   const graph = {};
   const distances = {};
   const allNodes = new Set();
-  
+  let totalUpdates = 0;
+  let nodesVisited = 0;
+
   // Parse weighted edges format: "0-1:5" means edge from 0 to 1 with weight 5
   edges.forEach(edge => {
     const [connection, weight] = edge.split(':');
     const [from, to] = connection.split('-').map(Number);
     const w = parseInt(weight) || 1;
-    
+
     if (!graph[from]) graph[from] = [];
     if (!graph[to]) graph[to] = [];
-    
+
     graph[from].push({ node: to, weight: w });
     graph[to].push({ node: from, weight: w });
-    
+
     allNodes.add(from);
     allNodes.add(to);
   });
-  
+
   // Initialize distances
   allNodes.forEach(node => {
     distances[node] = Infinity;
   });
   distances[parseInt(start)] = 0;
-  
+
   const steps = [{
     graph,
     distances: { ...distances },
     visited: new Set(),
     current: null,
-    description: `Initialize: Start node ${start} has distance 0, all others infinity`
+    description: `Initialize Dijkstra's algorithm from node ${start}`,
+    variables: { 'start node': parseInt(start), 'total nodes': allNodes.size },
+    operations: { 'nodes visited': 0, 'distance updates': 0 },
+    phase: 'Initialize',
+    insight: `Dijkstra finds shortest paths from source to all nodes. Start node has distance 0, all others start at infinity.`
   }];
-  
+
   const visited = new Set();
   const unvisited = Array.from(allNodes);
-  
+
   while (unvisited.length > 0) {
     // Find unvisited node with minimum distance
     let current = unvisited.reduce((min, node) =>
       !visited.has(node) && distances[node] < distances[min] ? node : min
     );
-    
+
     if (distances[current] === Infinity) break;
-    
+
+    nodesVisited++;
     visited.add(current);
+
     steps.push({
       graph,
       distances: { ...distances },
       visited: new Set(visited),
       current,
-      description: `Visit node ${current} (distance: ${distances[current]})`
+      description: `Visit node ${current} with shortest distance ${distances[current]}`,
+      variables: {
+        'current node': current,
+        'current distance': distances[current],
+        'unvisited count': unvisited.length - 1
+      },
+      operations: { 'nodes visited': nodesVisited, 'distance updates': totalUpdates },
+      phase: `Visiting (${nodesVisited}/${allNodes.size})`,
+      insight: `Node ${current} has the shortest distance (${distances[current]}) among unvisited nodes. This distance is now finalized.`
     });
-    
+
     const neighbors = graph[current] || [];
     for (const { node: neighbor, weight } of neighbors) {
       if (!visited.has(neighbor)) {
+        const oldDist = distances[neighbor];
         const newDist = distances[current] + weight;
-        
+
         if (newDist < distances[neighbor]) {
+          totalUpdates++;
           distances[neighbor] = newDist;
+
           steps.push({
             graph,
             distances: { ...distances },
             visited: new Set(visited),
             current,
             updating: neighbor,
-            description: `Update distance to node ${neighbor}: ${newDist}`
+            description: `Update node ${neighbor}: ${oldDist === Infinity ? '∞' : oldDist} → ${newDist}`,
+            variables: {
+              'updating': neighbor,
+              'old distance': oldDist === Infinity ? '∞' : oldDist,
+              'new distance': newDist,
+              'edge weight': weight
+            },
+            operations: { 'nodes visited': nodesVisited, 'distance updates': totalUpdates },
+            phase: `Visiting (${nodesVisited}/${allNodes.size})`,
+            insight: `Path through node ${current} is shorter! Distance to ${neighbor} improved from ${oldDist === Infinity ? '∞' : oldDist} to ${newDist}.`
+          });
+        } else {
+          steps.push({
+            graph,
+            distances: { ...distances },
+            visited: new Set(visited),
+            current,
+            checking: neighbor,
+            description: `Check node ${neighbor}: Current path (${oldDist}) is better than ${newDist}`,
+            variables: {
+              'checking': neighbor,
+              'current distance': oldDist,
+              'path via ${current}': newDist
+            },
+            operations: { 'nodes visited': nodesVisited, 'distance updates': totalUpdates },
+            phase: `Visiting (${nodesVisited}/${allNodes.size})`,
+            insight: `Path through ${current} (${newDist}) is not better than existing path (${oldDist}). Keep current distance.`
           });
         }
       }
     }
-    
+
     unvisited.splice(unvisited.indexOf(current), 1);
   }
-  
+
   steps.push({
     graph,
     distances: { ...distances },
     visited,
     current: null,
-    description: 'Dijkstra complete! All shortest distances found.'
+    description: 'Dijkstra complete! All shortest paths found.',
+    variables: { 'total nodes': allNodes.size },
+    operations: { 'nodes visited': nodesVisited, 'distance updates': totalUpdates },
+    phase: 'Complete',
+    insight: `Found shortest paths from node ${start} to all reachable nodes with ${totalUpdates} distance updates. Time: O((V + E) log V) with priority queue.`
   });
-  
+
   return steps;
 };
 
 const generateRecursionSteps = (n) => {
-  const steps = [{ callStack: [], description: `Computing factorial(${n})` }];
+  let totalCalls = 0;
+  const steps = [{
+    callStack: [],
+    description: `Starting factorial computation for ${n}`,
+    variables: { n, 'calls made': 0 },
+    operations: { 'function calls': 0, 'multiplications': 0 },
+    phase: 'Initialize',
+    insight: `Factorial uses recursion: f(n) = n × f(n-1), with base case f(0) = f(1) = 1. Each call adds to the call stack.`
+  }];
   const callStack = [];
-  
+  let multiplications = 0;
+
   const factorial = (num, depth = 0) => {
+    totalCalls++;
     callStack.push({ function: `factorial(${num})`, depth, returning: false });
+
     steps.push({
       callStack: callStack.map(c => ({ ...c })),
-      description: `Call factorial(${num})`
+      description: `Call factorial(${num}) - depth ${depth}`,
+      variables: { 'computing': num, depth, 'stack size': callStack.length },
+      operations: { 'function calls': totalCalls, 'multiplications': multiplications },
+      phase: `Diving Down`,
+      insight: `Push factorial(${num}) onto call stack. Need to compute factorial(${num - 1}) first before we can calculate ${num} × factorial(${num - 1}).`
     });
-    
+
     if (num <= 1) {
       callStack[callStack.length - 1].returning = true;
       callStack[callStack.length - 1].result = 1;
+
       steps.push({
         callStack: callStack.map(c => ({ ...c })),
-        description: `Base case: factorial(${num}) = 1`
+        description: `Base case reached: factorial(${num}) = 1`,
+        variables: { 'base case': num, result: 1, 'stack size': callStack.length },
+        operations: { 'function calls': totalCalls, 'multiplications': multiplications },
+        phase: `Base Case`,
+        insight: `Factorial of ${num} is 1 (base case). Now start returning up the call stack, multiplying as we go.`
       });
+
       callStack.pop();
+
       steps.push({
         callStack: callStack.map(c => ({ ...c })),
-        description: `Return 1 from factorial(${num})`
+        description: `Return 1 from factorial(${num})`,
+        variables: { returned: 1, 'stack size': callStack.length },
+        operations: { 'function calls': totalCalls, 'multiplications': multiplications },
+        phase: `Returning Up`,
+        insight: `Pop factorial(${num}) from stack, return 1 to caller.`
       });
+
       return 1;
     }
-    
+
     const result = num * factorial(num - 1, depth + 1);
-    
+    multiplications++;
+
     callStack[callStack.length - 1].returning = true;
     callStack[callStack.length - 1].result = result;
+
     steps.push({
       callStack: callStack.map(c => ({ ...c })),
-      description: `factorial(${num}) = ${num} × factorial(${num - 1}) = ${result}`
+      description: `Compute factorial(${num}) = ${num} × ${result / num} = ${result}`,
+      variables: { num, 'factorial(num-1)': result / num, result, 'stack size': callStack.length },
+      operations: { 'function calls': totalCalls, 'multiplications': multiplications },
+      phase: `Computing Result`,
+      insight: `Got factorial(${num - 1}) = ${result / num} from recursive call. Multiply: ${num} × ${result / num} = ${result}.`
     });
-    
+
     callStack.pop();
+
     steps.push({
       callStack: callStack.map(c => ({ ...c })),
-      description: `Return ${result} from factorial(${num})`
+      description: `Return ${result} from factorial(${num})`,
+      variables: { returned: result, 'to': num + 1, 'stack size': callStack.length },
+      operations: { 'function calls': totalCalls, 'multiplications': multiplications },
+      phase: `Returning Up`,
+      insight: `Pop factorial(${num}) from stack, return ${result} to ${num === n ? 'main' : `factorial(${num + 1})`}.`
     });
-    
+
     return result;
   };
-  
-  factorial(n);
-  const finalResult = Math.floor(Math.exp(n * Math.log(n) - n + 0.5 * Math.log(2 * Math.PI * n)));
-  steps.push({ callStack: [], description: `Result: factorial(${n})` });
+
+  const finalResult = factorial(n);
+
+  steps.push({
+    callStack: [],
+    description: `Factorial computation complete: ${n}! = ${finalResult}`,
+    variables: { n, result: finalResult },
+    operations: { 'function calls': totalCalls, 'multiplications': multiplications },
+    phase: 'Complete',
+    insight: `Computed ${n}! = ${finalResult} using ${totalCalls} function calls and ${multiplications} multiplications. Time: O(n), Space: O(n) for call stack.`
+  });
+
   return steps;
 };
 
 const generateBSTInsertSteps = (arr) => {
-  const steps = [{ tree: null, inserting: null, description: 'Empty tree - ready to insert nodes' }];
-  
+  let totalComparisons = 0;
+  let totalInsertions = 0;
+
+  const steps = [{
+    tree: null,
+    inserting: null,
+    description: 'Starting BST construction',
+    variables: { 'elements to insert': arr.length },
+    operations: { comparisons: 0, insertions: 0 },
+    phase: 'Initialize',
+    insight: `Binary Search Tree maintains order: left children < parent < right children. This enables O(log n) search on balanced trees.`
+  }];
+
   class TreeNode {
     constructor(val) {
       this.val = val;
@@ -1036,59 +1369,87 @@ const generateBSTInsertSteps = (arr) => {
       this.right = null;
     }
   }
-  
+
   let root = null;
-  
+
   const insert = (node, val, path = []) => {
     if (!node) {
+      totalInsertions++;
+
       steps.push({
         tree: JSON.parse(JSON.stringify(root)),
         inserting: val,
         path: [...path],
-        description: `Insert ${val} here`
+        description: `Insert ${val} at this position`,
+        variables: { inserting: val, 'path length': path.length, 'tree size': totalInsertions },
+        operations: { comparisons: totalComparisons, insertions: totalInsertions },
+        phase: `Inserting (${totalInsertions}/${arr.length})`,
+        insight: `Found empty spot! Insert ${val} as a new leaf node. Path taken: ${path.length === 0 ? 'root' : path.join(' → ')}.`
       });
+
       return new TreeNode(val);
     }
-    
+
+    totalComparisons++;
+
     steps.push({
       tree: JSON.parse(JSON.stringify(root)),
       inserting: val,
       path: [...path, node.val],
-      description: `${val} ${val < node.val ? '<' : '>'} ${node.val}, go ${val < node.val ? 'left' : 'right'}`
+      description: `Compare ${val} with ${node.val}: ${val < node.val ? `${val} < ${node.val}` : `${val} ≥ ${node.val}`}`,
+      variables: {
+        inserting: val,
+        'current node': node.val,
+        'going': val < node.val ? 'left' : 'right',
+        'depth': path.length
+      },
+      operations: { comparisons: totalComparisons, insertions: totalInsertions },
+      phase: `Inserting (${totalInsertions}/${arr.length})`,
+      insight: `${val} ${val < node.val ? '<' : '≥'} ${node.val}, so go ${val < node.val ? 'left' : 'right'}. BST property ensures smaller values go left, larger go right.`
     });
-    
+
     if (val < node.val) {
       node.left = insert(node.left, val, [...path, node.val]);
     } else {
       node.right = insert(node.right, val, [...path, node.val]);
     }
-    
+
     return node;
   };
-  
-  arr.forEach(val => {
+
+  arr.forEach((val, idx) => {
     root = insert(root, val);
+
     steps.push({
       tree: JSON.parse(JSON.stringify(root)),
       inserting: null,
       path: [],
-      description: `Inserted ${val}`
+      description: `Inserted ${val} successfully`,
+      variables: { 'just inserted': val, 'tree size': totalInsertions, remaining: arr.length - idx - 1 },
+      operations: { comparisons: totalComparisons, insertions: totalInsertions },
+      phase: `Progress (${idx + 1}/${arr.length})`,
+      insight: `${val} is now part of the tree. ${arr.length - idx - 1} element(s) remaining to insert.`
     });
   });
-  
+
   steps.push({
     tree: JSON.parse(JSON.stringify(root)),
     inserting: null,
     path: [],
-    description: 'BST construction complete!'
+    description: 'BST construction complete!',
+    variables: { 'total nodes': totalInsertions },
+    operations: { comparisons: totalComparisons, insertions: totalInsertions },
+    phase: 'Complete',
+    insight: `Built BST with ${totalInsertions} nodes using ${totalComparisons} comparisons. Average insert: O(log n), Worst case (skewed tree): O(n).`
   });
-  
+
   return steps;
 };
 
 const generateBSTSearchSteps = (arr, target) => {
+  let totalComparisons = 0;
   const steps = [];
-  
+
   class TreeNode {
     constructor(val) {
       this.val = val;
@@ -1096,7 +1457,7 @@ const generateBSTSearchSteps = (arr, target) => {
       this.right = null;
     }
   }
-  
+
   // Build tree first
   let root = null;
   const insert = (node, val) => {
@@ -1105,18 +1466,22 @@ const generateBSTSearchSteps = (arr, target) => {
     else node.right = insert(node.right, val);
     return node;
   };
-  
+
   arr.forEach(val => {
     root = insert(root, val);
   });
-  
+
   steps.push({
     tree: JSON.parse(JSON.stringify(root)),
     searching: target,
     current: null,
-    description: `Searching for ${target} in BST`
+    description: `Starting search for ${target} in BST`,
+    variables: { target, 'tree size': arr.length },
+    operations: { comparisons: 0 },
+    phase: 'Initialize',
+    insight: `BST search is efficient: compare with current node, then go left if target is smaller, right if larger. O(log n) on balanced trees.`
   });
-  
+
   // Search
   const search = (node, val, path = []) => {
     if (!node) {
@@ -1126,19 +1491,29 @@ const generateBSTSearchSteps = (arr, target) => {
         current: null,
         path: [...path],
         found: false,
-        description: `${val} not found in tree`
+        description: `Reached empty node - ${val} not found`,
+        variables: { target: val, 'path length': path.length, 'nodes checked': totalComparisons },
+        operations: { comparisons: totalComparisons },
+        phase: 'Not Found',
+        insight: `Reached a null node following the BST path. ${val} is not in the tree. Checked ${totalComparisons} node(s).`
       });
       return false;
     }
-    
+
+    totalComparisons++;
+
     steps.push({
       tree: JSON.parse(JSON.stringify(root)),
       searching: val,
       current: node.val,
       path: [...path, node.val],
-      description: `Check node ${node.val}`
+      description: `Compare ${val} with ${node.val}`,
+      variables: { target: val, 'current node': node.val, depth: path.length },
+      operations: { comparisons: totalComparisons },
+      phase: 'Searching',
+      insight: `At node ${node.val}. ${val === node.val ? 'Match found!' : val < node.val ? `${val} < ${node.val}, go left` : `${val} > ${node.val}, go right`}`
     });
-    
+
     if (node.val === val) {
       steps.push({
         tree: JSON.parse(JSON.stringify(root)),
@@ -1146,18 +1521,26 @@ const generateBSTSearchSteps = (arr, target) => {
         current: node.val,
         path: [...path, node.val],
         found: true,
-        description: `Found ${val}!`
+        description: `Found ${val}!`,
+        variables: { target: val, 'found at': node.val, 'path length': path.length + 1 },
+        operations: { comparisons: totalComparisons },
+        phase: 'Found',
+        insight: `Success! Found ${val} in ${totalComparisons} comparison(s). Path: ${[...path, node.val].join(' → ')}.`
       });
       return true;
     }
-    
+
     if (val < node.val) {
       steps.push({
         tree: JSON.parse(JSON.stringify(root)),
         searching: val,
         current: node.val,
         path: [...path, node.val],
-        description: `${val} < ${node.val}, search left`
+        description: `${val} < ${node.val}, searching left subtree`,
+        variables: { target: val, 'current node': node.val, direction: 'left' },
+        operations: { comparisons: totalComparisons },
+        phase: 'Searching',
+        insight: `${val} is less than ${node.val}, so it must be in the left subtree (if it exists).`
       });
       return search(node.left, val, [...path, node.val]);
     } else {
@@ -1166,156 +1549,247 @@ const generateBSTSearchSteps = (arr, target) => {
         searching: val,
         current: node.val,
         path: [...path, node.val],
-        description: `${val} > ${node.val}, search right`
+        description: `${val} > ${node.val}, searching right subtree`,
+        variables: { target: val, 'current node': node.val, direction: 'right' },
+        operations: { comparisons: totalComparisons },
+        phase: 'Searching',
+        insight: `${val} is greater than ${node.val}, so it must be in the right subtree (if it exists).`
       });
       return search(node.right, val, [...path, node.val]);
     }
   };
-  
+
   search(root, target);
   return steps;
 };
 
 const generateFibonacciSteps = (n) => {
-  const steps = [{ callStack: [], description: `Computing fibonacci(${n})` }];
   const callStack = [];
   let callCount = 0;
-  
+
+  const steps = [{
+    callStack: [],
+    description: `Starting Fibonacci computation for fib(${n})`,
+    variables: { n, 'calls made': 0 },
+    operations: { 'function calls': 0, additions: 0 },
+    phase: 'Initialize',
+    insight: `Fibonacci: fib(n) = fib(n-1) + fib(n-2), base cases: fib(0)=0, fib(1)=1. Recursive approach is inefficient due to repeated calculations.`
+  }];
+
+  let additions = 0;
+
   const fibonacci = (num, depth = 0) => {
     callCount++;
     if (callCount > 50) return 0; // Limit calls for visualization
-    
+
     callStack.push({ function: `fib(${num})`, depth, returning: false });
+
     steps.push({
       callStack: callStack.map(c => ({ ...c })),
-      description: `Call fib(${num})`
+      description: `Call fib(${num}) at depth ${depth}`,
+      variables: { computing: num, depth, 'stack size': callStack.length },
+      operations: { 'function calls': callCount, additions },
+      phase: `Diving`,
+      insight: `Need to compute fib(${num}). ${num <= 1 ? 'This is a base case!' : `Must compute fib(${num - 1}) and fib(${num - 2}) first.`}`
     });
-    
+
     if (num <= 1) {
       callStack[callStack.length - 1].returning = true;
       callStack[callStack.length - 1].result = num;
+
       steps.push({
         callStack: callStack.map(c => ({ ...c })),
-        description: `Base case: fib(${num}) = ${num}`
+        description: `Base case reached: fib(${num}) = ${num}`,
+        variables: { 'base case': num, result: num, 'stack size': callStack.length },
+        operations: { 'function calls': callCount, additions },
+        phase: `Base Case`,
+        insight: `Fibonacci base case: fib(${num}) = ${num}. Return this value up the call chain.`
       });
+
       callStack.pop();
       return num;
     }
-    
+
     const result1 = fibonacci(num - 1, depth + 1);
     const result2 = fibonacci(num - 2, depth + 1);
     const result = result1 + result2;
-    
+    additions++;
+
     callStack[callStack.length - 1].returning = true;
     callStack[callStack.length - 1].result = result;
+
     steps.push({
       callStack: callStack.map(c => ({ ...c })),
-      description: `fib(${num}) = fib(${num-1}) + fib(${num-2}) = ${result}`
+      description: `fib(${num}) = fib(${num-1}) + fib(${num-2}) = ${result1} + ${result2} = ${result}`,
+      variables: { num, 'fib(n-1)': result1, 'fib(n-2)': result2, result },
+      operations: { 'function calls': callCount, additions },
+      phase: `Computing`,
+      insight: `Got results from recursive calls: ${result1} + ${result2} = ${result}. Notice we may have recalculated same values multiple times!`
     });
-    
+
     callStack.pop();
     return result;
   };
-  
-  fibonacci(n);
-  steps.push({ callStack: [], description: `Result: fib(${n})` });
+
+  const finalResult = fibonacci(n);
+
+  steps.push({
+    callStack: [],
+    description: `Fibonacci complete: fib(${n}) = ${finalResult}`,
+    variables: { n, result: finalResult },
+    operations: { 'function calls': callCount, additions },
+    phase: 'Complete',
+    insight: `Computed fib(${n}) = ${finalResult} using ${callCount} function calls. This is inefficient! Time: O(2^n). Use DP for O(n).`
+  });
+
   return steps;
 };
 
 const generateFibonacciDPSteps = (n) => {
-  const steps = [{ dp: [], current: 0, description: `Computing fibonacci(${n}) with DP` }];
   const dp = new Array(n + 1).fill(-1);
-  
-  dp[0] = 0;
-  dp[1] = 1;
-  
-  steps.push({
+  let calculations = 0;
+
+  const steps = [{
     dp: [...dp],
     current: 0,
-    description: `Base cases: fib(0) = 0, fib(1) = 1`
+    description: `Starting Fibonacci with Dynamic Programming for fib(${n})`,
+    variables: { n, 'array size': n + 1 },
+    operations: { calculations: 0 },
+    phase: 'Initialize',
+    insight: `Dynamic Programming avoids redundant calculations by storing results. Build solution bottom-up from fib(0) to fib(${n}).`
+  }];
+
+  dp[0] = 0;
+  dp[1] = 1;
+
+  steps.push({
+    dp: [...dp],
+    current: 1,
+    description: `Set base cases: fib(0) = 0, fib(1) = 1`,
+    variables: { 'fib(0)': 0, 'fib(1)': 1 },
+    operations: { calculations: 0 },
+    phase: 'Base Cases',
+    insight: `Base cases are the foundation. Every Fibonacci number builds on these two values.`
   });
-  
+
   for (let i = 2; i <= n; i++) {
     steps.push({
       dp: [...dp],
       current: i,
-      description: `Calculate fib(${i}) = fib(${i-1}) + fib(${i-2})`
+      description: `Computing fib(${i}) from stored values`,
+      variables: { i, 'fib(i-1)': dp[i-1], 'fib(i-2)': dp[i-2], 'computing': `fib(${i})` },
+      operations: { calculations },
+      phase: `Computing (${i}/${n})`,
+      insight: `Look up fib(${i-1})=${dp[i-1]} and fib(${i-2})=${dp[i-2]} from array. No recursion needed - values already computed!`
     });
-    
+
+    calculations++;
     dp[i] = dp[i - 1] + dp[i - 2];
-    
+
     steps.push({
       dp: [...dp],
       current: i,
-      description: `fib(${i}) = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]}`
+      description: `fib(${i}) = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]}`,
+      variables: { i, 'fib(i-1)': dp[i-1], 'fib(i-2)': dp[i-2], result: dp[i] },
+      operations: { calculations },
+      phase: `Computing (${i}/${n})`,
+      insight: `Calculated fib(${i}) = ${dp[i]} in constant time using stored values. Store it for future use.`
     });
   }
-  
+
   steps.push({
     dp: [...dp],
     current: n,
-    description: `Result: fib(${n}) = ${dp[n]}`
+    description: `Fibonacci DP complete: fib(${n}) = ${dp[n]}`,
+    variables: { n, result: dp[n] },
+    operations: { calculations },
+    phase: 'Complete',
+    insight: `Computed fib(${n}) = ${dp[n]} with only ${calculations} calculations (vs O(2^n) for naive recursion). Time: O(n), Space: O(n). Much better!`
   });
-  
+
   return steps;
 };
 
 const generateTowerHanoiSteps = (n) => {
-  const steps = [];
   const towers = {
     A: Array.from({ length: n }, (_, i) => n - i),
     B: [],
     C: []
   };
-  
-  steps.push({
+
+  let totalMoves = 0;
+  let functionCalls = 0;
+
+  const steps = [{
     towers: JSON.parse(JSON.stringify(towers)),
     callStack: [],
-    description: `Tower of Hanoi with ${n} disks`
-  });
-  
+    description: `Starting Tower of Hanoi with ${n} disks`,
+    variables: { 'total disks': n, 'from': 'A', 'to': 'C', 'auxiliary': 'B' },
+    operations: { moves: 0, 'function calls': 0 },
+    phase: 'Initialize',
+    insight: `Tower of Hanoi: Move all disks from rod A to rod C using rod B. Rules: (1) Move one disk at a time, (2) Larger disk can't go on smaller disk.`
+  }];
+
   const callStack = [];
-  
+
   const hanoi = (disks, from, to, aux, depth = 0) => {
     if (disks === 0) return;
-    
+
+    functionCalls++;
     callStack.push({ function: `hanoi(${disks}, ${from}, ${to}, ${aux})`, depth });
+
     steps.push({
       towers: JSON.parse(JSON.stringify(towers)),
       callStack: callStack.map(c => ({ ...c })),
-      description: `Move ${disks} disk(s) from ${from} to ${to} using ${aux}`
+      description: `Plan: Move ${disks} disk(s) from ${from} to ${to} using ${aux}`,
+      variables: { disks, from, to, auxiliary: aux, depth, 'stack size': callStack.length },
+      operations: { moves: totalMoves, 'function calls': functionCalls },
+      phase: `Planning (depth ${depth})`,
+      insight: `To move ${disks} disk(s) from ${from} to ${to}: (1) Move ${disks-1} disks to ${aux}, (2) Move largest to ${to}, (3) Move ${disks-1} from ${aux} to ${to}.`
     });
-    
+
+    // Move n-1 disks from source to auxiliary
     hanoi(disks - 1, from, aux, to, depth + 1);
-    
+
+    // Move the largest disk
     const disk = towers[from].pop();
     towers[to].push(disk);
-    
+    totalMoves++;
+
     steps.push({
       towers: JSON.parse(JSON.stringify(towers)),
       callStack: callStack.map(c => ({ ...c })),
       move: { disk, from, to },
-      description: `Move disk ${disk} from ${from} to ${to}`
+      description: `Move disk ${disk} from rod ${from} to rod ${to}`,
+      variables: { 'disk moved': disk, from, to, 'move #': totalMoves, depth },
+      operations: { moves: totalMoves, 'function calls': functionCalls },
+      phase: `Moving (${totalMoves}/${Math.pow(2, n) - 1})`,
+      insight: `Moved disk ${disk} from ${from} to ${to}. This is move ${totalMoves} out of ${Math.pow(2, n) - 1} total moves needed.`
     });
-    
+
+    // Move n-1 disks from auxiliary to destination
     hanoi(disks - 1, aux, to, from, depth + 1);
-    
+
     callStack.pop();
   };
-  
+
   hanoi(n, 'A', 'C', 'B');
-  
+
   steps.push({
     towers: JSON.parse(JSON.stringify(towers)),
     callStack: [],
-    description: 'Tower of Hanoi complete!'
+    description: 'Tower of Hanoi complete!',
+    variables: { 'total disks': n, 'final position': 'C' },
+    operations: { moves: totalMoves, 'function calls': functionCalls },
+    phase: 'Complete',
+    insight: `Solved Tower of Hanoi with ${totalMoves} moves (minimum possible: 2^${n} - 1 = ${Math.pow(2, n) - 1}). Time complexity: O(2^n).`
   });
-  
+
   return steps;
 };
 
 // Main Component
-const AlgorithmVisualizer = () => {
+const AlgorithmVisualizer = ({ onStartVisualization }) => {
   const [algorithm, setAlgorithm] = useState('bubble');
   const [input, setInput] = useState('64, 34, 25, 12, 22, 11, 90');
   const [speed, setSpeed] = useState(500);
@@ -1398,8 +1872,17 @@ const AlgorithmVisualizer = () => {
       const n = Math.min(parseInt(startNode) || 3, 5); // Limit to 5 disks
       newSteps = generateTowerHanoiSteps(n);
     }
-    
-    setSteps(newSteps);
+
+    // If onStartVisualization prop is provided, navigate to new visualizer
+    if (onStartVisualization && newSteps.length > 0) {
+      onStartVisualization({
+        algorithm,
+        steps: newSteps,
+        algorithmName: algorithmSummaries[algorithm]?.title || algorithm
+      });
+    } else {
+      setSteps(newSteps);
+    }
   };
 
   useEffect(() => {
@@ -1420,46 +1903,129 @@ const AlgorithmVisualizer = () => {
 
   const renderArrayVisualization = (step) => {
     if (!step || !step.array) return null;
-    
+
     return (
       <div className="array-container">
         {step.array.map((value, index) => {
           let colorClass = 'bar-blue';
-          
+          let label = '';
+          let showArrow = false;
+
           // Sorting algorithms
           if (step.comparing?.includes(index)) {
             colorClass = step.swapped ? 'bar-red' : 'bar-yellow';
+            // Show the actual value being compared
+            if (step.comparing[0] === index) label = `COMPARING: ${value}`;
+            if (step.comparing[1] === index) label = `COMPARING: ${value}`;
+            showArrow = true;
           } else if (step.highlight?.includes(index)) {
             colorClass = 'bar-purple';
           } else if (step.sorted?.includes(index)) {
             colorClass = 'bar-green';
+            label = `✓ ${value} SORTED`;
           } else if (step.pivot === index) {
             colorClass = 'bar-green';
+            label = `PIVOT: ${value}`;
           } else if (step.current === index) {
             colorClass = 'bar-yellow';
+            label = `CURRENT: ${value}`;
+            showArrow = true;
           } else if (step.minIdx === index) {
             colorClass = 'bar-red';
+            label = `MIN: ${value}`;
+            showArrow = true;
           }
-          
+
           // Binary search
           if (step.mid === index) {
             colorClass = step.found ? 'bar-green' : 'bar-yellow';
-          } else if (algorithm === 'binary' && index >= step.left && index <= step.right) {
-            colorClass = 'bar-blue-light';
+            label = step.found ? `✓ FOUND ${value}!` : `MID: ${value}`;
+            showArrow = true;
+          } else if (algorithm === 'binary') {
+            if (step.left === index) {
+              label = `LEFT: ${value}`;
+            } else if (step.right === index) {
+              label = `RIGHT: ${value}`;
+            } else if (index >= step.left && index <= step.right) {
+              colorClass = 'bar-blue-light';
+            }
           }
-          
+
           // Linear search
           if (algorithm === 'linear' && step.current === index) {
             colorClass = step.found ? 'bar-green' : 'bar-yellow';
+            label = step.found ? `✓ FOUND ${value}!` : `CHECKING: ${value}`;
+            showArrow = true;
           }
-          
+
           return (
-            <div
-              key={index}
-              className={`array-bar ${colorClass}`}
-              style={{ height: `${value * 3 + 40}px` }}
-            >
-              {value}
+            <div key={index} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+              {/* Label above bar */}
+              {label && (
+                <div style={{
+                  position: 'absolute',
+                  top: '-45px',
+                  fontSize: '1rem',
+                  fontWeight: '900',
+                  color: '#ffffff',
+                  background: colorClass === 'bar-red' ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' :
+                             colorClass === 'bar-yellow' ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' :
+                             colorClass === 'bar-green' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' :
+                             'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.75rem',
+                  border: '3px solid',
+                  borderColor: colorClass === 'bar-red' ? '#fca5a5' : colorClass === 'bar-yellow' ? '#fde047' : colorClass === 'bar-green' ? '#6ee7b7' : '#93c5fd',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'uppercase',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.8)',
+                  boxShadow: `0 0 30px ${colorClass === 'bar-red' ? 'rgba(239, 68, 68, 0.8)' :
+                             colorClass === 'bar-yellow' ? 'rgba(251, 191, 36, 0.8)' :
+                             colorClass === 'bar-green' ? 'rgba(16, 185, 129, 0.8)' :
+                             'rgba(59, 130, 246, 0.8)'}`,
+                  zIndex: '10',
+                  letterSpacing: '0.5px'
+                }}>
+                  {label}
+                </div>
+              )}
+
+              {/* Arrow indicator */}
+              {showArrow && (
+                <div style={{
+                  position: 'absolute',
+                  top: '-75px',
+                  fontSize: '2.5rem',
+                  color: colorClass === 'bar-red' ? '#fca5a5' : colorClass === 'bar-yellow' ? '#fde047' : '#6ee7b7',
+                  animation: 'bounce 1s ease-in-out infinite',
+                  textShadow: '0 0 20px currentColor, 0 0 40px currentColor',
+                  filter: 'drop-shadow(0 0 15px currentColor)',
+                  fontWeight: '900'
+                }}>
+                  ▼
+                </div>
+              )}
+
+              {/* Bar */}
+              <div
+                className={`array-bar ${colorClass}`}
+                style={{ height: `${value * 3 + 40}px` }}
+              >
+                {value}
+              </div>
+
+              {/* Index label below */}
+              <div style={{
+                fontSize: '0.75rem',
+                fontWeight: '700',
+                color: '#9ca3af',
+                background: 'rgba(0, 0, 0, 0.6)',
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.25rem',
+                marginTop: '0.25rem'
+              }}>
+                [{index}]
+              </div>
             </div>
           );
         })}

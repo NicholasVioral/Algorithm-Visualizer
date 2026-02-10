@@ -1005,6 +1005,10 @@ const algorithmPatterns = {
       /\.append\([^)]+\)[\s\S]{0,300}\w+\([^)]*\)[\s\S]{0,300}\.pop\(\)/s,
       // Visited pattern: set true, recurse, set false
       /\w+\[\w+\]\s*=\s*True[\s\S]{0,300}\w+\([\s\S]{0,300}\w+\[\w+\]\s*=\s*False/s,
+      // Functional-style backtracking: recursive call with list concatenation
+      /def\s+\w+[\s\S]{0,400}if\s+len\(\w+\)\s*[=!]=[\s\S]{0,400}\w+\(\w+\s*\+\s*\[/s,
+      // Functional recursion with "not in" check
+      /for\s+\w+\s+in\s+range[\s\S]{0,400}if\s+\w+\s+not\s+in\s+\w+:[\s\S]{0,200}\w+\(\w+\s*\+/s,
     ],
     keywords: ["backtrack", "backtracking", "permutation", "combination", "subset", "path", "visited", "choose"],
     weight: {
@@ -1036,6 +1040,8 @@ const algorithmPatterns = {
       // === VARIABLE-NAME-AGNOSTIC PATTERNS ===
       // Array with initial 0
       /\w+\s*=\s*\[0\][\s\S]{0,300}for\s+\w+\s+in\s+range/s,
+      // Array with initial 0 + append-based loop (for element in array style)
+      /\w+\s*=\s*\[0\][\s\S]{0,200}for\s+\w+\s+in\s+\w+:[\s\S]{0,200}\.append\(\w+\[-1\]\s*\+/s,
       // Array element equals previous plus current
       /\w+\[\w+\]\s*=\s*\w+\[\w+\s*-\s*1\]\s*\+\s*\w+\[/,
       // Append with running sum
@@ -1079,7 +1085,8 @@ function analyzeStructuralSignatures(code) {
     insertionSortSignature: false,
     kadaneSignature: false,
     topologicalSortSignature: false,
-    lisSignature: false
+    lisSignature: false,
+    fastSlowSignature: false
   };
 
   // BFS Signature: Queue-based traversal with level-order pattern
@@ -1244,6 +1251,14 @@ function analyzeStructuralSignatures(code) {
     signatures.lisSignature = true;
   }
 
+  // Fast & Slow Pointers signature: two pointers with different speeds
+  const fastSlowPattern1 = /(slow|tortoise|tort)\s*=[\s\S]{0,200}(fast|hare)[\s\S]{0,300}while[\s\S]{0,300}\.next\.next/s;
+  const fastSlowPattern2 = /\w+\s*=\s*\w+\.next[\s\S]{0,200}\w+\s*=\s*\w+\.next\.next[\s\S]{0,300}if\s+\w+\s*[=!]=\s*\w+/s;
+  const fastSlowPattern3 = /\w+\s*=[\s\S]{0,100}\w+\s*=.*head[\s\S]{0,300}while.*\.next[\s\S]{0,300}\.next\.next[\s\S]{0,300}if\s+\w+\s*==\s*\w+/s;
+  if (fastSlowPattern1.test(code) || fastSlowPattern2.test(code) || fastSlowPattern3.test(code)) {
+    signatures.fastSlowSignature = true;
+  }
+
   return signatures;
 }
 
@@ -1358,6 +1373,10 @@ export function detectAlgorithm(code) {
     if (algoKey === 'lis' && structuralSigs.lisSignature) {
       score += 20;
       foundPatterns.push("LIS structural signature");
+    }
+    if (algoKey === 'fast-slow-pointers' && structuralSigs.fastSlowSignature) {
+      score += 20;
+      foundPatterns.push("Fast & slow pointers structural signature");
     }
 
     // Store results
