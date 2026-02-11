@@ -76,6 +76,46 @@ const algorithmSummaries = {
     description: "Linear Search sequentially checks each element in the array from start to finish until it finds the target value or reaches the end. It's simple but inefficient for large datasets, as it may need to check every element.",
     complexity: "Time: O(n) | Space: O(1)"
   },
+  twosum: {
+    title: "Two Sum",
+    description: "Two Sum finds two numbers in an array that add up to a target value. It uses a hash map to store previously seen numbers and their indices. For each number, it calculates the complement (target - current) and checks if it exists in the map. This allows finding the pair in a single pass through the array.",
+    complexity: "Time: O(n) | Space: O(n)"
+  },
+  maxsubarray: {
+    title: "Maximum Subarray (Kadane's)",
+    description: "Kadane's Algorithm finds the contiguous subarray with the maximum sum. At each position, it decides whether to extend the current subarray or start a new one by comparing the current element with the sum of current element plus previous sum. It tracks both the current sum and the global maximum.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  validparentheses: {
+    title: "Valid Parentheses",
+    description: "Valid Parentheses checks if brackets are properly matched using a stack. When encountering an opening bracket, push it onto the stack. For closing brackets, check if the stack's top has the matching opening bracket and pop it. The string is valid if the stack is empty at the end.",
+    complexity: "Time: O(n) | Space: O(n)"
+  },
+  longestsubstring: {
+    title: "Longest Substring Without Repeating Characters",
+    description: "This problem uses the sliding window technique with a hash set. Expand the window by moving the right pointer and add characters to the set. When a duplicate is found, shrink the window from the left until the duplicate is removed. Track the maximum window size throughout.",
+    complexity: "Time: O(n) | Space: O(min(n, m)) where m is charset size"
+  },
+  coinchange: {
+    title: "Coin Change",
+    description: "Coin Change finds the minimum number of coins needed to make a target amount using dynamic programming. Build a DP array where dp[i] represents the minimum coins for amount i. For each amount, try all coin denominations and take the minimum of (dp[amount - coin] + 1).",
+    complexity: "Time: O(amount × coins) | Space: O(amount)"
+  },
+  reverselist: {
+    title: "Reverse Linked List",
+    description: "Reverse Linked List iteratively reverses the direction of pointers in a singly linked list. Use three pointers: previous (initially null), current (head), and next. For each node, save the next node, reverse the current node's pointer to previous, then advance all three pointers.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  mergeintervals: {
+    title: "Merge Intervals",
+    description: "Merge Intervals combines overlapping intervals by first sorting them by start time. Then iterate through sorted intervals: if the current interval overlaps with the last merged interval (current start ≤ last end), merge them by updating the end. Otherwise, add the current interval to the result.",
+    complexity: "Time: O(n log n) | Space: O(n)"
+  },
+  productexceptself: {
+    title: "Product of Array Except Self",
+    description: "Product of Array Except Self calculates products without division using prefix and suffix products. First pass: build prefix products (product of all elements to the left). Second pass: build suffix products (product of all elements to the right) and multiply with prefix to get the final result.",
+    complexity: "Time: O(n) | Space: O(1) excluding output array"
+  },
   bfs: {
     title: "Breadth-First Search (BFS)",
     description: "BFS explores a graph level by level, visiting all neighbors of a node before moving to the next level. It uses a queue to track which nodes to visit next. Starting from the initial node, it marks nodes as visited, adds their unvisited neighbors to the queue, and continues until all reachable nodes are explored.",
@@ -857,6 +897,7 @@ const generateBinarySearchSteps = (arr, target) => {
   const sorted = [...arr].sort((a, b) => a - b);
   const steps = [{
     array: sorted,
+    comparing: [],
     left: 0,
     right: sorted.length - 1,
     mid: -1,
@@ -879,6 +920,7 @@ const generateBinarySearchSteps = (arr, target) => {
 
     steps.push({
       array: sorted,
+      comparing: [mid],
       left,
       right,
       mid,
@@ -894,6 +936,7 @@ const generateBinarySearchSteps = (arr, target) => {
     if (sorted[mid] === target) {
       steps.push({
         array: sorted,
+        comparing: [mid],
         left,
         right,
         mid,
@@ -911,6 +954,7 @@ const generateBinarySearchSteps = (arr, target) => {
       left = mid + 1;
       steps.push({
         array: sorted,
+        comparing: [],
         left,
         right,
         mid,
@@ -924,6 +968,7 @@ const generateBinarySearchSteps = (arr, target) => {
       right = mid - 1;
       steps.push({
         array: sorted,
+        comparing: [],
         left,
         right,
         mid,
@@ -938,6 +983,7 @@ const generateBinarySearchSteps = (arr, target) => {
 
   steps.push({
     array: sorted,
+    comparing: [],
     left,
     right,
     mid: -1,
@@ -1788,6 +1834,825 @@ const generateTowerHanoiSteps = (n) => {
   return steps;
 };
 
+const generateTwoSumSteps = (arr, target) => {
+  const steps = [{
+    array: arr,
+    hashMap: {},
+    currentIndex: -1,
+    comparing: [],
+    description: `Finding two numbers that sum to ${target}`,
+    variables: { target, 'array length': arr.length },
+    operations: { 'hash lookups': 0, 'hash inserts': 0 },
+    phase: 'Initialize',
+    insight: 'Two Sum uses a hash map to store seen numbers. For each number, we check if its complement (target - num) exists in the map.'
+  }];
+
+  const hashMap = {};
+  let hashLookups = 0;
+  let hashInserts = 0;
+
+  for (let i = 0; i < arr.length; i++) {
+    const currentValue = arr[i];
+    const complement = target - currentValue;
+    hashLookups++;
+
+    // Check if complement exists in hash map
+    steps.push({
+      array: arr,
+      hashMap: { ...hashMap },
+      currentIndex: i,
+      comparing: [i],
+      complement,
+      description: `Check if ${complement} (${target} - ${currentValue}) exists in hash map`,
+      variables: {
+        'current index': i,
+        'current value': currentValue,
+        'complement': complement,
+        'in map?': complement in hashMap ? 'YES' : 'NO'
+      },
+      operations: { 'hash lookups': hashLookups, 'hash inserts': hashInserts },
+      phase: `Searching (${i + 1}/${arr.length})`,
+      insight: `Looking for ${complement} in hash map. Current map: {${Object.entries(hashMap).map(([k, v]) => `${k}:${v}`).join(', ')}}`
+    });
+
+    if (complement in hashMap) {
+      // Found the answer!
+      const complementIndex = hashMap[complement];
+
+      steps.push({
+        array: arr,
+        hashMap: { ...hashMap },
+        currentIndex: i,
+        comparing: [i, complementIndex],
+        found: true,
+        result: [complementIndex, i],
+        description: `✓ Found! ${arr[complementIndex]} + ${currentValue} = ${target}`,
+        variables: {
+          'index 1': complementIndex,
+          'value 1': arr[complementIndex],
+          'index 2': i,
+          'value 2': currentValue,
+          'sum': arr[complementIndex] + currentValue
+        },
+        operations: { 'hash lookups': hashLookups, 'hash inserts': hashInserts },
+        phase: 'Found',
+        insight: `Solution found at indices [${complementIndex}, ${i}]. Hash map enabled O(n) time complexity by storing previously seen values.`
+      });
+
+      return steps;
+    }
+
+    // Add current value to hash map
+    hashMap[currentValue] = i;
+    hashInserts++;
+
+    steps.push({
+      array: arr,
+      hashMap: { ...hashMap },
+      currentIndex: i,
+      comparing: [],
+      description: `Add ${currentValue} → ${i} to hash map`,
+      variables: {
+        'added': `${currentValue} → index ${i}`,
+        'map size': Object.keys(hashMap).length
+      },
+      operations: { 'hash lookups': hashLookups, 'hash inserts': hashInserts },
+      phase: `Searching (${i + 1}/${arr.length})`,
+      insight: `Complement ${complement} not found. Store ${currentValue} at index ${i} for future lookups.`
+    });
+  }
+
+  // No solution found
+  steps.push({
+    array: arr,
+    hashMap: { ...hashMap },
+    currentIndex: -1,
+    comparing: [],
+    found: false,
+    description: `No two numbers sum to ${target}`,
+    variables: { target, 'checked': arr.length },
+    operations: { 'hash lookups': hashLookups, 'hash inserts': hashInserts },
+    phase: 'No Solution',
+    insight: `Checked all ${arr.length} numbers. No pair adds up to ${target}.`
+  });
+
+  return steps;
+};
+
+const generateMaxSubarraySteps = (arr) => {
+  const steps = [{
+    array: arr,
+    currentIndex: -1,
+    comparing: [],
+    description: 'Starting Maximum Subarray (Kadane\'s Algorithm)',
+    variables: { 'array length': arr.length },
+    operations: { iterations: 0 },
+    phase: 'Initialize',
+    insight: 'Kadane\'s algorithm finds the contiguous subarray with maximum sum in O(n) time by tracking current sum and global max.'
+  }];
+
+  let maxSum = arr[0];
+  let currentSum = arr[0];
+  let maxStart = 0;
+  let maxEnd = 0;
+  let currentStart = 0;
+
+  steps.push({
+    array: arr,
+    currentIndex: 0,
+    comparing: [0],
+    currentSum,
+    maxSum,
+    subarrayRange: [maxStart, maxEnd],
+    description: `Initialize: maxSum = ${maxSum}, currentSum = ${currentSum}`,
+    variables: { currentSum, maxSum, 'start': 0, 'end': 0 },
+    operations: { iterations: 0 },
+    phase: 'Initialize',
+    insight: `Start with first element ${arr[0]} as both current and max sum.`
+  });
+
+  for (let i = 1; i < arr.length; i++) {
+    const prevSum = currentSum;
+
+    if (currentSum + arr[i] > arr[i]) {
+      currentSum = currentSum + arr[i];
+    } else {
+      currentSum = arr[i];
+      currentStart = i;
+    }
+
+    steps.push({
+      array: arr,
+      currentIndex: i,
+      comparing: [i],
+      currentSum,
+      maxSum,
+      subarrayRange: [maxStart, maxEnd],
+      description: `At ${arr[i]}: extend (${prevSum + arr[i]}) vs restart (${arr[i]})`,
+      variables: {
+        'current value': arr[i],
+        'extend sum': prevSum + arr[i],
+        'start new': arr[i],
+        'decision': currentSum === arr[i] ? 'RESTART' : 'EXTEND',
+        currentSum,
+        maxSum
+      },
+      operations: { iterations: i },
+      phase: `Iterating (${i + 1}/${arr.length})`,
+      insight: currentSum === arr[i] ?
+        `Starting new subarray from index ${i}` :
+        `Extending current subarray`
+    });
+
+    if (currentSum > maxSum) {
+      maxSum = currentSum;
+      maxStart = currentStart;
+      maxEnd = i;
+
+      steps.push({
+        array: arr,
+        currentIndex: i,
+        comparing: Array.from({ length: maxEnd - maxStart + 1 }, (_, idx) => maxStart + idx),
+        currentSum,
+        maxSum,
+        subarrayRange: [maxStart, maxEnd],
+        found: true,
+        description: `✓ New max: ${maxSum}`,
+        variables: {
+          maxSum,
+          'subarray': `[${maxStart}..${maxEnd}]`
+        },
+        operations: { iterations: i },
+        phase: `New Max`,
+        insight: `New max subarray at indices [${maxStart}..${maxEnd}]`
+      });
+    }
+  }
+
+  steps.push({
+    array: arr,
+    currentIndex: -1,
+    comparing: Array.from({ length: maxEnd - maxStart + 1 }, (_, idx) => maxStart + idx),
+    currentSum,
+    maxSum,
+    subarrayRange: [maxStart, maxEnd],
+    found: true,
+    description: `Complete! Max sum = ${maxSum}`,
+    variables: {
+      maxSum,
+      'subarray': `[${maxStart}..${maxEnd}]`
+    },
+    operations: { iterations: arr.length - 1 },
+    phase: 'Complete',
+    insight: `Maximum subarray sum ${maxSum}. Time: O(n), Space: O(1).`
+  });
+
+  return steps;
+};
+
+const generateValidParenthesesSteps = (str) => {
+  const steps = [{
+    string: str,
+    stack: [],
+    currentIndex: -1,
+    description: `Checking if "${str}" has valid parentheses`,
+    variables: { 'string length': str.length, 'stack size': 0 },
+    operations: { 'pushes': 0, 'pops': 0 },
+    phase: 'Initialize',
+    insight: 'Use a stack to match opening brackets with closing brackets. Push opening brackets, pop and match closing brackets.'
+  }];
+
+  const stack = [];
+  const brackets = { '(': ')', '[': ']', '{': '}' };
+  const closingBrackets = { ')': '(', ']': '[', '}': '{' };
+  let pushes = 0, pops = 0;
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+
+    if (char in brackets) {
+      // Opening bracket
+      stack.push(char);
+      pushes++;
+
+      steps.push({
+        string: str,
+        stack: [...stack],
+        currentIndex: i,
+        currentChar: char,
+        action: 'push',
+        description: `Push '${char}' onto stack`,
+        variables: { 'current': char, 'stack size': stack.length },
+        operations: { pushes, pops },
+        phase: `Processing (${i + 1}/${str.length})`,
+        insight: `Opening bracket '${char}' pushed. Waiting for matching '${brackets[char]}'`
+      });
+    } else if (char in closingBrackets) {
+      // Closing bracket
+      const expected = closingBrackets[char];
+
+      if (stack.length === 0 || stack[stack.length - 1] !== expected) {
+        // Invalid!
+        steps.push({
+          string: str,
+          stack: [...stack],
+          currentIndex: i,
+          currentChar: char,
+          action: 'invalid',
+          valid: false,
+          description: `✗ Invalid! '${char}' has no matching opening bracket`,
+          variables: { 'current': char, 'expected': expected, 'stack top': stack.length > 0 ? stack[stack.length - 1] : 'empty' },
+          operations: { pushes, pops },
+          phase: 'Invalid',
+          insight: `Cannot match '${char}'. Stack is ${stack.length === 0 ? 'empty' : `missing '${expected}'`}`
+        });
+
+        return steps;
+      }
+
+      const popped = stack.pop();
+      pops++;
+
+      steps.push({
+        string: str,
+        stack: [...stack],
+        currentIndex: i,
+        currentChar: char,
+        action: 'pop',
+        matched: popped,
+        description: `Pop '${popped}' to match '${char}'`,
+        variables: { 'current': char, 'matched': popped, 'stack size': stack.length },
+        operations: { pushes, pops },
+        phase: `Processing (${i + 1}/${str.length})`,
+        insight: `Closing bracket '${char}' matched with opening bracket '${popped}'`
+      });
+    }
+  }
+
+  // Check if stack is empty
+  const isValid = stack.length === 0;
+
+  steps.push({
+    string: str,
+    stack: [...stack],
+    currentIndex: -1,
+    valid: isValid,
+    description: isValid ? `✓ Valid! All brackets matched` : `✗ Invalid! ${stack.length} unmatched opening bracket(s)`,
+    variables: { 'stack size': stack.length, 'valid': isValid ? 'YES' : 'NO' },
+    operations: { pushes, pops },
+    phase: isValid ? 'Valid' : 'Invalid',
+    insight: isValid ?
+      `All brackets properly matched. Time: O(n), Space: O(n)` :
+      `Unmatched opening brackets remain: ${stack.join(', ')}`
+  });
+
+  return steps;
+};
+
+const generateLongestSubstringSteps = (str) => {
+  const steps = [{
+    string: str,
+    windowStart: 0,
+    windowEnd: -1,
+    charSet: new Set(),
+    maxLength: 0,
+    description: `Finding longest substring without repeating characters in "${str}"`,
+    variables: { 'string length': str.length, 'max length': 0 },
+    operations: { 'expansions': 0, 'contractions': 0 },
+    phase: 'Initialize',
+    insight: 'Use sliding window: expand right to include characters, contract left when duplicate found.'
+  }];
+
+  let left = 0;
+  let maxLength = 0;
+  let maxStart = 0;
+  let maxEnd = -1;
+  const charSet = new Set();
+  let expansions = 0, contractions = 0;
+
+  for (let right = 0; right < str.length; right++) {
+    const char = str[right];
+    expansions++;
+
+    // Shrink window while duplicate exists
+    while (charSet.has(char)) {
+      const leftChar = str[left];
+      charSet.delete(leftChar);
+      contractions++;
+
+      steps.push({
+        string: str,
+        windowStart: left,
+        windowEnd: right - 1,
+        currentIndex: right,
+        charSet: new Set(charSet),
+        maxLength,
+        duplicate: char,
+        action: 'contract',
+        description: `Remove '${leftChar}' from window (duplicate '${char}' found)`,
+        variables: {
+          'window': `[${left}..${right - 1}]`,
+          'removing': leftChar,
+          'duplicate': char,
+          'window size': right - left
+        },
+        operations: { expansions, contractions },
+        phase: `Contracting`,
+        insight: `Shrinking window from left to remove duplicate '${char}'`
+      });
+
+      left++;
+    }
+
+    // Add current character
+    charSet.add(char);
+
+    steps.push({
+      string: str,
+      windowStart: left,
+      windowEnd: right,
+      currentIndex: right,
+      charSet: new Set(charSet),
+      maxLength,
+      action: 'expand',
+      description: `Add '${char}' to window`,
+      variables: {
+        'window': `[${left}..${right}]`,
+        'added': char,
+        'window size': right - left + 1,
+        'chars in window': Array.from(charSet).join(', ')
+      },
+      operations: { expansions, contractions },
+      phase: `Expanding (${right + 1}/${str.length})`,
+      insight: `Window now contains: ${str.substring(left, right + 1)}`
+    });
+
+    // Update max if current window is longer
+    if (right - left + 1 > maxLength) {
+      maxLength = right - left + 1;
+      maxStart = left;
+      maxEnd = right;
+
+      steps.push({
+        string: str,
+        windowStart: left,
+        windowEnd: right,
+        currentIndex: right,
+        charSet: new Set(charSet),
+        maxLength,
+        found: true,
+        description: `✓ New max length: ${maxLength}`,
+        variables: {
+          'max length': maxLength,
+          'substring': str.substring(left, right + 1)
+        },
+        operations: { expansions, contractions },
+        phase: 'New Max',
+        insight: `Longest substring so far: "${str.substring(left, right + 1)}"`
+      });
+    }
+  }
+
+  steps.push({
+    string: str,
+    windowStart: maxStart,
+    windowEnd: maxEnd,
+    currentIndex: -1,
+    charSet: new Set(),
+    maxLength,
+    found: true,
+    description: `Complete! Longest substring length = ${maxLength}`,
+    variables: {
+      'max length': maxLength,
+      'substring': maxLength > 0 ? str.substring(maxStart, maxEnd + 1) : ''
+    },
+    operations: { expansions, contractions },
+    phase: 'Complete',
+    insight: `Longest substring: "${maxLength > 0 ? str.substring(maxStart, maxEnd + 1) : ''}". Time: O(n), Space: O(min(n,m))`
+  });
+
+  return steps;
+};
+
+const generateCoinChangeSteps = (coins, amount) => {
+  const steps = [{
+    coins,
+    amount,
+    dpArray: new Array(amount + 1).fill(Infinity),
+    currentAmount: -1,
+    description: `Finding minimum coins to make amount ${amount} using coins [${coins.join(', ')}]`,
+    variables: { 'target amount': amount, 'coins': coins.join(', ') },
+    operations: { 'dp updates': 0 },
+    phase: 'Initialize',
+    insight: 'Build DP array where dp[i] = minimum coins for amount i. dp[0] = 0 (base case).'
+  }];
+
+  const dp = new Array(amount + 1).fill(Infinity);
+  dp[0] = 0;
+  let dpUpdates = 0;
+
+  steps.push({
+    coins,
+    amount,
+    dpArray: [...dp],
+    currentAmount: 0,
+    description: `Base case: dp[0] = 0 (0 coins needed for amount 0)`,
+    variables: { 'dp[0]': 0 },
+    operations: { 'dp updates': dpUpdates },
+    phase: 'Base Case',
+    insight: `Zero coins needed to make amount 0`
+  });
+
+  for (let i = 1; i <= amount; i++) {
+    for (let coin of coins) {
+      if (coin <= i && dp[i - coin] !== Infinity) {
+        const newValue = dp[i - coin] + 1;
+
+        steps.push({
+          coins,
+          amount,
+          dpArray: [...dp],
+          currentAmount: i,
+          currentCoin: coin,
+          comparing: true,
+          description: `Try coin ${coin}: dp[${i}] = min(${dp[i] === Infinity ? '∞' : dp[i]}, dp[${i - coin}] + 1 = ${newValue})`,
+          variables: {
+            'amount': i,
+            'coin': coin,
+            'dp[i-coin]': dp[i - coin],
+            'new value': newValue,
+            'current min': dp[i] === Infinity ? '∞' : dp[i]
+          },
+          operations: { 'dp updates': dpUpdates },
+          phase: `Building DP (${i}/${amount})`,
+          insight: `If we use coin ${coin}, we need ${newValue} coins total`
+        });
+
+        if (newValue < dp[i]) {
+          dp[i] = newValue;
+          dpUpdates++;
+
+          steps.push({
+            coins,
+            amount,
+            dpArray: [...dp],
+            currentAmount: i,
+            currentCoin: coin,
+            updated: true,
+            description: `✓ Update dp[${i}] = ${dp[i]}`,
+            variables: {
+              'dp[i]': dp[i],
+              'used coin': coin
+            },
+            operations: { 'dp updates': dpUpdates },
+            phase: `Update`,
+            insight: `Found better solution using coin ${coin}`
+          });
+        }
+      }
+    }
+  }
+
+  const result = dp[amount] === Infinity ? -1 : dp[amount];
+
+  steps.push({
+    coins,
+    amount,
+    dpArray: [...dp],
+    currentAmount: -1,
+    result,
+    description: result === -1 ? `✗ Impossible to make amount ${amount}` : `✓ Minimum coins needed: ${result}`,
+    variables: {
+      'result': result === -1 ? 'impossible' : result
+    },
+    operations: { 'dp updates': dpUpdates },
+    phase: result === -1 ? 'Impossible' : 'Complete',
+    insight: result === -1 ?
+      `Cannot make amount ${amount} with given coins` :
+      `Minimum ${result} coins needed. Time: O(amount × coins), Space: O(amount)`
+  });
+
+  return steps;
+};
+
+const generateProductExceptSelfSteps = (arr) => {
+  const steps = [{
+    array: arr,
+    prefixProducts: new Array(arr.length).fill(1),
+    suffixProducts: new Array(arr.length).fill(1),
+    result: new Array(arr.length).fill(1),
+    currentIndex: -1,
+    description: `Computing product of array except self for [${arr.join(', ')}]`,
+    variables: { 'array length': arr.length },
+    operations: { 'multiplications': 0 },
+    phase: 'Initialize',
+    insight: 'Use prefix and suffix products. For each index: result[i] = prefix[i-1] × suffix[i+1]'
+  }];
+
+  const n = arr.length;
+  const prefix = new Array(n).fill(1);
+  const suffix = new Array(n).fill(1);
+  const result = new Array(n).fill(1);
+  let multiplications = 0;
+
+  // Build prefix products
+  for (let i = 1; i < n; i++) {
+    prefix[i] = prefix[i - 1] * arr[i - 1];
+    multiplications++;
+
+    steps.push({
+      array: arr,
+      prefixProducts: [...prefix],
+      suffixProducts: [...suffix],
+      result: [...result],
+      currentIndex: i,
+      comparing: [i - 1, i],
+      description: `Prefix[${i}] = Prefix[${i - 1}] × arr[${i - 1}] = ${prefix[i - 1]} × ${arr[i - 1]} = ${prefix[i]}`,
+      variables: {
+        'current index': i,
+        'prefix[i-1]': prefix[i - 1],
+        'arr[i-1]': arr[i - 1],
+        'prefix[i]': prefix[i]
+      },
+      operations: { multiplications },
+      phase: `Building Prefix (${i}/${n - 1})`,
+      insight: `Prefix[${i}] stores the product of all elements before index ${i}`
+    });
+  }
+
+  steps.push({
+    array: arr,
+    prefixProducts: [...prefix],
+    suffixProducts: [...suffix],
+    result: [...result],
+    currentIndex: -1,
+    description: `✓ Prefix products complete`,
+    variables: { 'prefix': prefix.join(', ') },
+    operations: { multiplications },
+    phase: 'Prefix Complete',
+    insight: `Prefix array built. Each prefix[i] = product of all elements left of i`
+  });
+
+  // Build suffix products
+  for (let i = n - 2; i >= 0; i--) {
+    suffix[i] = suffix[i + 1] * arr[i + 1];
+    multiplications++;
+
+    steps.push({
+      array: arr,
+      prefixProducts: [...prefix],
+      suffixProducts: [...suffix],
+      result: [...result],
+      currentIndex: i,
+      comparing: [i, i + 1],
+      description: `Suffix[${i}] = Suffix[${i + 1}] × arr[${i + 1}] = ${suffix[i + 1]} × ${arr[i + 1]} = ${suffix[i]}`,
+      variables: {
+        'current index': i,
+        'suffix[i+1]': suffix[i + 1],
+        'arr[i+1]': arr[i + 1],
+        'suffix[i]': suffix[i]
+      },
+      operations: { multiplications },
+      phase: `Building Suffix (${n - 1 - i}/${n - 1})`,
+      insight: `Suffix[${i}] stores the product of all elements after index ${i}`
+    });
+  }
+
+  steps.push({
+    array: arr,
+    prefixProducts: [...prefix],
+    suffixProducts: [...suffix],
+    result: [...result],
+    currentIndex: -1,
+    description: `✓ Suffix products complete`,
+    variables: { 'suffix': suffix.join(', ') },
+    operations: { multiplications },
+    phase: 'Suffix Complete',
+    insight: `Suffix array built. Each suffix[i] = product of all elements right of i`
+  });
+
+  // Compute final result
+  for (let i = 0; i < n; i++) {
+    result[i] = prefix[i] * suffix[i];
+    multiplications++;
+
+    steps.push({
+      array: arr,
+      prefixProducts: [...prefix],
+      suffixProducts: [...suffix],
+      result: [...result],
+      currentIndex: i,
+      comparing: [i],
+      description: `Result[${i}] = Prefix[${i}] × Suffix[${i}] = ${prefix[i]} × ${suffix[i]} = ${result[i]}`,
+      variables: {
+        'index': i,
+        'prefix[i]': prefix[i],
+        'suffix[i]': suffix[i],
+        'result[i]': result[i]
+      },
+      operations: { multiplications },
+      phase: `Computing Result (${i + 1}/${n})`,
+      insight: `Result[${i}] = product of all elements except arr[${i}]`
+    });
+  }
+
+  steps.push({
+    array: arr,
+    prefixProducts: [...prefix],
+    suffixProducts: [...suffix],
+    result: [...result],
+    currentIndex: -1,
+    found: true,
+    description: `✓ Complete! Result: [${result.join(', ')}]`,
+    variables: { 'result': result.join(', ') },
+    operations: { multiplications },
+    phase: 'Complete',
+    insight: `Product except self computed. Time: O(n), Space: O(1) excluding output`
+  });
+
+  return steps;
+};
+
+const generateMergeIntervalsSteps = (intervals) => {
+  const steps = [{
+    intervals: [...intervals],
+    merged: [],
+    currentIndex: -1,
+    description: `Merging overlapping intervals`,
+    variables: { 'total intervals': intervals.length },
+    operations: { 'merges': 0 },
+    phase: 'Initialize',
+    insight: 'Sort intervals by start time, then merge overlapping ones'
+  }];
+
+  if (intervals.length === 0) {
+    steps.push({
+      intervals: [],
+      merged: [],
+      currentIndex: -1,
+      description: `Empty input`,
+      variables: {},
+      operations: { 'merges': 0 },
+      phase: 'Complete',
+      insight: 'No intervals to merge'
+    });
+    return steps;
+  }
+
+  // Sort by start time
+  const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+  let merges = 0;
+
+  steps.push({
+    intervals: [...sorted],
+    merged: [],
+    currentIndex: -1,
+    description: `Sorted intervals by start time`,
+    variables: { 'sorted': JSON.stringify(sorted) },
+    operations: { 'merges': 0 },
+    phase: 'Sorted',
+    insight: `Sorted: ${sorted.map(i => `[${i[0]},${i[1]}]`).join(', ')}`
+  });
+
+  const merged = [sorted[0]];
+
+  steps.push({
+    intervals: [...sorted],
+    merged: [[...sorted[0]]],
+    currentIndex: 0,
+    comparing: [0],
+    description: `Start with first interval [${sorted[0][0]}, ${sorted[0][1]}]`,
+    variables: { 'first interval': `[${sorted[0][0]}, ${sorted[0][1]}]` },
+    operations: { 'merges': 0 },
+    phase: 'Processing (1/'+sorted.length+')',
+    insight: `Initialize merged list with first interval`
+  });
+
+  for (let i = 1; i < sorted.length; i++) {
+    const current = sorted[i];
+    const lastMerged = merged[merged.length - 1];
+
+    steps.push({
+      intervals: [...sorted],
+      merged: merged.map(m => [...m]),
+      currentIndex: i,
+      comparing: [i],
+      lastMergedIndex: merged.length - 1,
+      description: `Compare [${current[0]}, ${current[1]}] with last merged [${lastMerged[0]}, ${lastMerged[1]}]`,
+      variables: {
+        'current': `[${current[0]}, ${current[1]}]`,
+        'last merged': `[${lastMerged[0]}, ${lastMerged[1]}]`,
+        'overlap?': current[0] <= lastMerged[1] ? 'YES' : 'NO'
+      },
+      operations: { 'merges': merges },
+      phase: `Processing (${i + 1}/${sorted.length})`,
+      insight: current[0] <= lastMerged[1] ?
+        `${current[0]} ≤ ${lastMerged[1]}: intervals overlap` :
+        `${current[0]} > ${lastMerged[1]}: no overlap`
+    });
+
+    if (current[0] <= lastMerged[1]) {
+      // Overlapping - merge
+      lastMerged[1] = Math.max(lastMerged[1], current[1]);
+      merges++;
+
+      steps.push({
+        intervals: [...sorted],
+        merged: merged.map(m => [...m]),
+        currentIndex: i,
+        comparing: [i],
+        lastMergedIndex: merged.length - 1,
+        merged_into: true,
+        description: `✓ Merge! Update end to ${lastMerged[1]}`,
+        variables: {
+          'merged interval': `[${lastMerged[0]}, ${lastMerged[1]}]`
+        },
+        operations: { 'merges': merges },
+        phase: 'Merged',
+        insight: `Extended last interval to [${lastMerged[0]}, ${lastMerged[1]}]`
+      });
+    } else {
+      // No overlap - add as new interval
+      merged.push([...current]);
+
+      steps.push({
+        intervals: [...sorted],
+        merged: merged.map(m => [...m]),
+        currentIndex: i,
+        comparing: [i],
+        lastMergedIndex: merged.length - 1,
+        added_new: true,
+        description: `No overlap - add new interval`,
+        variables: {
+          'added': `[${current[0]}, ${current[1]}]`,
+          'merged count': merged.length
+        },
+        operations: { 'merges': merges },
+        phase: 'Added New',
+        insight: `Added [${current[0]}, ${current[1]}] as separate interval`
+      });
+    }
+  }
+
+  steps.push({
+    intervals: [...sorted],
+    merged: merged.map(m => [...m]),
+    currentIndex: -1,
+    found: true,
+    description: `✓ Complete! ${merged.length} merged interval(s)`,
+    variables: {
+      'original': intervals.length,
+      'merged': merged.length,
+      'reduced by': intervals.length - merged.length
+    },
+    operations: { 'merges': merges },
+    phase: 'Complete',
+    insight: `Merged ${intervals.length} intervals into ${merged.length}. Time: O(n log n), Space: O(n)`
+  });
+
+  return steps;
+};
+
 // Main Component
 const AlgorithmVisualizer = ({ onStartVisualization }) => {
   const [algorithm, setAlgorithm] = useState('bubble');
@@ -1843,6 +2708,13 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
       const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
       const target = parseInt(targetNode);
       newSteps = generateLinearSearchSteps(arr, target);
+    } else if (algorithm === 'twosum') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const target = parseInt(targetNode);
+      newSteps = generateTwoSumSteps(arr, target);
+    } else if (algorithm === 'maxsubarray') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateMaxSubarraySteps(arr);
     } else if (algorithm === 'bfs') {
       const edges = graphInput.split(',').map(s => s.trim());
       newSteps = generateBFSSteps(edges, startNode);
@@ -1871,14 +2743,54 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
     } else if (algorithm === 'tower-hanoi') {
       const n = Math.min(parseInt(startNode) || 3, 5); // Limit to 5 disks
       newSteps = generateTowerHanoiSteps(n);
+    } else if (algorithm === 'validparentheses') {
+      const str = input.trim();
+      newSteps = generateValidParenthesesSteps(str);
+    } else if (algorithm === 'longestsubstring') {
+      const str = input.trim();
+      newSteps = generateLongestSubstringSteps(str);
+    } else if (algorithm === 'coinchange') {
+      const coins = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const amount = parseInt(targetNode) || 11;
+      newSteps = generateCoinChangeSteps(coins, amount);
+    } else if (algorithm === 'productexceptself') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateProductExceptSelfSteps(arr);
+    } else if (algorithm === 'mergeintervals') {
+      // Parse intervals like "1-3, 2-6, 8-10, 15-18"
+      const intervals = input.split(',').map(s => {
+        const parts = s.trim().split('-');
+        return [parseInt(parts[0]), parseInt(parts[1])];
+      }).filter(interval => !isNaN(interval[0]) && !isNaN(interval[1]));
+      newSteps = generateMergeIntervalsSteps(intervals);
     }
 
     // If onStartVisualization prop is provided, navigate to new visualizer
     if (onStartVisualization && newSteps.length > 0) {
+      // Prepare input data to display
+      let inputData = {};
+
+      if (['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'bst-insert', 'maxsubarray', 'productexceptself'].includes(algorithm)) {
+        inputData = { type: 'array', value: input };
+      } else if (['binary', 'linear', 'bst-search', 'twosum'].includes(algorithm)) {
+        inputData = { type: 'array-search', array: input, target: targetNode };
+      } else if (['bfs', 'dfs', 'dijkstra'].includes(algorithm)) {
+        inputData = { type: 'graph', edges: graphInput, startNode };
+      } else if (['recursion', 'fibonacci', 'fibonacci-dp', 'tower-hanoi'].includes(algorithm)) {
+        inputData = { type: 'number', value: startNode };
+      } else if (['validparentheses', 'longestsubstring'].includes(algorithm)) {
+        inputData = { type: 'string', value: input };
+      } else if (algorithm === 'coinchange') {
+        inputData = { type: 'array-target', array: input, target: targetNode, label: 'Coins / Amount' };
+      } else if (algorithm === 'mergeintervals') {
+        inputData = { type: 'intervals', value: input };
+      }
+
       onStartVisualization({
         algorithm,
         steps: newSteps,
-        algorithmName: algorithmSummaries[algorithm]?.title || algorithm
+        algorithmName: algorithmSummaries[algorithm]?.title || algorithm,
+        inputData
       });
     } else {
       setSteps(newSteps);
@@ -2448,10 +3360,88 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
     return null;
   };
 
-  const isArrayAlgorithm = ['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'binary', 'linear', 'bst-insert', 'bst-search'].includes(algorithm);
+  // Blind 75 problem to visualizer mapping
+  const blind75Mapping = {
+    // Array
+    'two-sum': { algo: 'twosum', category: 'Array', available: true },
+    'best-time-stock': { algo: 'maxsubarray', category: 'Array', available: false, note: 'Similar pattern' },
+    'contains-duplicate': { algo: 'twosum', category: 'Array', available: false, note: 'Hash set pattern' },
+    'product-except-self': { algo: 'productexceptself', category: 'Array', available: true },
+    'maximum-subarray': { algo: 'maxsubarray', category: 'Array', available: true },
+    'maximum-product-subarray': { algo: 'maxsubarray', category: 'Array', available: false, note: 'Similar DP' },
+    'find-min-rotated': { algo: 'binary', category: 'Array', available: false, note: 'Modified binary search' },
+    'search-rotated': { algo: 'binary', category: 'Array', available: true },
+    '3sum': { algo: null, category: 'Array', available: false },
+
+    // Dynamic Programming
+    'climbing-stairs': { algo: 'fibonacci-dp', category: 'Dynamic Programming', available: true },
+    'coin-change': { algo: 'coinchange', category: 'Dynamic Programming', available: true },
+    'longest-increasing-subsequence': { algo: null, category: 'Dynamic Programming', available: false },
+    'longest-common-subsequence': { algo: null, category: 'Dynamic Programming', available: false },
+    'word-break': { algo: null, category: 'Dynamic Programming', available: false },
+    'combination-sum-iv': { algo: null, category: 'Dynamic Programming', available: false },
+    'house-robber': { algo: null, category: 'Dynamic Programming', available: false },
+    'house-robber-ii': { algo: null, category: 'Dynamic Programming', available: false },
+    'decode-ways': { algo: null, category: 'Dynamic Programming', available: false },
+    'unique-paths': { algo: null, category: 'Dynamic Programming', available: false },
+    'jump-game': { algo: null, category: 'Dynamic Programming', available: false },
+
+    // Graph
+    'clone-graph': { algo: 'bfs', category: 'Graph', available: true },
+    'course-schedule': { algo: 'dfs', category: 'Graph', available: true },
+    'pacific-atlantic': { algo: 'bfs', category: 'Graph', available: true },
+    'number-of-islands': { algo: 'bfs', category: 'Graph', available: true },
+    'longest-consecutive': { algo: 'twosum', category: 'Graph', available: false, note: 'Hash set pattern' },
+    'graph-valid-tree': { algo: 'dfs', category: 'Graph', available: true },
+
+    // Tree
+    'max-depth-tree': { algo: 'bst-insert', category: 'Tree', available: true },
+    'same-tree': { algo: 'bst-search', category: 'Tree', available: true },
+    'invert-tree': { algo: 'bst-insert', category: 'Tree', available: true },
+    'tree-max-path-sum': { algo: 'bst-search', category: 'Tree', available: true },
+    'level-order': { algo: 'bfs', category: 'Tree', available: true },
+    'serialize-tree': { algo: 'bfs', category: 'Tree', available: true },
+    'subtree': { algo: 'bst-search', category: 'Tree', available: true },
+    'construct-tree': { algo: 'bst-insert', category: 'Tree', available: true },
+    'validate-bst': { algo: 'bst-search', category: 'Tree', available: true },
+    'kth-smallest-bst': { algo: 'bst-search', category: 'Tree', available: true },
+    'lca-bst': { algo: 'bst-search', category: 'Tree', available: true },
+
+    // String
+    'longest-substring': { algo: 'longestsubstring', category: 'String', available: true },
+    'longest-repeating': { algo: null, category: 'String', available: false },
+    'valid-anagram': { algo: null, category: 'String', available: false },
+    'group-anagrams': { algo: null, category: 'String', available: false },
+    'valid-parentheses': { algo: 'validparentheses', category: 'String', available: true },
+    'valid-palindrome': { algo: null, category: 'String', available: false },
+    'longest-palindrome': { algo: null, category: 'String', available: false },
+    'palindromic-substrings': { algo: null, category: 'String', available: false },
+
+    // Interval
+    'insert-interval': { algo: 'mergeintervals', category: 'Interval', available: false, note: 'Similar to merge intervals' },
+    'merge-intervals': { algo: 'mergeintervals', category: 'Interval', available: true },
+    'non-overlapping-intervals': { algo: null, category: 'Interval', available: false },
+    'meeting-rooms': { algo: null, category: 'Interval', available: false },
+    'meeting-rooms-ii': { algo: null, category: 'Interval', available: false },
+
+    // Linked List
+    'reverse-list': { algo: null, category: 'Linked List', available: false },
+    'detect-cycle': { algo: null, category: 'Linked List', available: false },
+    'merge-two-lists': { algo: null, category: 'Linked List', available: false },
+    'merge-k-lists': { algo: null, category: 'Linked List', available: false },
+    'remove-nth': { algo: null, category: 'Linked List', available: false },
+    'reorder-list': { algo: null, category: 'Linked List', available: false },
+  };
+
+  const [selectedBlind75, setSelectedBlind75] = useState('');
+
+  const isArrayAlgorithm = ['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'binary', 'linear', 'bst-insert', 'bst-search', 'productexceptself'].includes(algorithm);
   const isGraphAlgorithm = ['bfs', 'dfs', 'dijkstra'].includes(algorithm);
   const isRecursionAlgorithm = ['recursion', 'fibonacci', 'fibonacci-dp', 'tower-hanoi'].includes(algorithm);
-  const needsTarget = ['binary', 'linear', 'bst-search'].includes(algorithm);
+  const isStringAlgorithm = ['validparentheses', 'longestsubstring'].includes(algorithm);
+  const isCoinChange = algorithm === 'coinchange';
+  const isIntervalAlgorithm = algorithm === 'mergeintervals';
+  const needsTarget = ['binary', 'linear', 'bst-search', 'twosum', 'coinchange'].includes(algorithm);
   const needsWeightedGraph = algorithm === 'dijkstra';
 
   return (
@@ -2481,6 +3471,18 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
             <optgroup label="Search Algorithms">
               <option value="binary">Binary Search</option>
               <option value="linear">Linear Search</option>
+              <option value="twosum">Two Sum</option>
+            </optgroup>
+            <optgroup label="String Algorithms">
+              <option value="validparentheses">Valid Parentheses</option>
+              <option value="longestsubstring">Longest Substring Without Repeating</option>
+            </optgroup>
+            <optgroup label="Array Patterns">
+              <option value="maxsubarray">Maximum Subarray (Kadane's)</option>
+              <option value="productexceptself">Product of Array Except Self</option>
+            </optgroup>
+            <optgroup label="Interval Algorithms">
+              <option value="mergeintervals">Merge Intervals</option>
             </optgroup>
             <optgroup label="Graph Traversal">
               <option value="bfs">Breadth-First Search (BFS)</option>
@@ -2498,6 +3500,7 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
             </optgroup>
             <optgroup label="Dynamic Programming">
               <option value="fibonacci-dp">Fibonacci (DP)</option>
+              <option value="coinchange">Coin Change</option>
             </optgroup>
           </select>
         </div>
@@ -2508,6 +3511,166 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
           <p className="summary-description">{algorithmSummaries[algorithm].description}</p>
           <div className="complexity-badges">
             <span className="summary-complexity">{algorithmSummaries[algorithm].complexity}</span>
+          </div>
+        </div>
+
+        {/* Blind 75 LeetCode Problems Selector */}
+        <div className="form-group" style={{
+          marginTop: '2rem',
+          padding: '1.5rem',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+        }}>
+          <label className="form-label" htmlFor="blind75-select" style={{ color: 'white', fontSize: '1.1rem', fontWeight: '600' }}>
+            🎯 Blind 75 LeetCode Problems
+          </label>
+          <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.875rem', marginBottom: '1rem' }}>
+            Select a problem to see its visualizer
+          </p>
+          <select
+            id="blind75-select"
+            value={selectedBlind75}
+            onChange={(e) => {
+              const problemKey = e.target.value;
+              setSelectedBlind75(problemKey);
+
+              if (problemKey && blind75Mapping[problemKey]) {
+                const mapping = blind75Mapping[problemKey];
+                if (mapping.available && mapping.algo) {
+                  setAlgorithm(mapping.algo);
+                  // Scroll to input section
+                  setTimeout(() => {
+                    const inputSection = document.querySelector('.form-group');
+                    inputSection?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                  }, 100);
+                }
+              }
+            }}
+            className="input-field"
+            style={{
+              backgroundColor: 'white',
+              border: '2px solid rgba(255,255,255,0.3)',
+              fontSize: '0.95rem'
+            }}
+          >
+            <option value="">-- Select a Blind 75 Problem --</option>
+
+            <optgroup label="Array (9 problems)">
+              <option value="two-sum">✅ Two Sum</option>
+              <option value="best-time-stock">🔧 Best Time to Buy and Sell Stock</option>
+              <option value="contains-duplicate">📝 Contains Duplicate</option>
+              <option value="product-except-self">✅ Product of Array Except Self</option>
+              <option value="maximum-subarray">✅ Maximum Subarray (Kadane's)</option>
+              <option value="maximum-product-subarray">📝 Maximum Product Subarray</option>
+              <option value="find-min-rotated">🔧 Find Minimum in Rotated Sorted Array</option>
+              <option value="search-rotated">✅ Search in Rotated Sorted Array</option>
+              <option value="3sum">📝 3Sum</option>
+            </optgroup>
+
+            <optgroup label="Dynamic Programming (11 problems)">
+              <option value="climbing-stairs">✅ Climbing Stairs</option>
+              <option value="coin-change">✅ Coin Change</option>
+              <option value="longest-increasing-subsequence">📝 Longest Increasing Subsequence</option>
+              <option value="longest-common-subsequence">📝 Longest Common Subsequence</option>
+              <option value="word-break">📝 Word Break</option>
+              <option value="combination-sum-iv">📝 Combination Sum IV</option>
+              <option value="house-robber">📝 House Robber</option>
+              <option value="house-robber-ii">📝 House Robber II</option>
+              <option value="decode-ways">📝 Decode Ways</option>
+              <option value="unique-paths">📝 Unique Paths</option>
+              <option value="jump-game">📝 Jump Game</option>
+            </optgroup>
+
+            <optgroup label="Graph (6 problems)">
+              <option value="clone-graph">✅ Clone Graph</option>
+              <option value="course-schedule">✅ Course Schedule</option>
+              <option value="pacific-atlantic">✅ Pacific Atlantic Water Flow</option>
+              <option value="number-of-islands">✅ Number of Islands</option>
+              <option value="longest-consecutive">🔧 Longest Consecutive Sequence</option>
+              <option value="graph-valid-tree">✅ Graph Valid Tree</option>
+            </optgroup>
+
+            <optgroup label="Tree (11 problems)">
+              <option value="max-depth-tree">✅ Maximum Depth of Binary Tree</option>
+              <option value="same-tree">✅ Same Tree</option>
+              <option value="invert-tree">✅ Invert Binary Tree</option>
+              <option value="tree-max-path-sum">✅ Binary Tree Maximum Path Sum</option>
+              <option value="level-order">✅ Binary Tree Level Order Traversal</option>
+              <option value="serialize-tree">✅ Serialize and Deserialize Binary Tree</option>
+              <option value="subtree">✅ Subtree of Another Tree</option>
+              <option value="construct-tree">✅ Construct Binary Tree from Preorder and Inorder</option>
+              <option value="validate-bst">✅ Validate Binary Search Tree</option>
+              <option value="kth-smallest-bst">✅ Kth Smallest Element in BST</option>
+              <option value="lca-bst">✅ Lowest Common Ancestor of BST</option>
+            </optgroup>
+
+            <optgroup label="String (8 problems)">
+              <option value="longest-substring">✅ Longest Substring Without Repeating Characters</option>
+              <option value="longest-repeating">📝 Longest Repeating Character Replacement</option>
+              <option value="valid-anagram">📝 Valid Anagram</option>
+              <option value="group-anagrams">📝 Group Anagrams</option>
+              <option value="valid-parentheses">✅ Valid Parentheses</option>
+              <option value="valid-palindrome">📝 Valid Palindrome</option>
+              <option value="longest-palindrome">📝 Longest Palindromic Substring</option>
+              <option value="palindromic-substrings">📝 Palindromic Substrings</option>
+            </optgroup>
+
+            <optgroup label="Interval (5 problems)">
+              <option value="insert-interval">🔧 Insert Interval</option>
+              <option value="merge-intervals">✅ Merge Intervals</option>
+              <option value="non-overlapping-intervals">📝 Non-overlapping Intervals</option>
+              <option value="meeting-rooms">📝 Meeting Rooms</option>
+              <option value="meeting-rooms-ii">📝 Meeting Rooms II</option>
+            </optgroup>
+
+            <optgroup label="Linked List (6 problems)">
+              <option value="reverse-list">📝 Reverse Linked List</option>
+              <option value="detect-cycle">📝 Detect Cycle in Linked List</option>
+              <option value="merge-two-lists">📝 Merge Two Sorted Lists</option>
+              <option value="merge-k-lists">📝 Merge K Sorted Lists</option>
+              <option value="remove-nth">📝 Remove Nth Node From End</option>
+              <option value="reorder-list">📝 Reorder List</option>
+            </optgroup>
+          </select>
+
+          {selectedBlind75 && blind75Mapping[selectedBlind75] && (
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '8px',
+              fontSize: '0.875rem'
+            }}>
+              {blind75Mapping[selectedBlind75].available ? (
+                <div style={{ color: '#059669' }}>
+                  <strong>✅ Visualizer Available!</strong>
+                  <p style={{ margin: '0.5rem 0 0 0', color: '#374151' }}>
+                    Using: <strong>{algorithmSummaries[blind75Mapping[selectedBlind75].algo]?.title}</strong>
+                    {blind75Mapping[selectedBlind75].note && ` (${blind75Mapping[selectedBlind75].note})`}
+                  </p>
+                </div>
+              ) : (
+                <div style={{ color: '#dc2626' }}>
+                  <strong>📝 Coming Soon!</strong>
+                  <p style={{ margin: '0.5rem 0 0 0', color: '#374151' }}>
+                    This visualizer is not yet implemented.
+                    {blind75Mapping[selectedBlind75].note && ` Note: ${blind75Mapping[selectedBlind75].note}`}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div style={{
+            marginTop: '1rem',
+            padding: '0.75rem',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '6px',
+            fontSize: '0.75rem',
+            color: 'rgba(255,255,255,0.9)'
+          }}>
+            <strong>Legend:</strong> ✅ Available | 🔧 Similar Pattern | 📝 To Be Implemented
           </div>
         </div>
 
@@ -2582,6 +3745,67 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
               onChange={(e) => setStartNode(e.target.value)}
               className="input-field"
               placeholder={algorithm === 'tower-hanoi' ? "e.g., 3" : "e.g., 5"}
+            />
+          </div>
+        )}
+
+        {isStringAlgorithm && (
+          <div className="form-group">
+            <label className="form-label" htmlFor="string-input">
+              {algorithm === 'validparentheses' ? 'Input String (brackets only)' : 'Input String'}
+            </label>
+            <input
+              id="string-input"
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="input-field"
+              placeholder={algorithm === 'validparentheses' ? "e.g., ({[]})" : "e.g., abcabcbb"}
+            />
+          </div>
+        )}
+
+        {isCoinChange && (
+          <>
+            <div className="form-group">
+              <label className="form-label" htmlFor="coins-input">
+                Coin Denominations (comma-separated)
+              </label>
+              <input
+                id="coins-input"
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="input-field"
+                placeholder="e.g., 1, 2, 5"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="amount-input">Target Amount</label>
+              <input
+                id="amount-input"
+                type="text"
+                value={targetNode}
+                onChange={(e) => setTargetNode(e.target.value)}
+                className="input-field"
+                placeholder="e.g., 11"
+              />
+            </div>
+          </>
+        )}
+
+        {isIntervalAlgorithm && (
+          <div className="form-group">
+            <label className="form-label" htmlFor="intervals-input">
+              Intervals (format: start-end, start-end)
+            </label>
+            <input
+              id="intervals-input"
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="input-field"
+              placeholder="e.g., 1-3, 2-6, 8-10, 15-18"
             />
           </div>
         )}
