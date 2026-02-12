@@ -116,6 +116,91 @@ const algorithmSummaries = {
     description: "Product of Array Except Self calculates products without division using prefix and suffix products. First pass: build prefix products (product of all elements to the left). Second pass: build suffix products (product of all elements to the right) and multiply with prefix to get the final result.",
     complexity: "Time: O(n) | Space: O(1) excluding output array"
   },
+  containsduplicate: {
+    title: "Contains Duplicate",
+    description: "Contains Duplicate checks if any value appears at least twice in the array using a hash set. Iterate through the array and check if each element exists in the set. If found, return true. Otherwise, add it to the set and continue. Return false if no duplicates found.",
+    complexity: "Time: O(n) | Space: O(n)"
+  },
+  bestimestock: {
+    title: "Best Time to Buy and Sell Stock",
+    description: "Find the maximum profit from buying and selling stock once. Track the minimum price seen so far and calculate profit at each price. The maximum profit is the largest difference between current price and minimum price seen before it.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  validanagram: {
+    title: "Valid Anagram",
+    description: "Valid Anagram checks if two strings are anagrams (contain same characters with same frequencies). Use a hash map to count character frequencies in the first string, then decrement for the second string. If all counts end at zero, they're anagrams.",
+    complexity: "Time: O(n) | Space: O(1) - max 26 letters"
+  },
+  validpalindrome: {
+    title: "Valid Palindrome",
+    description: "Valid Palindrome uses two pointers starting from both ends of the string, moving inward. Skip non-alphanumeric characters and compare characters case-insensitively. If all characters match, it's a palindrome.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  containermostwater: {
+    title: "Container With Most Water",
+    description: "Container With Most Water uses two pointers at both ends to find maximum area. Area = min(height[left], height[right]) × (right - left). Move the pointer with smaller height inward, as moving the taller one can't increase area. Track maximum area throughout.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  threesum: {
+    title: "3Sum",
+    description: "3Sum finds all unique triplets that sum to zero. Sort the array first, then for each element, use two pointers to find pairs that sum to -element. Skip duplicates to ensure unique triplets. This combines sorting with two-pointer technique.",
+    complexity: "Time: O(n²) | Space: O(1) excluding output"
+  },
+  houserobber: {
+    title: "House Robber",
+    description: "House Robber finds maximum money you can rob without robbing adjacent houses using dynamic programming. At each house, decide to rob it (add to previous non-adjacent) or skip it (keep previous max). The recurrence is: dp[i] = max(dp[i-1], dp[i-2] + nums[i]).",
+    complexity: "Time: O(n) | Space: O(1) with optimization"
+  },
+  longestincreasing: {
+    title: "Longest Increasing Subsequence",
+    description: "Longest Increasing Subsequence (LIS) finds the length of the longest strictly increasing subsequence using dynamic programming. For each position, check all previous elements: if smaller, extend that subsequence. dp[i] = max(dp[j] + 1) for all j < i where arr[j] < arr[i].",
+    complexity: "Time: O(n²) or O(n log n) | Space: O(n)"
+  },
+  uniquepaths: {
+    title: "Unique Paths",
+    description: "Unique Paths counts paths in a grid from top-left to bottom-right (only right/down moves) using dynamic programming. Each cell dp[i][j] = dp[i-1][j] + dp[i][j-1] (sum of paths from top and left). First row and column are all 1s (only one path to reach them).",
+    complexity: "Time: O(m × n) | Space: O(m × n)"
+  },
+  jumpgame: {
+    title: "Jump Game",
+    description: "Jump Game determines if you can reach the last index using a greedy approach. Track the farthest position reachable. At each position, if reachable, update farthest with max(farthest, i + nums[i]). Return true if farthest reaches or exceeds the last index.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  decodeways: {
+    title: "Decode Ways",
+    description: "Decode Ways counts ways to decode a string where 1='A', 2='B'...26='Z' using DP. dp[i] counts ways to decode up to position i. Add dp[i-1] if single digit valid (1-9), add dp[i-2] if two digits valid (10-26). Handle edge cases for '0'.",
+    complexity: "Time: O(n) | Space: O(n) or O(1)"
+  },
+  wordbreak: {
+    title: "Word Break",
+    description: "Word Break determines if a string can be segmented into dictionary words using DP. dp[i] = true if string[0...i] can be segmented. For each position, check all possible words ending at that position. dp[i] = true if dp[i-len] is true and string[i-len...i] is in dictionary.",
+    complexity: "Time: O(n² × m) | Space: O(n)"
+  },
+  maxproductsubarray: {
+    title: "Maximum Product Subarray",
+    description: "Maximum Product Subarray finds the contiguous subarray with the largest product. Track both max and min products (negative × negative = positive). At each element, consider: element alone, element × maxProduct, element × minProduct. Swap max/min if element is negative.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  findminrotated: {
+    title: "Find Minimum in Rotated Sorted Array",
+    description: "Find Minimum in Rotated Sorted Array uses modified binary search. Compare mid with right: if mid > right, minimum is in right half; otherwise, minimum is in left half (including mid). The minimum is at the rotation point where arr[i] < arr[i-1].",
+    complexity: "Time: O(log n) | Space: O(1)"
+  },
+  missingnumber: {
+    title: "Missing Number",
+    description: "Missing Number finds the missing number from 0 to n using mathematical formula or XOR. Math approach: sum(0 to n) - sum(array) = missing number. XOR approach: XOR all indices with all values; result is the missing number (a⊕a=0, order doesn't matter).",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  topkfrequent: {
+    title: "Top K Frequent Elements",
+    description: "Top K Frequent Elements finds the k most frequent elements using a hash map and bucket sort. Count frequencies with hash map, then use bucket sort where bucket[freq] contains all elements with that frequency. Traverse buckets from high to low frequency to get top k elements.",
+    complexity: "Time: O(n) | Space: O(n)"
+  },
+  longestpalindrome: {
+    title: "Longest Palindromic Substring",
+    description: "Longest Palindromic Substring finds the longest palindrome by expanding around each center. For each position, expand outward while characters match. Check both odd-length palindromes (single center) and even-length palindromes (two centers). Track the longest palindrome found.",
+    complexity: "Time: O(n²) | Space: O(1)"
+  },
   bfs: {
     title: "Breadth-First Search (BFS)",
     description: "BFS explores a graph level by level, visiting all neighbors of a node before moving to the next level. It uses a queue to track which nodes to visit next. Starting from the initial node, it marks nodes as visited, adds their unvisited neighbors to the queue, and continues until all reachable nodes are explored.",
@@ -2653,9 +2738,2160 @@ const generateMergeIntervalsSteps = (intervals) => {
   return steps;
 };
 
+const generateContainsDuplicateSteps = (arr) => {
+  const steps = [{
+    array: arr,
+    seen: new Set(),
+    currentIndex: -1,
+    comparing: [],
+    description: `Checking for duplicates in [${arr.join(', ')}]`,
+    variables: { 'array length': arr.length, 'seen size': 0 },
+    operations: { 'checks': 0 },
+    phase: 'Initialize',
+    insight: 'Use a hash set to track seen numbers. If a number is already in the set, we found a duplicate.'
+  }];
+
+  const seen = new Set();
+  let checks = 0;
+
+  for (let i = 0; i < arr.length; i++) {
+    const num = arr[i];
+    checks++;
+
+    // Check if number is in set
+    steps.push({
+      array: arr,
+      seen: new Set(seen),
+      currentIndex: i,
+      comparing: [i],
+      checking: num,
+      description: `Check if ${num} exists in set`,
+      variables: {
+        'current index': i,
+        'current value': num,
+        'set size': seen.size,
+        'in set?': seen.has(num) ? 'YES - DUPLICATE!' : 'NO'
+      },
+      operations: { checks },
+      phase: `Checking (${i + 1}/${arr.length})`,
+      insight: `Looking for ${num} in set: {${Array.from(seen).join(', ')}}`
+    });
+
+    if (seen.has(num)) {
+      // Found duplicate!
+      steps.push({
+        array: arr,
+        seen: new Set(seen),
+        currentIndex: i,
+        comparing: [i],
+        found: true,
+        duplicate: num,
+        description: `✗ Duplicate found! ${num} appears more than once`,
+        variables: {
+          'duplicate': num,
+          'index': i
+        },
+        operations: { checks },
+        phase: 'Duplicate Found',
+        insight: `${num} was already in the set. Array contains duplicates.`
+      });
+
+      return steps;
+    }
+
+    // Add to set
+    seen.add(num);
+
+    steps.push({
+      array: arr,
+      seen: new Set(seen),
+      currentIndex: i,
+      comparing: [],
+      description: `Add ${num} to set`,
+      variables: {
+        'added': num,
+        'set size': seen.size
+      },
+      operations: { checks },
+      phase: `Checking (${i + 1}/${arr.length})`,
+      insight: `${num} not found. Add to set for future lookups.`
+    });
+  }
+
+  // No duplicates
+  steps.push({
+    array: arr,
+    seen: new Set(seen),
+    currentIndex: -1,
+    comparing: [],
+    found: false,
+    description: `✓ No duplicates found!`,
+    variables: {
+      'checked': arr.length,
+      'unique values': seen.size
+    },
+    operations: { checks },
+    phase: 'Complete',
+    insight: `All ${arr.length} values are unique. Time: O(n), Space: O(n)`
+  });
+
+  return steps;
+};
+
+const generateBestTimeStockSteps = (prices) => {
+  const steps = [{
+    array: prices,
+    currentIndex: -1,
+    minPrice: Infinity,
+    maxProfit: 0,
+    description: `Finding best time to buy and sell stock`,
+    variables: { 'prices': prices.length },
+    operations: { 'comparisons': 0 },
+    phase: 'Initialize',
+    insight: 'Track minimum price seen so far. At each price, calculate profit if sold today.'
+  }];
+
+  let minPrice = prices[0];
+  let maxProfit = 0;
+  let buyDay = 0;
+  let sellDay = 0;
+  let comparisons = 0;
+
+  steps.push({
+    array: prices,
+    currentIndex: 0,
+    comparing: [0],
+    minPrice,
+    maxProfit,
+    buyDay,
+    sellDay,
+    description: `Initialize: minPrice = ${minPrice}, maxProfit = ${maxProfit}`,
+    variables: { minPrice, maxProfit },
+    operations: { comparisons },
+    phase: 'Initialize',
+    insight: `Start with day 0 as potential buy day`
+  });
+
+  for (let i = 1; i < prices.length; i++) {
+    const price = prices[i];
+    const profit = price - minPrice;
+    comparisons++;
+
+    steps.push({
+      array: prices,
+      currentIndex: i,
+      comparing: [i, buyDay],
+      minPrice,
+      maxProfit,
+      buyDay,
+      sellDay,
+      currentProfit: profit,
+      description: `Day ${i}: Price = ${price}, Profit if sold = ${profit}`,
+      variables: {
+        'current price': price,
+        'min price': minPrice,
+        'profit if sold': profit,
+        'max profit': maxProfit
+      },
+      operations: { comparisons },
+      phase: `Day ${i + 1}/${prices.length}`,
+      insight: `If bought at ${minPrice} (day ${buyDay}) and sold at ${price} (day ${i}), profit = ${profit}`
+    });
+
+    if (profit > maxProfit) {
+      maxProfit = profit;
+      sellDay = i;
+
+      steps.push({
+        array: prices,
+        currentIndex: i,
+        comparing: [buyDay, i],
+        minPrice,
+        maxProfit,
+        buyDay,
+        sellDay,
+        found: true,
+        description: `✓ New max profit: ${maxProfit}`,
+        variables: {
+          'max profit': maxProfit,
+          'buy day': buyDay,
+          'sell day': sellDay
+        },
+        operations: { comparisons },
+        phase: 'New Max',
+        insight: `Buy on day ${buyDay} at $${minPrice}, sell on day ${sellDay} at $${price}`
+      });
+    }
+
+    if (price < minPrice) {
+      minPrice = price;
+      buyDay = i;
+
+      steps.push({
+        array: prices,
+        currentIndex: i,
+        comparing: [i],
+        minPrice,
+        maxProfit,
+        buyDay,
+        sellDay,
+        description: `New minimum price: ${minPrice}`,
+        variables: { 'min price': minPrice, 'buy day': buyDay },
+        operations: { comparisons },
+        phase: 'New Min',
+        insight: `Day ${i} has lower price. Update potential buy day.`
+      });
+    }
+  }
+
+  steps.push({
+    array: prices,
+    currentIndex: -1,
+    comparing: buyDay !== sellDay ? [buyDay, sellDay] : [],
+    minPrice,
+    maxProfit,
+    buyDay,
+    sellDay,
+    found: true,
+    description: `✓ Max profit: $${maxProfit}`,
+    variables: {
+      'max profit': maxProfit,
+      'buy day': buyDay,
+      'sell day': sellDay
+    },
+    operations: { comparisons },
+    phase: 'Complete',
+    insight: maxProfit > 0 ?
+      `Buy on day ${buyDay} at $${prices[buyDay]}, sell on day ${sellDay} at $${prices[sellDay]}` :
+      `No profitable transaction possible. Time: O(n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateValidAnagramSteps = (str1, str2) => {
+  const steps = [{
+    string1: str1,
+    string2: str2,
+    charCount: {},
+    currentIndex: -1,
+    description: `Checking if "${str1}" and "${str2}" are anagrams`,
+    variables: { 'length 1': str1.length, 'length 2': str2.length },
+    operations: { 'operations': 0 },
+    phase: 'Initialize',
+    insight: 'Anagrams have the same characters with the same frequencies. Use hash map to count.'
+  }];
+
+  if (str1.length !== str2.length) {
+    steps.push({
+      string1: str1,
+      string2: str2,
+      charCount: {},
+      currentIndex: -1,
+      valid: false,
+      description: `✗ Different lengths! Not anagrams`,
+      variables: { 'length 1': str1.length, 'length 2': str2.length },
+      operations: { 'operations': 0 },
+      phase: 'Invalid',
+      insight: `Strings of different lengths cannot be anagrams`
+    });
+    return steps;
+  }
+
+  const charCount = {};
+  let operations = 0;
+
+  // Count characters in first string
+  for (let i = 0; i < str1.length; i++) {
+    const char = str1[i];
+    charCount[char] = (charCount[char] || 0) + 1;
+    operations++;
+
+    steps.push({
+      string1: str1,
+      string2: str2,
+      charCount: { ...charCount },
+      currentIndex: i,
+      phase1: true,
+      description: `Count '${char}' in first string`,
+      variables: {
+        'character': char,
+        'count': charCount[char]
+      },
+      operations: { operations },
+      phase: `Counting String 1 (${i + 1}/${str1.length})`,
+      insight: `Character '${char}' appears ${charCount[char]} time(s) so far`
+    });
+  }
+
+  steps.push({
+    string1: str1,
+    string2: str2,
+    charCount: { ...charCount },
+    currentIndex: -1,
+    description: `Character counts: ${JSON.stringify(charCount)}`,
+    variables: { 'unique chars': Object.keys(charCount).length },
+    operations: { operations },
+    phase: 'Counted String 1',
+    insight: `Finished counting first string`
+  });
+
+  // Decrement for second string
+  for (let i = 0; i < str2.length; i++) {
+    const char = str2[i];
+
+    if (!charCount[char]) {
+      steps.push({
+        string1: str1,
+        string2: str2,
+        charCount: { ...charCount },
+        currentIndex: i,
+        phase2: true,
+        valid: false,
+        description: `✗ Character '${char}' not in first string`,
+        variables: { 'character': char },
+        operations: { operations },
+        phase: 'Not Anagram',
+        insight: `'${char}' appears in string2 but not in string1`
+      });
+      return steps;
+    }
+
+    charCount[char]--;
+    operations++;
+
+    if (charCount[char] === 0) {
+      delete charCount[char];
+    }
+
+    steps.push({
+      string1: str1,
+      string2: str2,
+      charCount: { ...charCount },
+      currentIndex: i,
+      phase2: true,
+      description: `Decrement '${char}' count`,
+      variables: {
+        'character': char,
+        'remaining': Object.keys(charCount).length
+      },
+      operations: { operations },
+      phase: `Checking String 2 (${i + 1}/${str2.length})`,
+      insight: `Matching '${char}' from string2 with string1`
+    });
+
+    if (charCount[char] < 0) {
+      steps.push({
+        string1: str1,
+        string2: str2,
+        charCount: { ...charCount },
+        currentIndex: i,
+        phase2: true,
+        valid: false,
+        description: `✗ Extra '${char}' in second string`,
+        variables: { 'character': char },
+        operations: { operations },
+        phase: 'Not Anagram',
+        insight: `'${char}' appears more in string2 than in string1`
+      });
+      return steps;
+    }
+  }
+
+  const isValid = Object.keys(charCount).length === 0;
+
+  steps.push({
+    string1: str1,
+    string2: str2,
+    charCount: { ...charCount },
+    currentIndex: -1,
+    valid: isValid,
+    description: isValid ? `✓ Valid anagram!` : `✗ Not an anagram`,
+    variables: {
+      'remaining chars': Object.keys(charCount).length,
+      'is anagram': isValid ? 'YES' : 'NO'
+    },
+    operations: { operations },
+    phase: isValid ? 'Valid Anagram' : 'Not Anagram',
+    insight: isValid ?
+      `All characters matched perfectly. Strings are anagrams.` :
+      `Character counts don't match. Not anagrams.`
+  });
+
+  return steps;
+};
+
+const generateValidPalindromeSteps = (str) => {
+  // Clean string: remove non-alphanumeric and lowercase
+  const cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  const steps = [{
+    original: str,
+    cleaned,
+    left: -1,
+    right: -1,
+    description: `Checking if "${str}" is a valid palindrome`,
+    variables: { 'original length': str.length, 'cleaned length': cleaned.length },
+    operations: { 'comparisons': 0 },
+    phase: 'Initialize',
+    insight: 'Remove non-alphanumeric characters, convert to lowercase, use two pointers'
+  }];
+
+  steps.push({
+    original: str,
+    cleaned,
+    left: -1,
+    right: -1,
+    description: `Cleaned string: "${cleaned}"`,
+    variables: { 'cleaned': cleaned },
+    operations: { 'comparisons': 0 },
+    phase: 'Cleaned',
+    insight: `After removing special characters: "${cleaned}"`
+  });
+
+  let left = 0;
+  let right = cleaned.length - 1;
+  let comparisons = 0;
+
+  while (left < right) {
+    comparisons++;
+
+    steps.push({
+      original: str,
+      cleaned,
+      left,
+      right,
+      leftChar: cleaned[left],
+      rightChar: cleaned[right],
+      description: `Compare '${cleaned[left]}' vs '${cleaned[right]}'`,
+      variables: {
+        'left': left,
+        'right': right,
+        'left char': cleaned[left],
+        'right char': cleaned[right],
+        'match?': cleaned[left] === cleaned[right] ? 'YES' : 'NO'
+      },
+      operations: { comparisons },
+      phase: `Comparing`,
+      insight: `Pointers at positions ${left} and ${right}`
+    });
+
+    if (cleaned[left] !== cleaned[right]) {
+      steps.push({
+        original: str,
+        cleaned,
+        left,
+        right,
+        leftChar: cleaned[left],
+        rightChar: cleaned[right],
+        valid: false,
+        description: `✗ Not a palindrome! '${cleaned[left]}' ≠ '${cleaned[right]}'`,
+        variables: {
+          'left char': cleaned[left],
+          'right char': cleaned[right]
+        },
+        operations: { comparisons },
+        phase: 'Not Palindrome',
+        insight: `Characters don't match at positions ${left} and ${right}`
+      });
+      return steps;
+    }
+
+    steps.push({
+      original: str,
+      cleaned,
+      left,
+      right,
+      leftChar: cleaned[left],
+      rightChar: cleaned[right],
+      matched: true,
+      description: `✓ Match! Moving pointers inward`,
+      variables: {
+        'matched': `${cleaned[left]} = ${cleaned[right]}`
+      },
+      operations: { comparisons },
+      phase: 'Matched',
+      insight: `Characters match, move both pointers`
+    });
+
+    left++;
+    right--;
+  }
+
+  steps.push({
+    original: str,
+    cleaned,
+    left,
+    right,
+    valid: true,
+    description: `✓ Valid palindrome!`,
+    variables: {
+      'comparisons': comparisons,
+      'is palindrome': 'YES'
+    },
+    operations: { comparisons },
+    phase: 'Valid Palindrome',
+    insight: `All characters matched. "${str}" is a valid palindrome. Time: O(n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateContainerMostWaterSteps = (heights) => {
+  const steps = [{
+    array: heights,
+    left: -1,
+    right: -1,
+    maxArea: 0,
+    description: `Finding container with most water`,
+    variables: { 'heights': heights.length },
+    operations: { 'calculations': 0 },
+    phase: 'Initialize',
+    insight: 'Use two pointers. Area = min(height[left], height[right]) × distance. Move pointer with smaller height.'
+  }];
+
+  let left = 0;
+  let right = heights.length - 1;
+  let maxArea = 0;
+  let bestLeft = 0;
+  let bestRight = heights.length - 1;
+  let calculations = 0;
+
+  steps.push({
+    array: heights,
+    left,
+    right,
+    maxArea,
+    description: `Start with pointers at both ends`,
+    variables: { left, right },
+    operations: { calculations },
+    phase: 'Start',
+    insight: `Initial width = ${right - left}`
+  });
+
+  while (left < right) {
+    const width = right - left;
+    const height = Math.min(heights[left], heights[right]);
+    const area = width * height;
+    calculations++;
+
+    steps.push({
+      array: heights,
+      left,
+      right,
+      currentArea: area,
+      maxArea,
+      description: `Area = min(${heights[left]}, ${heights[right]}) × ${width} = ${area}`,
+      variables: {
+        'left': left,
+        'right': right,
+        'width': width,
+        'min height': height,
+        'area': area,
+        'max area': maxArea
+      },
+      operations: { calculations },
+      phase: 'Calculate',
+      insight: `Container bounded by heights ${heights[left]} and ${heights[right]}`
+    });
+
+    if (area > maxArea) {
+      maxArea = area;
+      bestLeft = left;
+      bestRight = right;
+
+      steps.push({
+        array: heights,
+        left,
+        right,
+        currentArea: area,
+        maxArea,
+        bestLeft,
+        bestRight,
+        found: true,
+        description: `✓ New max area: ${maxArea}`,
+        variables: {
+          'max area': maxArea,
+          'container': `[${bestLeft}, ${bestRight}]`
+        },
+        operations: { calculations },
+        phase: 'New Max',
+        insight: `Best container so far: left=${bestLeft}, right=${bestRight}`
+      });
+    }
+
+    // Move pointer with smaller height
+    if (heights[left] < heights[right]) {
+      steps.push({
+        array: heights,
+        left,
+        right,
+        currentArea: area,
+        maxArea,
+        moveLeft: true,
+        description: `Move left pointer (${heights[left]} < ${heights[right]})`,
+        variables: {
+          'moving': 'left',
+          'reason': `${heights[left]} < ${heights[right]}`
+        },
+        operations: { calculations },
+        phase: 'Move Pointer',
+        insight: `Left height is smaller, so moving right pointer can't increase area`
+      });
+      left++;
+    } else {
+      steps.push({
+        array: heights,
+        left,
+        right,
+        currentArea: area,
+        maxArea,
+        moveRight: true,
+        description: `Move right pointer (${heights[right]} ≤ ${heights[left]})`,
+        variables: {
+          'moving': 'right',
+          'reason': `${heights[right]} ≤ ${heights[left]}`
+        },
+        operations: { calculations },
+        phase: 'Move Pointer',
+        insight: `Right height is smaller/equal, so moving left pointer can't increase area`
+      });
+      right--;
+    }
+  }
+
+  steps.push({
+    array: heights,
+    left,
+    right,
+    maxArea,
+    bestLeft,
+    bestRight,
+    found: true,
+    description: `✓ Max area: ${maxArea}`,
+    variables: {
+      'max area': maxArea,
+      'left index': bestLeft,
+      'right index': bestRight,
+      'width': bestRight - bestLeft,
+      'height': Math.min(heights[bestLeft], heights[bestRight])
+    },
+    operations: { calculations },
+    phase: 'Complete',
+    insight: `Maximum water: ${maxArea} units. Container from index ${bestLeft} to ${bestRight}. Time: O(n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateThreeSumSteps = (nums) => {
+  const steps = [{
+    array: nums,
+    sorted: [],
+    currentIndex: -1,
+    description: `Finding all triplets that sum to 0`,
+    variables: { 'array length': nums.length },
+    operations: { 'iterations': 0 },
+    phase: 'Initialize',
+    insight: 'Sort array first. For each element, use two pointers to find pairs that sum to -element.'
+  }];
+
+  const sorted = [...nums].sort((a, b) => a - b);
+  const result = [];
+  let iterations = 0;
+
+  steps.push({
+    array: nums,
+    sorted: [...sorted],
+    currentIndex: -1,
+    description: `Sorted array: [${sorted.join(', ')}]`,
+    variables: { 'sorted': sorted.join(', ') },
+    operations: { iterations },
+    phase: 'Sorted',
+    insight: `Sorted array to use two-pointer technique`
+  });
+
+  for (let i = 0; i < sorted.length - 2; i++) {
+    // Skip duplicates
+    if (i > 0 && sorted[i] === sorted[i - 1]) {
+      steps.push({
+        array: nums,
+        sorted: [...sorted],
+        currentIndex: i,
+        description: `Skip duplicate ${sorted[i]}`,
+        variables: { 'skipping': sorted[i] },
+        operations: { iterations },
+        phase: 'Skip Duplicate',
+        insight: `Already processed ${sorted[i]} in previous iteration`
+      });
+      continue;
+    }
+
+    const target = -sorted[i];
+    let left = i + 1;
+    let right = sorted.length - 1;
+
+    steps.push({
+      array: nums,
+      sorted: [...sorted],
+      currentIndex: i,
+      left,
+      right,
+      target,
+      description: `Fix ${sorted[i]}, find pairs that sum to ${target}`,
+      variables: {
+        'i': i,
+        'value': sorted[i],
+        'target sum': target,
+        'left': left,
+        'right': right
+      },
+      operations: { iterations },
+      phase: `Outer Loop (${i + 1}/${sorted.length - 2})`,
+      insight: `Looking for pairs that sum to ${target} to make total sum = 0`
+    });
+
+    while (left < right) {
+      iterations++;
+      const sum = sorted[left] + sorted[right];
+
+      steps.push({
+        array: nums,
+        sorted: [...sorted],
+        currentIndex: i,
+        left,
+        right,
+        sum,
+        target,
+        description: `${sorted[i]} + ${sorted[left]} + ${sorted[right]} = ${sorted[i] + sum}`,
+        variables: {
+          'sum': sorted[i] + sum,
+          'target': 0,
+          'diff': sum - target
+        },
+        operations: { iterations },
+        phase: 'Two Pointer',
+        insight: `Checking triplet [${sorted[i]}, ${sorted[left]}, ${sorted[right]}]`
+      });
+
+      if (sum === target) {
+        result.push([sorted[i], sorted[left], sorted[right]]);
+
+        steps.push({
+          array: nums,
+          sorted: [...sorted],
+          currentIndex: i,
+          left,
+          right,
+          found: true,
+          triplet: [sorted[i], sorted[left], sorted[right]],
+          result: result.map(r => [...r]),
+          description: `✓ Found: [${sorted[i]}, ${sorted[left]}, ${sorted[right]}]`,
+          variables: {
+            'triplet': `[${sorted[i]}, ${sorted[left]}, ${sorted[right]}]`,
+            'total found': result.length
+          },
+          operations: { iterations },
+          phase: 'Found Triplet',
+          insight: `${sorted[i]} + ${sorted[left]} + ${sorted[right]} = 0`
+        });
+
+        // Skip duplicates
+        while (left < right && sorted[left] === sorted[left + 1]) left++;
+        while (left < right && sorted[right] === sorted[right - 1]) right--;
+
+        left++;
+        right--;
+      } else if (sum < target) {
+        steps.push({
+          array: nums,
+          sorted: [...sorted],
+          currentIndex: i,
+          left,
+          right,
+          sum,
+          target,
+          moveLeft: true,
+          description: `Sum too small (${sum} < ${target}), move left →`,
+          operations: { iterations },
+          phase: 'Adjust',
+          insight: `Need larger sum, increment left pointer`
+        });
+        left++;
+      } else {
+        steps.push({
+          array: nums,
+          sorted: [...sorted],
+          currentIndex: i,
+          left,
+          right,
+          sum,
+          target,
+          moveRight: true,
+          description: `Sum too large (${sum} > ${target}), move right ←`,
+          operations: { iterations },
+          phase: 'Adjust',
+          insight: `Need smaller sum, decrement right pointer`
+        });
+        right--;
+      }
+    }
+  }
+
+  steps.push({
+    array: nums,
+    sorted: [...sorted],
+    currentIndex: -1,
+    result: result.map(r => [...r]),
+    description: `✓ Found ${result.length} triplet(s)`,
+    variables: {
+      'total triplets': result.length,
+      'triplets': result.map(r => `[${r.join(', ')}]`).join(', ')
+    },
+    operations: { iterations },
+    phase: 'Complete',
+    insight: result.length > 0 ?
+      `All triplets: ${result.map(r => `[${r.join(', ')}]`).join(', ')}. Time: O(n²), Space: O(1)` :
+      `No triplets sum to 0. Time: O(n²), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateHouseRobberSteps = (houses) => {
+  const steps = [{
+    array: houses,
+    dp: [],
+    currentIndex: -1,
+    description: `Finding maximum money to rob from ${houses.length} houses`,
+    variables: { 'houses': houses.length },
+    operations: { 'decisions': 0 },
+    phase: 'Initialize',
+    insight: 'Cannot rob adjacent houses. At each house, choose max(rob this + dp[i-2], skip this = dp[i-1])'
+  }];
+
+  const dp = new Array(houses.length).fill(0);
+  let decisions = 0;
+
+  if (houses.length === 0) {
+    steps.push({
+      array: houses,
+      dp,
+      currentIndex: -1,
+      maxMoney: 0,
+      description: `No houses to rob`,
+      operations: { decisions },
+      phase: 'Complete',
+      insight: 'Empty input'
+    });
+    return steps;
+  }
+
+  // Base cases
+  dp[0] = houses[0];
+
+  steps.push({
+    array: houses,
+    dp: [...dp],
+    currentIndex: 0,
+    description: `Base case: dp[0] = ${houses[0]}`,
+    variables: { 'dp[0]': houses[0] },
+    operations: { decisions },
+    phase: 'Base Case',
+    insight: `With only house 0, must rob it for $${houses[0]}`
+  });
+
+  if (houses.length === 1) {
+    steps.push({
+      array: houses,
+      dp: [...dp],
+      currentIndex: -1,
+      maxMoney: dp[0],
+      description: `✓ Max money: $${dp[0]}`,
+      operations: { decisions },
+      phase: 'Complete',
+      insight: `Only one house, rob it for $${dp[0]}`
+    });
+    return steps;
+  }
+
+  dp[1] = Math.max(houses[0], houses[1]);
+  decisions++;
+
+  steps.push({
+    array: houses,
+    dp: [...dp],
+    currentIndex: 1,
+    description: `Base case: dp[1] = max(${houses[0]}, ${houses[1]}) = ${dp[1]}`,
+    variables: {
+      'house 0': houses[0],
+      'house 1': houses[1],
+      'dp[1]': dp[1]
+    },
+    operations: { decisions },
+    phase: 'Base Case',
+    insight: `With houses 0 and 1, choose the more valuable one`
+  });
+
+  // Fill DP array
+  for (let i = 2; i < houses.length; i++) {
+    const robCurrent = houses[i] + dp[i - 2];
+    const skipCurrent = dp[i - 1];
+    dp[i] = Math.max(robCurrent, skipCurrent);
+    decisions++;
+
+    steps.push({
+      array: houses,
+      dp: [...dp],
+      currentIndex: i,
+      robCurrent,
+      skipCurrent,
+      description: `House ${i}: Rob ($${houses[i]} + $${dp[i - 2]} = $${robCurrent}) vs Skip ($${skipCurrent})`,
+      variables: {
+        'house value': houses[i],
+        'rob this': robCurrent,
+        'skip this': skipCurrent,
+        'decision': dp[i] === robCurrent ? 'ROB' : 'SKIP',
+        'dp[i]': dp[i]
+      },
+      operations: { decisions },
+      phase: `House ${i + 1}/${houses.length}`,
+      insight: dp[i] === robCurrent ?
+        `Rob house ${i} for $${houses[i]}, total = $${dp[i]}` :
+        `Skip house ${i}, keep $${dp[i]} from previous`
+    });
+  }
+
+  steps.push({
+    array: houses,
+    dp: [...dp],
+    currentIndex: -1,
+    maxMoney: dp[houses.length - 1],
+    found: true,
+    description: `✓ Max money: $${dp[houses.length - 1]}`,
+    variables: {
+      'max money': dp[houses.length - 1],
+      'dp array': dp.join(', ')
+    },
+    operations: { decisions },
+    phase: 'Complete',
+    insight: `Maximum money that can be robbed: $${dp[houses.length - 1]}. Time: O(n), Space: O(n)`
+  });
+
+  return steps;
+};
+
+const generateLongestIncreasingSubsequenceSteps = (nums) => {
+  const steps = [{
+    array: nums,
+    dp: [],
+    currentIndex: -1,
+    description: `Finding longest increasing subsequence in [${nums.join(', ')}]`,
+    variables: { 'array length': nums.length },
+    operations: { 'comparisons': 0 },
+    phase: 'Initialize',
+    insight: 'For each element, check all previous smaller elements and extend their subsequences'
+  }];
+
+  if (nums.length === 0) {
+    steps.push({
+      array: nums,
+      dp: [],
+      maxLength: 0,
+      description: 'Empty array',
+      phase: 'Complete',
+      insight: 'No elements'
+    });
+    return steps;
+  }
+
+  const dp = new Array(nums.length).fill(1);
+  let comparisons = 0;
+  let maxLength = 1;
+  let maxIndex = 0;
+
+  steps.push({
+    array: nums,
+    dp: [...dp],
+    currentIndex: -1,
+    description: 'Initialize all dp[i] = 1 (each element is a subsequence of length 1)',
+    variables: { 'dp': dp.join(', ') },
+    operations: { comparisons },
+    phase: 'Initialize',
+    insight: 'Every single element forms an LIS of length 1'
+  });
+
+  for (let i = 1; i < nums.length; i++) {
+    for (let j = 0; j < i; j++) {
+      comparisons++;
+
+      if (nums[j] < nums[i]) {
+        const newLength = dp[j] + 1;
+
+        steps.push({
+          array: nums,
+          dp: [...dp],
+          currentIndex: i,
+          comparingWith: j,
+          comparing: [i, j],
+          description: `${nums[j]} < ${nums[i]}: Can extend subsequence`,
+          variables: {
+            'i': i,
+            'j': j,
+            'nums[i]': nums[i],
+            'nums[j]': nums[j],
+            'dp[j]+1': newLength,
+            'current dp[i]': dp[i]
+          },
+          operations: { comparisons },
+          phase: `Building (${i}/${nums.length - 1})`,
+          insight: `Since ${nums[j]} < ${nums[i]}, we can extend the subsequence ending at j`
+        });
+
+        if (newLength > dp[i]) {
+          dp[i] = newLength;
+
+          if (dp[i] > maxLength) {
+            maxLength = dp[i];
+            maxIndex = i;
+          }
+
+          steps.push({
+            array: nums,
+            dp: [...dp],
+            currentIndex: i,
+            comparingWith: j,
+            comparing: [i, j],
+            updated: true,
+            description: `✓ Update dp[${i}] = ${dp[i]}`,
+            variables: {
+              'dp[i]': dp[i],
+              'max length': maxLength
+            },
+            operations: { comparisons },
+            phase: 'Updated',
+            insight: `Found longer subsequence ending at index ${i}`
+          });
+        }
+      }
+    }
+  }
+
+  steps.push({
+    array: nums,
+    dp: [...dp],
+    currentIndex: -1,
+    maxLength,
+    maxIndex,
+    found: true,
+    description: `✓ Longest increasing subsequence length: ${maxLength}`,
+    variables: {
+      'max length': maxLength,
+      'dp array': dp.join(', ')
+    },
+    operations: { comparisons },
+    phase: 'Complete',
+    insight: `LIS length = ${maxLength}. Time: O(n²), Space: O(n)`
+  });
+
+  return steps;
+};
+
+const generateUniquePathsSteps = (m, n) => {
+  const steps = [{
+    m,
+    n,
+    grid: [],
+    currentRow: -1,
+    currentCol: -1,
+    description: `Finding unique paths in ${m}×${n} grid`,
+    variables: { 'rows': m, 'cols': n },
+    operations: { 'cells filled': 0 },
+    phase: 'Initialize',
+    insight: 'Grid DP: each cell = sum of paths from top and left'
+  }];
+
+  const dp = Array(m).fill(0).map(() => Array(n).fill(0));
+  let cellsFilled = 0;
+
+  // Initialize first row and column
+  for (let i = 0; i < m; i++) dp[i][0] = 1;
+  for (let j = 0; j < n; j++) dp[0][j] = 1;
+  cellsFilled = m + n - 1;
+
+  steps.push({
+    m,
+    n,
+    grid: dp.map(row => [...row]),
+    currentRow: -1,
+    currentCol: -1,
+    description: 'Initialize first row and column to 1',
+    variables: { 'cells filled': cellsFilled },
+    operations: { 'cells filled': cellsFilled },
+    phase: 'Base Cases',
+    insight: 'Only one way to reach cells in first row/column (all right or all down)'
+  });
+
+  for (let i = 1; i < m; i++) {
+    for (let j = 1; j < n; j++) {
+      dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+      cellsFilled++;
+
+      steps.push({
+        m,
+        n,
+        grid: dp.map(row => [...row]),
+        currentRow: i,
+        currentCol: j,
+        description: `dp[${i}][${j}] = dp[${i-1}][${j}] + dp[${i}][${j-1}] = ${dp[i-1][j]} + ${dp[i][j-1]} = ${dp[i][j]}`,
+        variables: {
+          'from top': dp[i-1][j],
+          'from left': dp[i][j-1],
+          'total': dp[i][j]
+        },
+        operations: { 'cells filled': cellsFilled },
+        phase: `Row ${i+1}/${m}`,
+        insight: `Paths to (${i},${j}) = paths from top + paths from left`
+      });
+    }
+  }
+
+  steps.push({
+    m,
+    n,
+    grid: dp.map(row => [...row]),
+    currentRow: -1,
+    currentCol: -1,
+    totalPaths: dp[m-1][n-1],
+    found: true,
+    description: `✓ Total unique paths: ${dp[m-1][n-1]}`,
+    variables: { 'unique paths': dp[m-1][n-1] },
+    operations: { 'cells filled': cellsFilled },
+    phase: 'Complete',
+    insight: `${dp[m-1][n-1]} unique paths from (0,0) to (${m-1},${n-1}). Time: O(m×n), Space: O(m×n)`
+  });
+
+  return steps;
+};
+
+const generateJumpGameSteps = (nums) => {
+  const steps = [{
+    array: nums,
+    currentIndex: -1,
+    farthest: 0,
+    description: `Can we jump from index 0 to ${nums.length - 1}?`,
+    variables: { 'target': nums.length - 1 },
+    operations: { 'jumps checked': 0 },
+    phase: 'Initialize',
+    insight: 'Track farthest position reachable. Greedy: always jump to maximize reach.'
+  }];
+
+  let farthest = 0;
+  let jumpsChecked = 0;
+
+  for (let i = 0; i <= farthest && i < nums.length; i++) {
+    const reach = i + nums[i];
+    jumpsChecked++;
+
+    steps.push({
+      array: nums,
+      currentIndex: i,
+      comparing: [i],
+      farthest,
+      newReach: reach,
+      description: `From index ${i}, can reach index ${reach}`,
+      variables: {
+        'position': i,
+        'jump length': nums[i],
+        'can reach': reach,
+        'farthest': farthest
+      },
+      operations: { 'jumps checked': jumpsChecked },
+      phase: `Checking (${i+1}/${nums.length})`,
+      insight: `From position ${i}, we can jump ${nums[i]} steps forward`
+    });
+
+    if (reach > farthest) {
+      farthest = reach;
+
+      steps.push({
+        array: nums,
+        currentIndex: i,
+        comparing: [i],
+        farthest,
+        updated: true,
+        description: `✓ Update farthest to ${farthest}`,
+        variables: { 'new farthest': farthest },
+        operations: { 'jumps checked': jumpsChecked },
+        phase: 'Extended Reach',
+        insight: `Can now reach up to index ${farthest}`
+      });
+    }
+
+    if (farthest >= nums.length - 1) {
+      steps.push({
+        array: nums,
+        currentIndex: i,
+        farthest,
+        canReach: true,
+        found: true,
+        description: `✓ Can reach the end!`,
+        variables: { 'farthest': farthest, 'target': nums.length - 1 },
+        operations: { 'jumps checked': jumpsChecked },
+        phase: 'Success',
+        insight: `Farthest (${farthest}) >= target (${nums.length - 1}). Can reach the end!`
+      });
+      return steps;
+    }
+  }
+
+  steps.push({
+    array: nums,
+    currentIndex: -1,
+    farthest,
+    canReach: false,
+    description: `✗ Cannot reach the end`,
+    variables: { 'farthest': farthest, 'target': nums.length - 1 },
+    operations: { 'jumps checked': jumpsChecked },
+    phase: 'Failed',
+    insight: `Stuck at position ${farthest}. Cannot reach ${nums.length - 1}. Time: O(n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateMissingNumberSteps = (nums) => {
+  const n = nums.length;
+  const steps = [{
+    array: nums,
+    n,
+    currentIndex: -1,
+    description: `Finding missing number from 0 to ${n}`,
+    variables: { 'n': n, 'array length': nums.length },
+    operations: { 'operations': 0 },
+    phase: 'Initialize',
+    insight: 'Expected sum: n×(n+1)/2. Missing = expected - actual.'
+  }];
+
+  const expectedSum = (n * (n + 1)) / 2;
+  let actualSum = 0;
+  let operations = 0;
+
+  steps.push({
+    array: nums,
+    n,
+    expectedSum,
+    description: `Expected sum (0 to ${n}): ${n}×${n+1}/2 = ${expectedSum}`,
+    variables: { 'expected sum': expectedSum },
+    operations: { operations },
+    phase: 'Calculate Expected',
+    insight: `Sum of 0 to n = n×(n+1)/2`
+  });
+
+  for (let i = 0; i < nums.length; i++) {
+    actualSum += nums[i];
+    operations++;
+
+    steps.push({
+      array: nums,
+      n,
+      currentIndex: i,
+      comparing: [i],
+      actualSum,
+      expectedSum,
+      description: `Add ${nums[i]}, actual sum = ${actualSum}`,
+      variables: {
+        'current': nums[i],
+        'actual sum': actualSum,
+        'expected sum': expectedSum
+      },
+      operations: { operations },
+      phase: `Summing (${i+1}/${nums.length})`,
+      insight: `Running sum of array elements`
+    });
+  }
+
+  const missing = expectedSum - actualSum;
+
+  steps.push({
+    array: nums,
+    n,
+    currentIndex: -1,
+    actualSum,
+    expectedSum,
+    missing,
+    found: true,
+    description: `✓ Missing number: ${expectedSum} - ${actualSum} = ${missing}`,
+    variables: {
+      'expected': expectedSum,
+      'actual': actualSum,
+      'missing': missing
+    },
+    operations: { operations },
+    phase: 'Complete',
+    insight: `Missing number is ${missing}. Time: O(n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateDecodeWaysSteps = (s) => {
+  const steps = [{
+    string: s,
+    dp: [],
+    currentIndex: -1,
+    description: `How many ways to decode "${s}"?`,
+    variables: { 'string length': s.length },
+    operations: { 'decodings': 0 },
+    phase: 'Initialize',
+    insight: 'DP: dp[i] = ways to decode s[0...i]. Consider 1-digit and 2-digit decodings.'
+  }];
+
+  if (s.length === 0 || s[0] === '0') {
+    steps.push({
+      string: s,
+      dp: [],
+      ways: 0,
+      description: s.length === 0 ? 'Empty string' : 'Cannot start with 0',
+      phase: 'Invalid',
+      insight: 'Invalid input'
+    });
+    return steps;
+  }
+
+  const dp = new Array(s.length + 1).fill(0);
+  dp[0] = 1; // Empty string
+  dp[1] = s[0] !== '0' ? 1 : 0;
+
+  steps.push({
+    string: s,
+    dp: [...dp],
+    currentIndex: 0,
+    description: `Base cases: dp[0]=1, dp[1]=${dp[1]}`,
+    variables: { 'dp[0]': 1, 'dp[1]': dp[1] },
+    operations: { 'decodings': 0 },
+    phase: 'Base Case',
+    insight: 'Empty string has 1 way, first character has 1 way if not 0'
+  });
+
+  for (let i = 2; i <= s.length; i++) {
+    const oneDigit = parseInt(s[i - 1]);
+    const twoDigits = parseInt(s.substring(i - 2, i));
+
+    steps.push({
+      string: s,
+      dp: [...dp],
+      currentIndex: i - 1,
+      oneDigit,
+      twoDigits,
+      description: `Position ${i}: checking "${s[i-1]}" and "${s.substring(i-2, i)}"`,
+      variables: {
+        'position': i,
+        'one digit': oneDigit,
+        'two digits': twoDigits,
+        'one valid?': oneDigit >= 1 && oneDigit <= 9,
+        'two valid?': twoDigits >= 10 && twoDigits <= 26
+      },
+      operations: { 'decodings': i - 1 },
+      phase: `Decoding (${i}/${s.length})`,
+      insight: `Check if we can decode as single digit (1-9) or two digits (10-26)`
+    });
+
+    // One digit decoding
+    if (oneDigit >= 1 && oneDigit <= 9) {
+      dp[i] += dp[i - 1];
+    }
+
+    // Two digit decoding
+    if (twoDigits >= 10 && twoDigits <= 26) {
+      dp[i] += dp[i - 2];
+    }
+
+    steps.push({
+      string: s,
+      dp: [...dp],
+      currentIndex: i - 1,
+      oneDigit,
+      twoDigits,
+      updated: true,
+      description: `dp[${i}] = ${dp[i]} ways`,
+      variables: {
+        'dp[i]': dp[i],
+        'from single': oneDigit >= 1 && oneDigit <= 9 ? dp[i-1] : 0,
+        'from double': twoDigits >= 10 && twoDigits <= 26 ? dp[i-2] : 0
+      },
+      operations: { 'decodings': i - 1 },
+      phase: 'Updated',
+      insight: `Total ways to decode up to position ${i}: ${dp[i]}`
+    });
+  }
+
+  steps.push({
+    string: s,
+    dp: [...dp],
+    currentIndex: -1,
+    ways: dp[s.length],
+    found: true,
+    description: `✓ Total ways to decode: ${dp[s.length]}`,
+    variables: { 'total ways': dp[s.length] },
+    operations: { 'decodings': s.length },
+    phase: 'Complete',
+    insight: `"${s}" can be decoded ${dp[s.length]} different ways. Time: O(n), Space: O(n)`
+  });
+
+  return steps;
+};
+
+const generateWordBreakSteps = (s, wordDict) => {
+  const steps = [{
+    string: s,
+    dictionary: wordDict,
+    dp: [],
+    currentIndex: -1,
+    description: `Can "${s}" be segmented using dictionary [${wordDict.join(', ')}]?`,
+    variables: { 'string length': s.length, 'dict size': wordDict.length },
+    operations: { 'checks': 0 },
+    phase: 'Initialize',
+    insight: 'DP: dp[i]=true if s[0...i] can be segmented. Check all words ending at each position.'
+  }];
+
+  const wordSet = new Set(wordDict);
+  const dp = new Array(s.length + 1).fill(false);
+  dp[0] = true; // Empty string
+  let checks = 0;
+
+  steps.push({
+    string: s,
+    dictionary: wordDict,
+    dp: [...dp],
+    currentIndex: -1,
+    description: 'Base case: dp[0] = true (empty string)',
+    variables: { 'dp[0]': true },
+    operations: { checks },
+    phase: 'Base Case',
+    insight: 'Empty string can always be segmented'
+  });
+
+  for (let i = 1; i <= s.length; i++) {
+    for (let j = 0; j < i; j++) {
+      const word = s.substring(j, i);
+      const inDict = wordSet.has(word);
+      checks++;
+
+      if (dp[j] && inDict) {
+        dp[i] = true;
+
+        steps.push({
+          string: s,
+          dictionary: wordDict,
+          dp: [...dp],
+          currentIndex: i - 1,
+          word,
+          wordStart: j,
+          wordEnd: i - 1,
+          found: true,
+          description: `✓ Found "${word}" in dictionary, dp[${i}] = true`,
+          variables: {
+            'word': word,
+            'positions': `[${j}...${i-1}]`,
+            'dp[j]': dp[j],
+            'in dict?': 'YES'
+          },
+          operations: { checks },
+          phase: `Position ${i}/${s.length}`,
+          insight: `s[0...${j}] can be segmented AND "${word}" is in dictionary`
+        });
+        break; // Found valid segmentation up to i
+      }
+    }
+
+    if (!dp[i]) {
+      steps.push({
+        string: s,
+        dictionary: wordDict,
+        dp: [...dp],
+        currentIndex: i - 1,
+        description: `No valid word ending at position ${i}`,
+        variables: { 'dp[i]': false },
+        operations: { checks },
+        phase: `Position ${i}/${s.length}`,
+        insight: `Cannot segment s[0...${i-1}] with dictionary words`
+      });
+    }
+  }
+
+  steps.push({
+    string: s,
+    dictionary: wordDict,
+    dp: [...dp],
+    currentIndex: -1,
+    canSegment: dp[s.length],
+    found: dp[s.length],
+    description: dp[s.length] ? `✓ "${s}" can be segmented` : `✗ "${s}" cannot be segmented`,
+    variables: { 'can segment?': dp[s.length] ? 'YES' : 'NO' },
+    operations: { checks },
+    phase: dp[s.length] ? 'Success' : 'Failed',
+    insight: dp[s.length] ?
+      `String can be broken into dictionary words` :
+      `String cannot be fully segmented. Time: O(n² × m), Space: O(n)`
+  });
+
+  return steps;
+};
+
+const generateMaxProductSubarraySteps = (nums) => {
+  const steps = [{
+    array: nums,
+    currentIndex: -1,
+    description: `Finding maximum product subarray in [${nums.join(', ')}]`,
+    variables: { 'array length': nums.length },
+    operations: { 'iterations': 0 },
+    phase: 'Initialize',
+    insight: 'Track both max and min products (negative × negative = positive)'
+  }];
+
+  let maxProduct = nums[0];
+  let currentMax = nums[0];
+  let currentMin = nums[0];
+  let maxStart = 0;
+  let maxEnd = 0;
+
+  steps.push({
+    array: nums,
+    currentIndex: 0,
+    comparing: [0],
+    currentMax,
+    currentMin,
+    maxProduct,
+    description: `Initialize: max=${maxProduct}, currentMax=${currentMax}, currentMin=${currentMin}`,
+    variables: { maxProduct, currentMax, currentMin },
+    operations: { 'iterations': 0 },
+    phase: 'Initialize',
+    insight: 'Start with first element'
+  });
+
+  for (let i = 1; i < nums.length; i++) {
+    const num = nums[i];
+    const tempMax = currentMax;
+
+    // If current number is negative, swap max and min
+    const candidates = [num, num * currentMax, num * currentMin];
+    currentMax = Math.max(...candidates);
+    currentMin = Math.min(num, num * tempMax, num * currentMin);
+
+    steps.push({
+      array: nums,
+      currentIndex: i,
+      comparing: [i],
+      currentMax,
+      currentMin,
+      maxProduct,
+      candidates,
+      description: `At ${num}: max(${num}, ${num}×${tempMax}, ${num}×${currentMin})`,
+      variables: {
+        'current': num,
+        'candidates': candidates.join(', '),
+        'new max': currentMax,
+        'new min': currentMin
+      },
+      operations: { 'iterations': i },
+      phase: `Computing (${i+1}/${nums.length})`,
+      insight: num < 0 ?
+        `Negative number: min can become max!` :
+        `Consider: number alone, extend max product, extend min product`
+    });
+
+    if (currentMax > maxProduct) {
+      maxProduct = currentMax;
+      maxEnd = i;
+
+      steps.push({
+        array: nums,
+        currentIndex: i,
+        comparing: [i],
+        currentMax,
+        currentMin,
+        maxProduct,
+        found: true,
+        description: `✓ New max product: ${maxProduct}`,
+        variables: { 'max product': maxProduct },
+        operations: { 'iterations': i },
+        phase: 'New Max',
+        insight: `Best subarray product so far: ${maxProduct}`
+      });
+    }
+  }
+
+  steps.push({
+    array: nums,
+    currentIndex: -1,
+    maxProduct,
+    found: true,
+    description: `✓ Maximum product: ${maxProduct}`,
+    variables: { 'max product': maxProduct },
+    operations: { 'iterations': nums.length - 1 },
+    phase: 'Complete',
+    insight: `Maximum subarray product: ${maxProduct}. Time: O(n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateFindMinRotatedSteps = (nums) => {
+  const steps = [{
+    array: nums,
+    left: -1,
+    right: -1,
+    mid: -1,
+    description: `Finding minimum in rotated sorted array [${nums.join(', ')}]`,
+    variables: { 'array length': nums.length },
+    operations: { 'iterations': 0 },
+    phase: 'Initialize',
+    insight: 'Binary search: compare mid with right. If mid > right, minimum is in right half.'
+  }];
+
+  let left = 0;
+  let right = nums.length - 1;
+  let iterations = 0;
+
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+    iterations++;
+
+    steps.push({
+      array: nums,
+      left,
+      right,
+      mid,
+      comparing: [left, mid, right],
+      description: `Compare nums[${mid}]=${nums[mid]} with nums[${right}]=${nums[right]}`,
+      variables: {
+        'left': left,
+        'mid': mid,
+        'right': right,
+        'nums[mid]': nums[mid],
+        'nums[right]': nums[right]
+      },
+      operations: { iterations },
+      phase: 'Binary Search',
+      insight: `Search space: [${left}...${right}], checking index ${mid}`
+    });
+
+    if (nums[mid] > nums[right]) {
+      // Minimum is in right half
+      left = mid + 1;
+
+      steps.push({
+        array: nums,
+        left,
+        right,
+        mid,
+        comparing: [left, mid, right],
+        moveRight: true,
+        description: `${nums[mid]} > ${nums[right]}: search right half`,
+        variables: { 'new left': left },
+        operations: { iterations },
+        phase: 'Search Right',
+        insight: `Rotation point (minimum) must be in [${left}...${right}]`
+      });
+    } else {
+      // Minimum is in left half (including mid)
+      right = mid;
+
+      steps.push({
+        array: nums,
+        left,
+        right,
+        mid,
+        comparing: [left, mid, right],
+        moveLeft: true,
+        description: `${nums[mid]} ≤ ${nums[right]}: search left half`,
+        variables: { 'new right': right },
+        operations: { iterations },
+        phase: 'Search Left',
+        insight: `Minimum could be at mid or to its left`
+      });
+    }
+  }
+
+  steps.push({
+    array: nums,
+    left,
+    right,
+    mid: left,
+    comparing: [left],
+    minimum: nums[left],
+    found: true,
+    description: `✓ Minimum: ${nums[left]} at index ${left}`,
+    variables: {
+      'minimum': nums[left],
+      'index': left
+    },
+    operations: { iterations },
+    phase: 'Complete',
+    insight: `Found minimum ${nums[left]}. Time: O(log n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateReverseListSteps = (arr) => {
+  const steps = [{
+    list: [...arr],
+    prev: null,
+    current: 0,
+    next: null,
+    description: `Reversing linked list [${arr.join(' → ')}]`,
+    variables: { 'list length': arr.length },
+    operations: { 'pointer updates': 0 },
+    phase: 'Initialize',
+    insight: 'Use three pointers: prev (null), current (head), and next. Reverse each pointer one by one.'
+  }];
+
+  if (arr.length === 0) {
+    steps.push({
+      list: [],
+      prev: null,
+      current: null,
+      next: null,
+      description: 'Empty list - nothing to reverse',
+      variables: {},
+      operations: { 'pointer updates': 0 },
+      phase: 'Complete',
+      insight: 'Empty list is already reversed!'
+    });
+    return steps;
+  }
+
+  let prev = null;
+  let current = 0;
+  let pointerUpdates = 0;
+
+  steps.push({
+    list: [...arr],
+    prev,
+    current,
+    next: current < arr.length - 1 ? current + 1 : null,
+    description: `Start with prev=null, current=node 0 (${arr[0]})`,
+    variables: { prev: 'null', current: 0, 'value': arr[0] },
+    operations: { 'pointer updates': 0 },
+    phase: 'Setup',
+    insight: 'Initialize three pointers to iterate through the list'
+  });
+
+  while (current < arr.length) {
+    const next = current < arr.length - 1 ? current + 1 : null;
+
+    steps.push({
+      list: [...arr],
+      prev,
+      current,
+      next,
+      description: `Save next pointer: ${next !== null ? `node ${next}` : 'null'}`,
+      variables: {
+        prev: prev !== null ? prev : 'null',
+        current,
+        next: next !== null ? next : 'null'
+      },
+      operations: { 'pointer updates': pointerUpdates },
+      phase: `Reversing (${current + 1}/${arr.length})`,
+      insight: 'Save reference to next node before we change the current node\'s pointer'
+    });
+
+    // Reverse the pointer
+    pointerUpdates++;
+
+    steps.push({
+      list: [...arr],
+      prev,
+      current,
+      next,
+      reversing: true,
+      description: `Reverse pointer: node ${current} now points to ${prev !== null ? `node ${prev}` : 'null'}`,
+      variables: {
+        'reversing': `${current} → ${prev !== null ? prev : 'null'}`,
+        'old direction': `${current} → ${next !== null ? next : 'null'}`
+      },
+      operations: { 'pointer updates': pointerUpdates },
+      phase: `Reversing (${current + 1}/${arr.length})`,
+      insight: `Changed node ${current}'s next pointer from ${next !== null ? next : 'null'} to ${prev !== null ? prev : 'null'}`
+    });
+
+    // Move pointers forward
+    prev = current;
+    current = next !== null ? next : arr.length; // Move past end to exit loop
+
+    if (current < arr.length) {
+      steps.push({
+        list: [...arr],
+        prev,
+        current,
+        next: current < arr.length - 1 ? current + 1 : null,
+        description: `Advance pointers: prev=${prev}, current=${current}`,
+        variables: {
+          'new prev': prev,
+          'new current': current,
+          'value': arr[current]
+        },
+        operations: { 'pointer updates': pointerUpdates },
+        phase: `Advancing (${current + 1}/${arr.length})`,
+        insight: 'Move all pointers one step forward to process next node'
+      });
+    }
+  }
+
+  steps.push({
+    list: [...arr].reverse(),
+    prev,
+    current: null,
+    next: null,
+    found: true,
+    description: `✓ Reversed! New head is node ${prev} (${arr[prev]})`,
+    variables: {
+      'new head': prev,
+      'reversed list': arr.map((_, i) => arr[arr.length - 1 - i]).join(' → ')
+    },
+    operations: { 'pointer updates': pointerUpdates },
+    phase: 'Complete',
+    insight: `List reversed with ${pointerUpdates} pointer updates. Time: O(n), Space: O(1)`
+  });
+
+  return steps;
+};
+
+const generateTopKFrequentSteps = (nums, k) => {
+  const steps = [{
+    array: nums,
+    frequencyMap: {},
+    buckets: [],
+    result: [],
+    k,
+    description: `Finding top ${k} frequent elements in [${nums.join(', ')}]`,
+    variables: { 'array length': nums.length, k },
+    operations: { 'map operations': 0 },
+    phase: 'Initialize',
+    insight: 'Use hash map to count frequencies, then bucket sort to find top k elements efficiently.'
+  }];
+
+  // Count frequencies
+  const frequencyMap = {};
+  let mapOps = 0;
+
+  for (let i = 0; i < nums.length; i++) {
+    const num = nums[i];
+    frequencyMap[num] = (frequencyMap[num] || 0) + 1;
+    mapOps++;
+
+    steps.push({
+      array: nums,
+      frequencyMap: { ...frequencyMap },
+      buckets: [],
+      result: [],
+      currentIndex: i,
+      k,
+      description: `Count ${num}: frequency = ${frequencyMap[num]}`,
+      variables: {
+        'current': num,
+        'frequency': frequencyMap[num],
+        'map size': Object.keys(frequencyMap).length
+      },
+      operations: { 'map operations': mapOps },
+      phase: `Counting (${i + 1}/${nums.length})`,
+      insight: `${num} appears ${frequencyMap[num]} time(s) so far`
+    });
+  }
+
+  steps.push({
+    array: nums,
+    frequencyMap: { ...frequencyMap },
+    buckets: [],
+    result: [],
+    k,
+    description: `Frequency map complete: ${Object.entries(frequencyMap).map(([k, v]) => `${k}:${v}`).join(', ')}`,
+    variables: { 'unique elements': Object.keys(frequencyMap).length },
+    operations: { 'map operations': mapOps },
+    phase: 'Counting Complete',
+    insight: 'Now create buckets where bucket[freq] contains all elements with that frequency'
+  });
+
+  // Bucket sort: bucket[i] contains elements with frequency i
+  const buckets = Array.from({ length: nums.length + 1 }, () => []);
+
+  for (const [num, freq] of Object.entries(frequencyMap)) {
+    buckets[freq].push(parseInt(num));
+    mapOps++;
+
+    steps.push({
+      array: nums,
+      frequencyMap: { ...frequencyMap },
+      buckets: buckets.map(b => [...b]),
+      result: [],
+      k,
+      description: `Place ${num} in bucket[${freq}]`,
+      variables: {
+        'number': num,
+        'frequency': freq,
+        'bucket': buckets[freq].join(',')
+      },
+      operations: { 'map operations': mapOps },
+      phase: 'Building Buckets',
+      insight: `Elements with frequency ${freq}: [${buckets[freq].join(', ')}]`
+    });
+  }
+
+  steps.push({
+    array: nums,
+    frequencyMap: { ...frequencyMap },
+    buckets: buckets.map(b => [...b]),
+    result: [],
+    k,
+    description: `Buckets created. Now collect top ${k} elements from highest frequencies`,
+    variables: { k },
+    operations: { 'map operations': mapOps },
+    phase: 'Buckets Complete',
+    insight: 'Traverse buckets from high to low frequency to get most frequent elements'
+  });
+
+  // Collect top k elements
+  const result = [];
+
+  for (let freq = buckets.length - 1; freq >= 0 && result.length < k; freq--) {
+    if (buckets[freq].length > 0) {
+      for (const num of buckets[freq]) {
+        if (result.length < k) {
+          result.push(num);
+          mapOps++;
+
+          steps.push({
+            array: nums,
+            frequencyMap: { ...frequencyMap },
+            buckets: buckets.map(b => [...b]),
+            result: [...result],
+            k,
+            currentFreq: freq,
+            description: `Add ${num} (frequency ${freq}) to result`,
+            variables: {
+              'added': num,
+              'frequency': freq,
+              'result size': result.length,
+              'remaining': k - result.length
+            },
+            operations: { 'map operations': mapOps },
+            phase: `Collecting (${result.length}/${k})`,
+            insight: `${num} appears ${freq} times. Added to top ${k} list.`
+          });
+        }
+      }
+    }
+  }
+
+  steps.push({
+    array: nums,
+    frequencyMap: { ...frequencyMap },
+    buckets: buckets.map(b => [...b]),
+    result: [...result],
+    k,
+    found: true,
+    description: `✓ Top ${k} frequent: [${result.join(', ')}]`,
+    variables: {
+      'result': result.join(', '),
+      'frequencies': result.map(n => `${n}:${frequencyMap[n]}`).join(', ')
+    },
+    operations: { 'map operations': mapOps },
+    phase: 'Complete',
+    insight: `Found top ${k} elements. Time: O(n), Space: O(n) using bucket sort`
+  });
+
+  return steps;
+};
+
+const generateLongestPalindromeSteps = (str) => {
+  const steps = [{
+    string: str,
+    center: -1,
+    left: -1,
+    right: -1,
+    longestStart: -1,
+    longestEnd: -1,
+    longestLength: 0,
+    description: `Finding longest palindromic substring in "${str}"`,
+    variables: { 'string length': str.length },
+    operations: { 'expansions': 0 },
+    phase: 'Initialize',
+    insight: 'Expand around each possible center. Check both odd-length (single center) and even-length (two centers) palindromes.'
+  }];
+
+  if (str.length === 0) {
+    steps.push({
+      string: '',
+      center: -1,
+      left: -1,
+      right: -1,
+      longestStart: -1,
+      longestEnd: -1,
+      longestLength: 0,
+      description: 'Empty string',
+      variables: {},
+      operations: { 'expansions': 0 },
+      phase: 'Complete',
+      insight: 'Empty string has no palindromes'
+    });
+    return steps;
+  }
+
+  let longestStart = 0;
+  let longestEnd = 0;
+  let longestLength = 1;
+  let expansions = 0;
+
+  const expandAroundCenter = (left, right, isEven) => {
+    const startLeft = left;
+
+    steps.push({
+      string: str,
+      center: isEven ? -1 : left,
+      left,
+      right,
+      longestStart,
+      longestEnd,
+      longestLength,
+      description: isEven ?
+        `Try even-length palindrome centered between '${str[left]}' and '${str[right]}'` :
+        `Try odd-length palindrome centered at '${str[left]}'`,
+      variables: {
+        'center type': isEven ? 'even (two chars)' : 'odd (single char)',
+        'left': left,
+        'right': right
+      },
+      operations: { expansions },
+      phase: 'New Center',
+      insight: isEven ?
+        `Check if characters at ${left} and ${right} match` :
+        `Expand outward from center character '${str[left]}'`
+    });
+
+    while (left >= 0 && right < str.length && str[left] === str[right]) {
+      expansions++;
+
+      steps.push({
+        string: str,
+        center: isEven ? -1 : startLeft,
+        left,
+        right,
+        longestStart,
+        longestEnd,
+        longestLength,
+        expanding: true,
+        match: true,
+        description: `✓ Match! '${str[left]}' === '${str[right]}', expand outward`,
+        variables: {
+          'left char': str[left],
+          'right char': str[right],
+          'palindrome': str.substring(left, right + 1),
+          'length': right - left + 1
+        },
+        operations: { expansions },
+        phase: 'Expanding',
+        insight: `Found palindrome "${str.substring(left, right + 1)}" of length ${right - left + 1}`
+      });
+
+      left--;
+      right++;
+    }
+
+    // Revert to last valid palindrome
+    left++;
+    right--;
+
+    if (left <= right) {
+      const length = right - left + 1;
+
+      if (length > longestLength) {
+        longestLength = length;
+        longestStart = left;
+        longestEnd = right;
+
+        steps.push({
+          string: str,
+          center: isEven ? -1 : startLeft,
+          left,
+          right,
+          longestStart,
+          longestEnd,
+          longestLength,
+          found: true,
+          description: `✓ New longest! "${str.substring(left, right + 1)}" (length ${length})`,
+          variables: {
+            'palindrome': str.substring(left, right + 1),
+            'length': length,
+            'start': left,
+            'end': right
+          },
+          operations: { expansions },
+          phase: 'New Longest',
+          insight: `Found longer palindrome: "${str.substring(left, right + 1)}"`
+        });
+      } else {
+        steps.push({
+          string: str,
+          center: isEven ? -1 : startLeft,
+          left,
+          right,
+          longestStart,
+          longestEnd,
+          longestLength,
+          description: `Palindrome "${str.substring(left, right + 1)}" (length ${length}) not longer than current max`,
+          variables: {
+            'palindrome': str.substring(left, right + 1),
+            'length': length,
+            'current max': longestLength
+          },
+          operations: { expansions },
+          phase: 'Not Longest',
+          insight: `${length} ≤ ${longestLength}, current longest remains`
+        });
+      }
+    }
+  };
+
+  // Try each possible center
+  for (let i = 0; i < str.length; i++) {
+    // Odd length palindromes (single character center)
+    expandAroundCenter(i, i, false);
+
+    // Even length palindromes (two character center)
+    if (i < str.length - 1) {
+      expandAroundCenter(i, i + 1, true);
+    }
+  }
+
+  steps.push({
+    string: str,
+    center: -1,
+    left: longestStart,
+    right: longestEnd,
+    longestStart,
+    longestEnd,
+    longestLength,
+    found: true,
+    description: `✓ Longest palindrome: "${str.substring(longestStart, longestEnd + 1)}"`,
+    variables: {
+      'result': str.substring(longestStart, longestEnd + 1),
+      'length': longestLength,
+      'start': longestStart,
+      'end': longestEnd
+    },
+    operations: { expansions },
+    phase: 'Complete',
+    insight: `Found longest palindrome "${str.substring(longestStart, longestEnd + 1)}" with ${expansions} expansions. Time: O(n²), Space: O(1)`
+  });
+
+  return steps;
+};
+
 // Main Component
-const AlgorithmVisualizer = ({ onStartVisualization }) => {
-  const [algorithm, setAlgorithm] = useState('bubble');
+const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => {
+  const [algorithm, setAlgorithm] = useState(preselectedAlgorithm || 'bubble');
   const [input, setInput] = useState('64, 34, 25, 12, 22, 11, 90');
   const [speed, setSpeed] = useState(500);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -2667,6 +4903,12 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
   const [userCode, setUserCode] = useState("");
   const [detected, setDetected] = useState(null);
 
+  // Update algorithm when preselectedAlgorithm prop changes (from AI detector)
+  useEffect(() => {
+    if (preselectedAlgorithm) {
+      setAlgorithm(preselectedAlgorithm);
+    }
+  }, [preselectedAlgorithm]);
 
   const handleDetectAlgorithm = () => {
     const result = detectAlgorithm(userCode);
@@ -2763,6 +5005,68 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
         return [parseInt(parts[0]), parseInt(parts[1])];
       }).filter(interval => !isNaN(interval[0]) && !isNaN(interval[1]));
       newSteps = generateMergeIntervalsSteps(intervals);
+    } else if (algorithm === 'containsduplicate') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateContainsDuplicateSteps(arr);
+    } else if (algorithm === 'besttimestock') {
+      const prices = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateBestTimeStockSteps(prices);
+    } else if (algorithm === 'validanagram') {
+      // Parse two strings separated by comma or use input and targetNode
+      const strings = input.includes(',') ? input.split(',').map(s => s.trim()) : [input.trim(), targetNode.trim()];
+      newSteps = generateValidAnagramSteps(strings[0] || '', strings[1] || '');
+    } else if (algorithm === 'validpalindrome') {
+      const str = input.trim();
+      newSteps = generateValidPalindromeSteps(str);
+    } else if (algorithm === 'containermostwater') {
+      const heights = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateContainerMostWaterSteps(heights);
+    } else if (algorithm === 'threesum') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateThreeSumSteps(nums);
+    } else if (algorithm === 'houserobber') {
+      const houses = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateHouseRobberSteps(houses);
+    } else if (algorithm === 'longestincreasing') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateLongestIncreasingSubsequenceSteps(nums);
+    } else if (algorithm === 'uniquepaths') {
+      // Parse m,n from input like "3,7"
+      const dims = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const m = dims[0] || 3;
+      const n = dims[1] || 7;
+      newSteps = generateUniquePathsSteps(m, n);
+    } else if (algorithm === 'jumpgame') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateJumpGameSteps(nums);
+    } else if (algorithm === 'decodeways') {
+      const str = input.trim();
+      newSteps = generateDecodeWaysSteps(str);
+    } else if (algorithm === 'wordbreak') {
+      // Parse string and dictionary like "leetcode|leet,code"
+      const parts = input.split('|');
+      const str = parts[0]?.trim() || '';
+      const dict = parts[1]?.split(',').map(s => s.trim()) || [];
+      newSteps = generateWordBreakSteps(str, dict);
+    } else if (algorithm === 'maxproductsubarray') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateMaxProductSubarraySteps(nums);
+    } else if (algorithm === 'findminrotated') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateFindMinRotatedSteps(nums);
+    } else if (algorithm === 'missingnumber') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateMissingNumberSteps(nums);
+    } else if (algorithm === 'reverselist') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateReverseListSteps(arr);
+    } else if (algorithm === 'topkfrequent') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const k = parseInt(targetNode) || 2;
+      newSteps = generateTopKFrequentSteps(nums, k);
+    } else if (algorithm === 'longestpalindrome') {
+      const str = input.trim();
+      newSteps = generateLongestPalindromeSteps(str);
     }
 
     // If onStartVisualization prop is provided, navigate to new visualizer
@@ -2770,20 +5074,26 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
       // Prepare input data to display
       let inputData = {};
 
-      if (['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'bst-insert', 'maxsubarray', 'productexceptself'].includes(algorithm)) {
+      if (['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'bst-insert', 'maxsubarray', 'productexceptself', 'containsduplicate', 'besttimestock', 'containermostwater', 'threesum', 'houserobber', 'longestincreasing', 'jumpgame', 'maxproductsubarray', 'findminrotated', 'missingnumber', 'reverselist'].includes(algorithm)) {
         inputData = { type: 'array', value: input };
-      } else if (['binary', 'linear', 'bst-search', 'twosum'].includes(algorithm)) {
+      } else if (['binary', 'linear', 'bst-search', 'twosum', 'topkfrequent'].includes(algorithm)) {
         inputData = { type: 'array-search', array: input, target: targetNode };
       } else if (['bfs', 'dfs', 'dijkstra'].includes(algorithm)) {
         inputData = { type: 'graph', edges: graphInput, startNode };
       } else if (['recursion', 'fibonacci', 'fibonacci-dp', 'tower-hanoi'].includes(algorithm)) {
         inputData = { type: 'number', value: startNode };
-      } else if (['validparentheses', 'longestsubstring'].includes(algorithm)) {
+      } else if (['validparentheses', 'longestsubstring', 'validpalindrome', 'decodeways', 'longestpalindrome'].includes(algorithm)) {
         inputData = { type: 'string', value: input };
       } else if (algorithm === 'coinchange') {
         inputData = { type: 'array-target', array: input, target: targetNode, label: 'Coins / Amount' };
+      } else if (algorithm === 'validanagram') {
+        inputData = { type: 'two-strings', value: input, target: targetNode };
       } else if (algorithm === 'mergeintervals') {
         inputData = { type: 'intervals', value: input };
+      } else if (algorithm === 'uniquepaths') {
+        inputData = { type: 'grid-dimensions', value: input };
+      } else if (algorithm === 'wordbreak') {
+        inputData = { type: 'string-dictionary', value: input };
       }
 
       onStartVisualization({
@@ -3364,27 +5674,28 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
   const blind75Mapping = {
     // Array
     'two-sum': { algo: 'twosum', category: 'Array', available: true },
-    'best-time-stock': { algo: 'maxsubarray', category: 'Array', available: false, note: 'Similar pattern' },
-    'contains-duplicate': { algo: 'twosum', category: 'Array', available: false, note: 'Hash set pattern' },
+    'best-time-stock': { algo: 'besttimestock', category: 'Array', available: true },
+    'contains-duplicate': { algo: 'containsduplicate', category: 'Array', available: true },
     'product-except-self': { algo: 'productexceptself', category: 'Array', available: true },
     'maximum-subarray': { algo: 'maxsubarray', category: 'Array', available: true },
-    'maximum-product-subarray': { algo: 'maxsubarray', category: 'Array', available: false, note: 'Similar DP' },
-    'find-min-rotated': { algo: 'binary', category: 'Array', available: false, note: 'Modified binary search' },
+    'maximum-product-subarray': { algo: 'maxproductsubarray', category: 'Array', available: true },
+    'find-min-rotated': { algo: 'findminrotated', category: 'Array', available: true },
     'search-rotated': { algo: 'binary', category: 'Array', available: true },
-    '3sum': { algo: null, category: 'Array', available: false },
+    '3sum': { algo: 'threesum', category: 'Array', available: true },
+    'container-most-water': { algo: 'containermostwater', category: 'Array', available: true },
 
     // Dynamic Programming
     'climbing-stairs': { algo: 'fibonacci-dp', category: 'Dynamic Programming', available: true },
     'coin-change': { algo: 'coinchange', category: 'Dynamic Programming', available: true },
-    'longest-increasing-subsequence': { algo: null, category: 'Dynamic Programming', available: false },
+    'house-robber': { algo: 'houserobber', category: 'Dynamic Programming', available: true },
+    'house-robber-ii': { algo: 'houserobber', category: 'Dynamic Programming', available: false, note: 'Similar to House Robber' },
+    'longest-increasing-subsequence': { algo: 'longestincreasing', category: 'Dynamic Programming', available: true },
     'longest-common-subsequence': { algo: null, category: 'Dynamic Programming', available: false },
-    'word-break': { algo: null, category: 'Dynamic Programming', available: false },
+    'word-break': { algo: 'wordbreak', category: 'Dynamic Programming', available: true },
     'combination-sum-iv': { algo: null, category: 'Dynamic Programming', available: false },
-    'house-robber': { algo: null, category: 'Dynamic Programming', available: false },
-    'house-robber-ii': { algo: null, category: 'Dynamic Programming', available: false },
-    'decode-ways': { algo: null, category: 'Dynamic Programming', available: false },
-    'unique-paths': { algo: null, category: 'Dynamic Programming', available: false },
-    'jump-game': { algo: null, category: 'Dynamic Programming', available: false },
+    'decode-ways': { algo: 'decodeways', category: 'Dynamic Programming', available: true },
+    'unique-paths': { algo: 'uniquepaths', category: 'Dynamic Programming', available: true },
+    'jump-game': { algo: 'jumpgame', category: 'Dynamic Programming', available: true },
 
     // Graph
     'clone-graph': { algo: 'bfs', category: 'Graph', available: true },
@@ -3410,10 +5721,10 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
     // String
     'longest-substring': { algo: 'longestsubstring', category: 'String', available: true },
     'longest-repeating': { algo: null, category: 'String', available: false },
-    'valid-anagram': { algo: null, category: 'String', available: false },
-    'group-anagrams': { algo: null, category: 'String', available: false },
+    'valid-anagram': { algo: 'validanagram', category: 'String', available: true },
+    'group-anagrams': { algo: 'validanagram', category: 'String', available: false, note: 'Similar pattern' },
     'valid-parentheses': { algo: 'validparentheses', category: 'String', available: true },
-    'valid-palindrome': { algo: null, category: 'String', available: false },
+    'valid-palindrome': { algo: 'validpalindrome', category: 'String', available: true },
     'longest-palindrome': { algo: null, category: 'String', available: false },
     'palindromic-substrings': { algo: null, category: 'String', available: false },
 
@@ -3435,12 +5746,15 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
 
   const [selectedBlind75, setSelectedBlind75] = useState('');
 
-  const isArrayAlgorithm = ['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'binary', 'linear', 'bst-insert', 'bst-search', 'productexceptself'].includes(algorithm);
+  const isArrayAlgorithm = ['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'binary', 'linear', 'bst-insert', 'bst-search', 'productexceptself', 'containsduplicate', 'besttimestock', 'containermostwater', 'threesum', 'houserobber', 'longestincreasing', 'jumpgame', 'maxproductsubarray', 'findminrotated', 'missingnumber'].includes(algorithm);
   const isGraphAlgorithm = ['bfs', 'dfs', 'dijkstra'].includes(algorithm);
   const isRecursionAlgorithm = ['recursion', 'fibonacci', 'fibonacci-dp', 'tower-hanoi'].includes(algorithm);
-  const isStringAlgorithm = ['validparentheses', 'longestsubstring'].includes(algorithm);
+  const isStringAlgorithm = ['validparentheses', 'longestsubstring', 'validpalindrome', 'decodeways'].includes(algorithm);
   const isCoinChange = algorithm === 'coinchange';
+  const isValidAnagram = algorithm === 'validanagram';
   const isIntervalAlgorithm = algorithm === 'mergeintervals';
+  const isUniquePaths = algorithm === 'uniquepaths';
+  const isWordBreak = algorithm === 'wordbreak';
   const needsTarget = ['binary', 'linear', 'bst-search', 'twosum', 'coinchange'].includes(algorithm);
   const needsWeightedGraph = algorithm === 'dijkstra';
 
@@ -3476,10 +5790,18 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
             <optgroup label="String Algorithms">
               <option value="validparentheses">Valid Parentheses</option>
               <option value="longestsubstring">Longest Substring Without Repeating</option>
+              <option value="validanagram">Valid Anagram</option>
+              <option value="validpalindrome">Valid Palindrome</option>
             </optgroup>
             <optgroup label="Array Patterns">
+              <option value="containsduplicate">Contains Duplicate</option>
+              <option value="besttimestock">Best Time to Buy and Sell Stock</option>
               <option value="maxsubarray">Maximum Subarray (Kadane's)</option>
               <option value="productexceptself">Product of Array Except Self</option>
+              <option value="containermostwater">Container With Most Water</option>
+              <option value="threesum">3Sum</option>
+              <option value="findminrotated">Find Minimum in Rotated Sorted Array</option>
+              <option value="missingnumber">Missing Number</option>
             </optgroup>
             <optgroup label="Interval Algorithms">
               <option value="mergeintervals">Merge Intervals</option>
@@ -3501,6 +5823,13 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
             <optgroup label="Dynamic Programming">
               <option value="fibonacci-dp">Fibonacci (DP)</option>
               <option value="coinchange">Coin Change</option>
+              <option value="houserobber">House Robber</option>
+              <option value="longestincreasing">Longest Increasing Subsequence</option>
+              <option value="uniquepaths">Unique Paths</option>
+              <option value="jumpgame">Jump Game</option>
+              <option value="decodeways">Decode Ways</option>
+              <option value="wordbreak">Word Break</option>
+              <option value="maxproductsubarray">Maximum Product Subarray</option>
             </optgroup>
           </select>
         </div>
@@ -3515,19 +5844,12 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
         </div>
 
         {/* Blind 75 LeetCode Problems Selector */}
-        <div className="form-group" style={{
-          marginTop: '2rem',
-          padding: '1.5rem',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-        }}>
-          <label className="form-label" htmlFor="blind75-select" style={{ color: 'white', fontSize: '1.1rem', fontWeight: '600' }}>
-            🎯 Blind 75 LeetCode Problems
-          </label>
-          <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.875rem', marginBottom: '1rem' }}>
-            Select a problem to see its visualizer
-          </p>
+        <div className="blind75-selector">
+          <div className="blind75-header">
+            <h3 className="blind75-title">🎯 Blind 75 LeetCode Problems</h3>
+            <p className="blind75-subtitle">Select a problem to see its visualizer</p>
+          </div>
+
           <select
             id="blind75-select"
             value={selectedBlind75}
@@ -3547,39 +5869,35 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
                 }
               }
             }}
-            className="input-field"
-            style={{
-              backgroundColor: 'white',
-              border: '2px solid rgba(255,255,255,0.3)',
-              fontSize: '0.95rem'
-            }}
+            className="input-field blind75-select"
           >
             <option value="">-- Select a Blind 75 Problem --</option>
 
-            <optgroup label="Array (9 problems)">
+            <optgroup label="Array (10 problems)">
               <option value="two-sum">✅ Two Sum</option>
-              <option value="best-time-stock">🔧 Best Time to Buy and Sell Stock</option>
-              <option value="contains-duplicate">📝 Contains Duplicate</option>
+              <option value="best-time-stock">✅ Best Time to Buy and Sell Stock</option>
+              <option value="contains-duplicate">✅ Contains Duplicate</option>
               <option value="product-except-self">✅ Product of Array Except Self</option>
               <option value="maximum-subarray">✅ Maximum Subarray (Kadane's)</option>
-              <option value="maximum-product-subarray">📝 Maximum Product Subarray</option>
-              <option value="find-min-rotated">🔧 Find Minimum in Rotated Sorted Array</option>
+              <option value="maximum-product-subarray">✅ Maximum Product Subarray</option>
+              <option value="find-min-rotated">✅ Find Minimum in Rotated Sorted Array</option>
               <option value="search-rotated">✅ Search in Rotated Sorted Array</option>
-              <option value="3sum">📝 3Sum</option>
+              <option value="3sum">✅ 3Sum</option>
+              <option value="container-most-water">✅ Container With Most Water</option>
             </optgroup>
 
             <optgroup label="Dynamic Programming (11 problems)">
               <option value="climbing-stairs">✅ Climbing Stairs</option>
               <option value="coin-change">✅ Coin Change</option>
-              <option value="longest-increasing-subsequence">📝 Longest Increasing Subsequence</option>
+              <option value="longest-increasing-subsequence">✅ Longest Increasing Subsequence</option>
               <option value="longest-common-subsequence">📝 Longest Common Subsequence</option>
-              <option value="word-break">📝 Word Break</option>
+              <option value="word-break">✅ Word Break</option>
               <option value="combination-sum-iv">📝 Combination Sum IV</option>
-              <option value="house-robber">📝 House Robber</option>
-              <option value="house-robber-ii">📝 House Robber II</option>
-              <option value="decode-ways">📝 Decode Ways</option>
-              <option value="unique-paths">📝 Unique Paths</option>
-              <option value="jump-game">📝 Jump Game</option>
+              <option value="house-robber">✅ House Robber</option>
+              <option value="house-robber-ii">🔧 House Robber II</option>
+              <option value="decode-ways">✅ Decode Ways</option>
+              <option value="unique-paths">✅ Unique Paths</option>
+              <option value="jump-game">✅ Jump Game</option>
             </optgroup>
 
             <optgroup label="Graph (6 problems)">
@@ -3608,10 +5926,10 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
             <optgroup label="String (8 problems)">
               <option value="longest-substring">✅ Longest Substring Without Repeating Characters</option>
               <option value="longest-repeating">📝 Longest Repeating Character Replacement</option>
-              <option value="valid-anagram">📝 Valid Anagram</option>
-              <option value="group-anagrams">📝 Group Anagrams</option>
+              <option value="valid-anagram">✅ Valid Anagram</option>
+              <option value="group-anagrams">🔧 Group Anagrams</option>
               <option value="valid-parentheses">✅ Valid Parentheses</option>
-              <option value="valid-palindrome">📝 Valid Palindrome</option>
+              <option value="valid-palindrome">✅ Valid Palindrome</option>
               <option value="longest-palindrome">📝 Longest Palindromic Substring</option>
               <option value="palindromic-substrings">📝 Palindromic Substrings</option>
             </optgroup>
@@ -3635,25 +5953,19 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
           </select>
 
           {selectedBlind75 && blind75Mapping[selectedBlind75] && (
-            <div style={{
-              marginTop: '1rem',
-              padding: '1rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              borderRadius: '8px',
-              fontSize: '0.875rem'
-            }}>
+            <div className="blind75-status">
               {blind75Mapping[selectedBlind75].available ? (
-                <div style={{ color: '#059669' }}>
+                <div className="status-available">
                   <strong>✅ Visualizer Available!</strong>
-                  <p style={{ margin: '0.5rem 0 0 0', color: '#374151' }}>
+                  <p>
                     Using: <strong>{algorithmSummaries[blind75Mapping[selectedBlind75].algo]?.title}</strong>
                     {blind75Mapping[selectedBlind75].note && ` (${blind75Mapping[selectedBlind75].note})`}
                   </p>
                 </div>
               ) : (
-                <div style={{ color: '#dc2626' }}>
+                <div className="status-unavailable">
                   <strong>📝 Coming Soon!</strong>
-                  <p style={{ margin: '0.5rem 0 0 0', color: '#374151' }}>
+                  <p>
                     This visualizer is not yet implemented.
                     {blind75Mapping[selectedBlind75].note && ` Note: ${blind75Mapping[selectedBlind75].note}`}
                   </p>
@@ -3662,14 +5974,7 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
             </div>
           )}
 
-          <div style={{
-            marginTop: '1rem',
-            padding: '0.75rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '6px',
-            fontSize: '0.75rem',
-            color: 'rgba(255,255,255,0.9)'
-          }}>
+          <div className="blind75-legend">
             <strong>Legend:</strong> ✅ Available | 🔧 Similar Pattern | 📝 To Be Implemented
           </div>
         </div>
@@ -3806,6 +6111,67 @@ const AlgorithmVisualizer = ({ onStartVisualization }) => {
               onChange={(e) => setInput(e.target.value)}
               className="input-field"
               placeholder="e.g., 1-3, 2-6, 8-10, 15-18"
+            />
+          </div>
+        )}
+
+        {isValidAnagram && (
+          <>
+            <div className="form-group">
+              <label className="form-label" htmlFor="string1-input">
+                First String
+              </label>
+              <input
+                id="string1-input"
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="input-field"
+                placeholder="e.g., listen"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="string2-input">Second String</label>
+              <input
+                id="string2-input"
+                type="text"
+                value={targetNode}
+                onChange={(e) => setTargetNode(e.target.value)}
+                className="input-field"
+                placeholder="e.g., silent"
+              />
+            </div>
+          </>
+        )}
+
+        {isUniquePaths && (
+          <div className="form-group">
+            <label className="form-label" htmlFor="grid-input">
+              Grid Dimensions (format: m,n for m×n grid)
+            </label>
+            <input
+              id="grid-input"
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="input-field"
+              placeholder="e.g., 3,7"
+            />
+          </div>
+        )}
+
+        {isWordBreak && (
+          <div className="form-group">
+            <label className="form-label" htmlFor="wordbreak-input">
+              String | Dictionary (format: string|word1,word2,word3)
+            </label>
+            <input
+              id="wordbreak-input"
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="input-field"
+              placeholder="e.g., leetcode|leet,code"
             />
           </div>
         )}

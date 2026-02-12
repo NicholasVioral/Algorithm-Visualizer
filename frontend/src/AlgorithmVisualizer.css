@@ -1128,3 +1128,122 @@ body {
     gap: 0.5rem;
   }
 }
+
+/* Blind 75 Selector Styling */
+.blind75-selector {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #0c4a6e 100%);
+  color: white;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow:
+    0 8px 32px rgba(30, 64, 175, 0.4),
+    0 0 0 1px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.blind75-selector::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.blind75-selector:hover::before {
+  left: 100%;
+}
+
+.blind75-selector:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 40px rgba(30, 64, 175, 0.5),
+    0 0 0 1px rgba(59, 130, 246, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.blind75-header {
+  margin-bottom: 1rem;
+}
+
+.blind75-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.blind75-subtitle {
+  font-size: 0.938rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.blind75-select {
+  margin-bottom: 1rem;
+}
+
+.blind75-status {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(30, 58, 138, 0.4);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  backdrop-filter: blur(5px);
+}
+
+.status-available {
+  color: #6ee7b7;
+}
+
+.status-available strong {
+  color: #6ee7b7;
+  font-size: 1rem;
+}
+
+.status-available p {
+  margin: 0.5rem 0 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+}
+
+.status-unavailable {
+  color: #fca5a5;
+}
+
+.status-unavailable strong {
+  color: #fca5a5;
+  font-size: 1rem;
+}
+
+.status-unavailable p {
+  margin: 0.5rem 0 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+}
+
+.blind75-legend {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(30, 58, 138, 0.3);
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.blind75-legend strong {
+  color: #60a5fa;
+  margin-right: 0.5rem;
+}
