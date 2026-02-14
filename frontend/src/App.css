@@ -1,7 +1,46 @@
+/* ============================================
+   DARK MYSTICAL GLASS-MORPHISM THEME
+   Inspired by "Rise of the Merlin" aesthetic
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
 .app-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: radial-gradient(ellipse at 50% 30%, #1a1f3a 0%, #0d1117 40%, #080b12 100%);
   padding: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Snowfall / particle effect */
+.app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(2px 2px at 15% 70%, rgba(200,210,230,0.06) 0%, transparent 100%),
+    radial-gradient(2px 2px at 45% 80%, rgba(200,210,230,0.05) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 90%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 45%, rgba(255,255,255,0.07) 0%, transparent 100%);
+  animation: snowDrift 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes snowDrift {
+  0%   { transform: translateY(0) translateX(0); }
+  50%  { transform: translateY(50vh) translateX(10px); }
+  100% { transform: translateY(100vh) translateX(-10px); }
 }
 
 .view-toggle {
@@ -11,34 +50,44 @@
   display: flex;
   gap: 1rem;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .toggle-btn {
   flex: 1;
   max-width: 300px;
   padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  color: white;
-  font-size: 1rem;
+  color: rgba(200, 210, 230, 0.6);
+  font-family: 'Cinzel', 'Inter', serif;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.4s ease;
+  letter-spacing: 0.5px;
 }
 
 .toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(200, 210, 230, 0.9);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .toggle-btn.active {
-  background: white;
-  color: #667eea;
-  border-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(220, 225, 240, 0.95);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 30px rgba(140, 150, 180, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 @media (max-width: 768px) {
