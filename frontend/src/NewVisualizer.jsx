@@ -8,7 +8,8 @@ const NewVisualizer = ({ data, onBack }) => {
   // Use data from props
   const steps = data?.steps || [];
   const algorithmName = data?.algorithmName || 'Algorithm';
-  const algorithm = data?.algorithm || 'bubble';
+  // algorithm kept for future rendering switches
+  const _algorithm = data?.algorithm || 'bubble'; void _algorithm;
 
   useEffect(() => {
     let interval;
@@ -196,7 +197,6 @@ const NewVisualizer = ({ data, onBack }) => {
                 {currentState.array.map((value, index) => {
                   const isComparing = currentState.comparing && currentState.comparing.includes(index);
                   const isFirst = currentState.comparing && currentState.comparing[0] === index;
-                  const isSecond = currentState.comparing && currentState.comparing[1] === index;
 
                   // Binary Search pointers
                   const isLeft = currentState.left !== undefined && currentState.left === index;
@@ -1009,6 +1009,234 @@ const NewVisualizer = ({ data, onBack }) => {
               )}
             </div>
           )}
+
+          {/* Linked List Visualization (Reverse List, Detect Cycle, Merge Two Lists) */}
+          {currentState.list !== undefined && !currentState.array && !currentState.string && (
+            <div className="linked-list-display">
+              <h2>🔗 Linked List</h2>
+              <div className="ll-nodes">
+                {currentState.list.map((val, idx) => {
+                  const isSlow = currentState.slow === idx;
+                  const isFast = currentState.fast === idx;
+                  const isCurrent = currentState.current === idx;
+                  const isPrev = currentState.prev === idx;
+                  const isNext = currentState.next === idx;
+                  let nodeClass = 'll-node';
+                  if (isSlow && isFast) nodeClass += ' ll-meeting';
+                  else if (isSlow) nodeClass += ' ll-slow';
+                  else if (isFast) nodeClass += ' ll-fast';
+                  else if (isCurrent) nodeClass += ' ll-current';
+                  else if (isPrev) nodeClass += ' ll-prev';
+                  else if (isNext) nodeClass += ' ll-next';
+                  const label = isSlow && isFast ? 'SLOW+FAST' : isSlow ? 'SLOW' : isFast ? 'FAST' : isCurrent ? 'CUR' : isPrev ? 'PREV' : isNext ? 'NEXT' : '';
+                  return (
+                    <React.Fragment key={idx}>
+                      <div className={nodeClass}>
+                        {label && <div className="ll-label">{label}</div>}
+                        <div className="ll-value">{val}</div>
+                        <div className="ll-index">[{idx}]</div>
+                      </div>
+                      {idx < currentState.list.length - 1 && (
+                        <div className={`ll-arrow ${currentState.cycleAt === idx + 1 ? 'll-arrow-cycle' : ''}`}>→</div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+                {currentState.cycleAt !== null && currentState.cycleAt !== undefined && (
+                  <div className="ll-cycle-label">↩ cycle to [{currentState.cycleAt}]</div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Merge Two Sorted Lists */}
+          {currentState.list1 !== undefined && currentState.list2 !== undefined && (
+            <div className="linked-list-display">
+              <h2>🔗 Merge Two Sorted Lists</h2>
+              <div className="ll-merge-row">
+                <div className="ll-merge-label">List 1:</div>
+                <div className="ll-nodes">
+                  {currentState.list1.map((val, idx) => (
+                    <React.Fragment key={idx}>
+                      <div className={`ll-node ${idx === currentState.p1 ? 'll-current' : idx < currentState.p1 ? 'll-done' : ''}`}>
+                        {idx === currentState.p1 && <div className="ll-label">p1</div>}
+                        <div className="ll-value">{val}</div>
+                      </div>
+                      {idx < currentState.list1.length - 1 && <div className="ll-arrow">→</div>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+              <div className="ll-merge-row">
+                <div className="ll-merge-label">List 2:</div>
+                <div className="ll-nodes">
+                  {currentState.list2.map((val, idx) => (
+                    <React.Fragment key={idx}>
+                      <div className={`ll-node ${idx === currentState.p2 ? 'll-current' : idx < currentState.p2 ? 'll-done' : ''}`}>
+                        {idx === currentState.p2 && <div className="ll-label">p2</div>}
+                        <div className="ll-value">{val}</div>
+                      </div>
+                      {idx < currentState.list2.length - 1 && <div className="ll-arrow">→</div>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+              {currentState.merged && currentState.merged.length > 0 && (
+                <div className="ll-merge-row ll-merged-row">
+                  <div className="ll-merge-label">Merged:</div>
+                  <div className="ll-nodes">
+                    {currentState.merged.map((val, idx) => (
+                      <React.Fragment key={idx}>
+                        <div className="ll-node ll-done">
+                          <div className="ll-value">{val}</div>
+                        </div>
+                        {idx < currentState.merged.length - 1 && <div className="ll-arrow">→</div>}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* LCS 2D DP Table */}
+          {currentState.dp && currentState.text1 !== undefined && (
+            <div className="lcs-display">
+              <h2>📊 LCS DP Table</h2>
+              <div className="lcs-strings">
+                <span className="lcs-string-label">text1: <strong>"{currentState.text1}"</strong></span>
+                <span className="lcs-string-label">text2: <strong>"{currentState.text2}"</strong></span>
+              </div>
+              <div className="lcs-table-wrapper">
+                <table className="lcs-table">
+                  <thead>
+                    <tr>
+                      <th className="lcs-header-cell"></th>
+                      <th className="lcs-header-cell">""</th>
+                      {currentState.text2.split('').map((c, j) => (
+                        <th key={j} className={`lcs-header-cell ${currentState.col === j + 1 ? 'lcs-active-col' : ''}`}>{c}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentState.dp.map((row, i) => (
+                      <tr key={i}>
+                        <th className={`lcs-header-cell ${currentState.row === i ? 'lcs-active-row' : ''}`}>
+                          {i === 0 ? '""' : currentState.text1[i - 1]}
+                        </th>
+                        {row.map((val, j) => (
+                          <td
+                            key={j}
+                            className={`lcs-cell ${
+                              i === currentState.row && j === currentState.col ? (currentState.match ? 'lcs-match' : 'lcs-no-match') :
+                              i < currentState.row || (i === currentState.row && j < currentState.col) ? 'lcs-filled' :
+                              'lcs-empty'
+                            }`}
+                          >
+                            {val}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {currentState.found && (
+                <div className="lcs-result">LCS Length: <strong>{currentState.dp[currentState.dp.length-1]?.[currentState.dp[0].length-1]}</strong></div>
+              )}
+            </div>
+          )}
+
+          {/* Group Anagrams */}
+          {currentState.words !== undefined && currentState.map !== undefined && (
+            <div className="group-anagrams-display">
+              <h2>🔤 Group Anagrams</h2>
+              <div className="ga-words-row">
+                {currentState.words.map((w, idx) => (
+                  <div key={idx} className={`ga-word ${idx === currentState.currentIndex ? 'ga-active' : idx < currentState.currentIndex ? 'ga-done' : ''}`}>
+                    {w}
+                  </div>
+                ))}
+              </div>
+              {currentState.currentKey && (
+                <div className="ga-key-row">
+                  Sorted key: <strong className="ga-key">"{currentState.currentKey}"</strong>
+                </div>
+              )}
+              <div className="ga-groups">
+                {Object.entries(currentState.map).map(([key, group]) => (
+                  <div key={key} className={`ga-group ${key === currentState.currentKey ? 'ga-group-active' : ''}`}>
+                    <div className="ga-group-key">Key: "{key}"</div>
+                    <div className="ga-group-words">
+                      {group.map((w, i) => <span key={i} className="ga-group-word">{w}</span>)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Non-overlapping Intervals */}
+          {currentState.intervals !== undefined && currentState.kept !== undefined && !currentState.original && (
+            <div className="nonoverlap-display">
+              <h2>📅 Non-overlapping Intervals</h2>
+              <div className="nonoverlap-rows">
+                {currentState.intervals.map(([start, end], idx) => {
+                  const isKept = currentState.kept.some(([s, e]) => s === start && e === end);
+                  const isRemoved = currentState.removed.some(([s, e]) => s === start && e === end);
+                  const isCurrent = idx === currentState.currentIndex;
+                  return (
+                    <div key={idx} className={`nonoverlap-row ${isCurrent ? 'nonoverlap-current' : ''}`}>
+                      <div className="nonoverlap-bar-wrap">
+                        <div
+                          className={`nonoverlap-bar ${isRemoved ? 'bar-removed' : isKept ? 'bar-kept' : 'bar-pending'}`}
+                          style={{ marginLeft: `${start * 12}px`, width: `${Math.max((end - start) * 12, 30)}px` }}
+                        >
+                          [{start},{end}]
+                        </div>
+                      </div>
+                      <div className="nonoverlap-status">
+                        {isRemoved ? '❌ Remove' : isKept ? '✅ Keep' : isCurrent ? '👁 Checking' : ''}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="nonoverlap-stats">
+                <span className="stat-kept">Kept: {currentState.kept?.length || 0}</span>
+                <span className="stat-removed">Removed: {currentState.removed?.length || 0}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Palindrome Expansion */}
+          {currentState.string !== undefined && currentState.longestStart !== undefined && (
+            <div className="palindrome-display">
+              <h2>🔁 Palindrome Expansion</h2>
+              <div className="palindrome-chars">
+                {currentState.string.split('').map((char, idx) => (
+                  <div
+                    key={idx}
+                    className={`palindrome-char ${
+                      idx >= currentState.longestStart && idx <= currentState.longestEnd ? 'pal-longest' :
+                      idx >= currentState.left && idx <= currentState.right && currentState.expanding ? 'pal-expanding' :
+                      idx === currentState.center ? 'pal-center' : ''
+                    }`}
+                  >
+                    <div className="pal-value">{char}</div>
+                    <div className="pal-index">{idx}</div>
+                  </div>
+                ))}
+              </div>
+              {currentState.longestLength > 0 && (
+                <div className="pal-result">
+                  Current Longest: <strong>"{currentState.string.substring(currentState.longestStart, currentState.longestEnd + 1)}"</strong>
+                  <span className="pal-length"> (length {currentState.longestLength})</span>
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
 

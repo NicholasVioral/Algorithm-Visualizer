@@ -14,7 +14,7 @@ html {
 }
 
 body {
-  background: radial-gradient(ellipse at 50% 30%, #1a1f3a 0%, #0d1117 40%, #080b12 100%);
+  background: #050508;
   background-attachment: fixed;
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -25,19 +25,20 @@ body {
   perspective: 1000px;
 }
 
-.app-container {
-  max-width: 80rem;
-  margin: 2rem auto;
-  background: rgba(255, 255, 255, 0.03);
+.visualizer-container {
+  width: calc(100% - 3rem);
+  max-width: none;
+  margin: 0 auto 2rem auto;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 1rem;
   box-shadow:
     0 0 60px rgba(0, 0, 0, 0.5),
     0 20px 40px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
   overflow: hidden;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   will-change: transform;
   transform: translateZ(0);
   contain: layout style paint;
@@ -76,14 +77,13 @@ body {
   font-size: 2.25rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  color: rgba(200, 210, 230, 0.9);
+  color: #ffffff;
   position: relative;
-  text-shadow: 0 0 40px rgba(140, 150, 180, 0.15);
   letter-spacing: 2px;
 }
 
 .header-subtitle {
-  color: rgba(150, 160, 180, 0.6);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 1rem;
   position: relative;
   font-weight: 500;
@@ -95,6 +95,24 @@ body {
   padding: 2rem;
   background: rgba(0, 0, 0, 0.15);
   contain: layout style;
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.setup-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: sticky;
+  top: 1rem;
+}
+
+.setup-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .form-group {
@@ -102,19 +120,19 @@ body {
 }
 
 .algorithm-summary {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
   color: white;
   padding: 1.75rem;
   border-radius: 1rem;
   margin-bottom: 1.5rem;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   transition: all 0.3s ease;
 }
 
@@ -154,7 +172,7 @@ body {
   font-size: 0.938rem;
   line-height: 1.7;
   margin-bottom: 0.75rem;
-  color: rgba(180, 190, 210, 0.75);
+  color: rgba(255, 255, 255, 0.72);
   font-family: 'Inter', sans-serif;
 }
 
@@ -190,7 +208,7 @@ body {
   font-family: 'Cinzel', serif;
   font-size: 0.875rem;
   font-weight: 600;
-  color: rgba(180, 190, 210, 0.8);
+  color: rgba(255, 255, 255, 0.85);
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -199,44 +217,41 @@ body {
 .input-field {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 0.75rem;
   font-size: 1rem;
   transition: all 0.4s ease;
-  background: rgba(0, 0, 0, 0.3);
-  color: rgba(200, 210, 230, 0.85);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(8px);
   font-family: 'Inter', sans-serif;
 }
 
 .input-field:focus {
   outline: none;
-  border-color: rgba(140, 150, 180, 0.25);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 30px rgba(100, 120, 160, 0.08);
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.04);
 }
 
 .input-field::placeholder {
-  color: rgba(150, 160, 180, 0.3);
+  color: rgba(255, 255, 255, 0.28);
 }
 
 .btn-primary {
   width: 100%;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(200, 210, 230, 0.9);
-  font-weight: 600;
+  background: #ffffff;
+  color: #050508;
+  font-weight: 700;
   padding: 1rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   border-radius: 0.75rem;
   cursor: pointer;
   font-size: 1.05rem;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   letter-spacing: 1px;
   text-transform: uppercase;
   font-family: 'Cinzel', serif;
@@ -261,12 +276,9 @@ body {
 }
 
 .btn-primary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.88);
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 32px rgba(255, 255, 255, 0.14);
 }
 
 .btn-primary:active {
@@ -562,11 +574,11 @@ body {
 }
 
 .description-box {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
   padding: 1.75rem;
   border-radius: 1rem;
   margin-bottom: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.20);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow:
@@ -1139,7 +1151,7 @@ body {
 
 /* Blind 75 Selector Styling */
 .blind75-selector {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
   color: white;
   padding: 1.75rem;
   border-radius: 1rem;
@@ -1147,12 +1159,12 @@ body {
   margin-top: 1.5rem;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   transition: all 0.3s ease;
 }
 
@@ -1259,4 +1271,166 @@ body {
 .blind75-legend strong {
   color: rgba(200, 210, 230, 0.85);
   margin-right: 0.5rem;
+}
+
+/* ── Code Detection Section ── */
+.code-detection-section {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+}
+
+.detection-title {
+  margin: 0 0 0.75rem 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.detection-textarea {
+  width: 100%;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.875rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.88);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.detection-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.detection-textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.detect-btn {
+  margin-top: 0.75rem;
+  padding: 0.6rem 1.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.detect-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Detection result */
+.detection-result {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.detection-result.result-high {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.30);
+}
+
+.detection-result.result-low {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.30);
+}
+
+.detection-result-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.detection-icon {
+  font-size: 1.4rem;
+}
+
+.detection-name {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: 'Inter', sans-serif;
+}
+
+.detection-confidence-row {
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+}
+
+.confidence-badge {
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #ffffff;
+}
+
+.confidence-badge.conf-high   { background: #10b981; }
+.confidence-badge.conf-medium { background: #f59e0b; }
+.confidence-badge.conf-low    { background: #ef4444; }
+
+.detection-explanation {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.60);
+  font-style: italic;
+  font-family: 'Inter', sans-serif;
+}
+
+.detection-others {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Inter', sans-serif;
+}
+
+.match-tags {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.match-tag {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ── Responsive: stack to single column on small screens ── */
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-left {
+    position: static;
+  }
+
+  .visualizer-container {
+    width: calc(100% - 2rem);
+  }
 }

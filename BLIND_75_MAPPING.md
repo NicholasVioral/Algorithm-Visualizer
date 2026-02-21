@@ -160,8 +160,8 @@ This document maps each of the Blind 75 problems to available visualizers or ind
 **What you see:** Keep earliest ending intervals
 
 ### 📝 32. Meeting Rooms
-**Pattern:** Sort by start time
-**What you see:** Timeline showing conflicts
+t by start time
+**What you see:****Pattern:** Sor Timeline showing conflicts
 
 ### 📝 33. Meeting Rooms II
 **Pattern:** Min heap / sweep line

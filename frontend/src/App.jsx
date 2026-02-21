@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import LandingPage from "./LandingPage";
 import AlgorithmVisualizer from "./AlgorithmVisualizer";
 import NewVisualizer from "./NewVisualizer";
 import CodeExplainer from "./CodeExplainer";
 import './App.css';
 
 function App() {
-  const [currentView, setCurrentView] = useState('setup'); // 'setup', 'visualize', or 'ai-explainer'
+  // 'landing' | 'setup' | 'ai-explainer' | 'visualize'
+  const [currentView, setCurrentView] = useState('landing');
   const [visualizationData, setVisualizationData] = useState(null);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
 
@@ -22,7 +24,6 @@ function App() {
   const handleAlgorithmDetected = (algorithm) => {
     setSelectedAlgorithm(algorithm);
     setCurrentView('setup');
-    // Scroll to algorithm selector if needed
     setTimeout(() => {
       const algorithmSelect = document.querySelector('select[value="' + algorithm + '"]');
       if (algorithmSelect) {
@@ -31,56 +32,52 @@ function App() {
     }, 100);
   };
 
+  if (currentView === 'landing') {
+    return <LandingPage onNavigate={setCurrentView} />;
+  }
+
+  if (currentView === 'visualize') {
+    return (
+      <NewVisualizer
+        data={visualizationData}
+        onBack={handleBackToSetup}
+      />
+    );
+  }
+
   return (
-    <>
+    <div className="app-container">
+      <div className="view-toggle">
+        <button
+          className={`toggle-btn ${currentView === 'setup' ? 'active' : ''}`}
+          onClick={() => setCurrentView('setup')}
+        >
+          📊 Manual Setup
+        </button>
+        <button
+          className={`toggle-btn ${currentView === 'ai-explainer' ? 'active' : ''}`}
+          onClick={() => setCurrentView('ai-explainer')}
+        >
+          🤖 AI Code Analyzer
+        </button>
+        <button
+          className="toggle-btn home-btn"
+          onClick={() => setCurrentView('landing')}
+        >
+          ← Home
+        </button>
+      </div>
+
       {currentView === 'setup' && (
-        <div className="app-container">
-          <div className="view-toggle">
-            <button
-              className="toggle-btn active"
-              onClick={() => setCurrentView('setup')}
-            >
-              📊 Manual Setup
-            </button>
-            <button
-              className="toggle-btn"
-              onClick={() => setCurrentView('ai-explainer')}
-            >
-              🤖 AI Code Analyzer
-            </button>
-          </div>
-          <AlgorithmVisualizer
-            onStartVisualization={handleStartVisualization}
-            preselectedAlgorithm={selectedAlgorithm}
-          />
-        </div>
-      )}
-      {currentView === 'ai-explainer' && (
-        <div className="app-container">
-          <div className="view-toggle">
-            <button
-              className="toggle-btn"
-              onClick={() => setCurrentView('setup')}
-            >
-              📊 Manual Setup
-            </button>
-            <button
-              className="toggle-btn active"
-              onClick={() => setCurrentView('ai-explainer')}
-            >
-              🤖 AI Code Analyzer
-            </button>
-          </div>
-          <CodeExplainer onAlgorithmDetected={handleAlgorithmDetected} />
-        </div>
-      )}
-      {currentView === 'visualize' && (
-        <NewVisualizer
-          data={visualizationData}
-          onBack={handleBackToSetup}
+        <AlgorithmVisualizer
+          onStartVisualization={handleStartVisualization}
+          preselectedAlgorithm={selectedAlgorithm}
         />
       )}
-    </>
+      {currentView === 'ai-explainer' && (
+        <CodeExplainer onAlgorithmDetected={handleAlgorithmDetected} />
+      )}
+    </div>
   );
 }
 

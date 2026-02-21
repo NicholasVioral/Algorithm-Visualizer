@@ -201,6 +201,31 @@ const algorithmSummaries = {
     description: "Longest Palindromic Substring finds the longest palindrome by expanding around each center. For each position, expand outward while characters match. Check both odd-length palindromes (single center) and even-length palindromes (two centers). Track the longest palindrome found.",
     complexity: "Time: O(n²) | Space: O(1)"
   },
+  detectcycle: {
+    title: "Detect Cycle in Linked List",
+    description: "Floyd's cycle detection uses two pointers — slow (moves 1 step) and fast (moves 2 steps). If there's a cycle, fast will eventually lap slow and they'll meet. If fast reaches null, there is no cycle. This is O(1) space and O(n) time.",
+    complexity: "Time: O(n) | Space: O(1)"
+  },
+  mergetwolists: {
+    title: "Merge Two Sorted Lists",
+    description: "Merge two sorted linked lists by comparing the heads of each list and always picking the smaller value. Advance the pointer of whichever list provided the smaller value. When one list is exhausted, append the remainder of the other list.",
+    complexity: "Time: O(m + n) | Space: O(1)"
+  },
+  lcs: {
+    title: "Longest Common Subsequence",
+    description: "LCS finds the longest subsequence common to two strings using a 2D DP table. dp[i][j] = length of LCS of first i characters of text1 and first j characters of text2. If characters match, dp[i][j] = dp[i-1][j-1] + 1. Otherwise, dp[i][j] = max(dp[i-1][j], dp[i][j-1]).",
+    complexity: "Time: O(m × n) | Space: O(m × n)"
+  },
+  groupanagrams: {
+    title: "Group Anagrams",
+    description: "Group Anagrams clusters strings that are anagrams of each other by using a sorted version of each string as a hash map key. All strings that sort to the same key are anagrams and belong in the same group.",
+    complexity: "Time: O(n × k log k) | Space: O(n × k)"
+  },
+  nonoverlapping: {
+    title: "Non-overlapping Intervals",
+    description: "Find the minimum number of intervals to remove so the rest don't overlap. Sort by end time (greedy). Greedily keep intervals that end earliest — when overlap is found, remove the interval with the later end (keep the one ending sooner to leave more room).",
+    complexity: "Time: O(n log n) | Space: O(1)"
+  },
   bfs: {
     title: "Breadth-First Search (BFS)",
     description: "BFS explores a graph level by level, visiting all neighbors of a node before moving to the next level. It uses a queue to track which nodes to visit next. Starting from the initial node, it marks nodes as visited, adds their unvisited neighbors to the queue, and continues until all reachable nodes are explored.",
@@ -4928,6 +4953,879 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
     setIsPlaying(false);
   }, [algorithm]);
 
+  // ─── Detect Cycle (Floyd's) ───────────────────────────────────────────────
+  const generateDetectCycleSteps = (arr, cycleAt) => {
+    const steps = [];
+    const hasCycle = cycleAt >= 0 && cycleAt < arr.length;
+    steps.push({
+      list: [...arr],
+      slow: 0, fast: 0, cycleAt: hasCycle ? cycleAt : null,
+      description: `Linked list: [${arr.join(' → ')}]${hasCycle ? ` with cycle back to index ${cycleAt}` : ' (no cycle)'}`,
+      variables: { slow: 0, fast: 0 },
+      operations: { steps: 0 },
+      phase: 'Initialize',
+      insight: 'Floyd\'s algorithm: slow moves 1 step, fast moves 2. If they meet → cycle exists.'
+    });
+    let slow = 0, fast = 0, stepCount = 0;
+    const maxSteps = arr.length * 3 + 5;
+    while (stepCount < maxSteps) {
+      // advance slow 1 step
+      const nextSlow = slow + 1;
+      if (!hasCycle && nextSlow >= arr.length) break;
+      const slowNext = hasCycle && nextSlow >= arr.length ? cycleAt : nextSlow;
+      // advance fast 2 steps
+      const f1 = fast + 1;
+      const fast1 = hasCycle && f1 >= arr.length ? cycleAt : f1;
+      const f2 = fast1 + 1;
+      const fastNext = hasCycle && f2 >= arr.length ? cycleAt : f2;
+      if (!hasCycle && (f1 >= arr.length || f2 >= arr.length)) break;
+      slow = slowNext; fast = fastNext; stepCount++;
+      const meeting = slow === fast;
+      steps.push({
+        list: [...arr], slow, fast, cycleAt: hasCycle ? cycleAt : null,
+        description: meeting ? `✓ Slow and fast both at index ${slow} — cycle detected!` : `Slow at ${slow} (${arr[slow]}), fast at ${fast} (${arr[fast]})`,
+        variables: { slow, fast, 'slow value': arr[slow], 'fast value': arr[fast] },
+        operations: { steps: stepCount },
+        phase: meeting ? 'Cycle Found!' : `Step ${stepCount}`,
+        insight: meeting ? `Pointers met at index ${slow} — this confirms a cycle.` : `Fast gains on slow. If there\'s a cycle, they must eventually meet.`,
+        found: meeting
+      });
+      if (meeting) return steps;
+    }
+    steps.push({
+      list: [...arr], slow: null, fast: null, cycleAt: null,
+      description: '✓ Fast pointer reached end — no cycle detected.',
+      variables: {}, operations: { steps: stepCount },
+      phase: 'No Cycle', found: true,
+      insight: 'Fast pointer reached null. No cycle exists in this linked list.'
+    });
+    return steps;
+  };
+
+  // ─── Merge Two Sorted Lists ───────────────────────────────────────────────
+  const generateMergeTwoListsSteps = (arr1, arr2) => {
+    const steps = [];
+    steps.push({
+      list1: [...arr1], list2: [...arr2], merged: [],
+      p1: 0, p2: 0,
+      description: `Merge list1 [${arr1.join(' → ')}] and list2 [${arr2.join(' → ')}]`,
+      variables: { p1: 0, p2: 0 },
+      operations: { comparisons: 0 },
+      phase: 'Initialize',
+      insight: 'Two pointers, one per list. Always pick the smaller head value.'
+    });
+    const merged = [];
+    let p1 = 0, p2 = 0, comps = 0;
+    while (p1 < arr1.length && p2 < arr2.length) {
+      comps++;
+      const pick1 = arr1[p1] <= arr2[p2];
+      steps.push({
+        list1: [...arr1], list2: [...arr2], merged: [...merged],
+        p1, p2, comparing1: pick1 ? p1 : null, comparing2: pick1 ? null : p2,
+        description: `Compare ${arr1[p1]} vs ${arr2[p2]} → pick ${pick1 ? arr1[p1] : arr2[p2]} from list${pick1 ? '1' : '2'}`,
+        variables: { 'list1[p1]': arr1[p1], 'list2[p2]': arr2[p2] },
+        operations: { comparisons: comps },
+        phase: 'Comparing',
+        insight: `${pick1 ? arr1[p1] : arr2[p2]} is smaller — append to merged list.`
+      });
+      if (pick1) { merged.push(arr1[p1]); p1++; }
+      else { merged.push(arr2[p2]); p2++; }
+      steps.push({
+        list1: [...arr1], list2: [...arr2], merged: [...merged],
+        p1, p2,
+        description: `Added to merged. Merged so far: [${merged.join(' → ')}]`,
+        variables: { merged: merged.join(' → '), p1, p2 },
+        operations: { comparisons: comps },
+        phase: 'Appended',
+        insight: `Merged list grows. Advance the pointer of the list we took from.`
+      });
+    }
+    while (p1 < arr1.length) { merged.push(arr1[p1]); p1++; }
+    while (p2 < arr2.length) { merged.push(arr2[p2]); p2++; }
+    steps.push({
+      list1: [...arr1], list2: [...arr2], merged: [...merged],
+      p1: arr1.length, p2: arr2.length, found: true,
+      description: `✓ Merged: [${merged.join(' → ')}]`,
+      variables: { result: merged.join(' → ') },
+      operations: { comparisons: comps },
+      phase: 'Complete',
+      insight: `One list exhausted — append remaining nodes from the other list. Done in O(m+n).`
+    });
+    return steps;
+  };
+
+  // ─── Longest Common Subsequence ───────────────────────────────────────────
+  const generateLCSSteps = (text1, text2) => {
+    const m = text1.length, n = text2.length;
+    const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+    const steps = [];
+    steps.push({
+      text1, text2, dp: dp.map(r => [...r]), row: -1, col: -1,
+      description: `Find LCS of "${text1}" and "${text2}". Build ${m+1}×${n+1} DP table.`,
+      variables: { 'm (text1)': m, 'n (text2)': n },
+      operations: { cells: 0 },
+      phase: 'Initialize',
+      insight: 'dp[i][j] = LCS length of text1[0..i-1] and text2[0..j-1]. Base case: row/col 0 = 0.'
+    });
+    let cells = 0;
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        cells++;
+        const match = text1[i - 1] === text2[j - 1];
+        dp[i][j] = match ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+        steps.push({
+          text1, text2, dp: dp.map(r => [...r]), row: i, col: j,
+          match,
+          description: match
+            ? `"${text1[i-1]}" === "${text2[j-1]}" → dp[${i}][${j}] = dp[${i-1}][${j-1}]+1 = ${dp[i][j]}`
+            : `"${text1[i-1]}" ≠ "${text2[j-1]}" → dp[${i}][${j}] = max(dp[${i-1}][${j}], dp[${i}][${j-1}]) = ${dp[i][j]}`,
+          variables: { 'text1[i-1]': text1[i-1], 'text2[j-1]': text2[j-1], [`dp[${i}][${j}]`]: dp[i][j] },
+          operations: { cells },
+          phase: match ? 'Match!' : 'No Match',
+          insight: match ? `Characters match — extend LCS by 1.` : `No match — take the best of skipping one character from either string.`
+        });
+      }
+    }
+    steps.push({
+      text1, text2, dp: dp.map(r => [...r]), row: m, col: n, found: true,
+      description: `✓ LCS length = ${dp[m][n]}`,
+      variables: { 'LCS length': dp[m][n] },
+      operations: { cells },
+      phase: 'Complete',
+      insight: `dp[${m}][${n}] = ${dp[m][n]} is the length of the longest common subsequence.`
+    });
+    return steps;
+  };
+
+  // ─── Group Anagrams ───────────────────────────────────────────────────────
+  const generateGroupAnagramsSteps = (words) => {
+    const steps = [];
+    const map = {};
+    steps.push({
+      words, map: {}, currentIndex: -1,
+      description: `Group anagrams from: [${words.join(', ')}]`,
+      variables: { 'words count': words.length },
+      operations: { processed: 0 },
+      phase: 'Initialize',
+      insight: 'Sort each word alphabetically to get its canonical key. Words with the same key are anagrams.'
+    });
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      const key = word.split('').sort().join('');
+      if (!map[key]) map[key] = [];
+      map[key].push(word);
+      steps.push({
+        words, map: JSON.parse(JSON.stringify(map)), currentIndex: i, currentKey: key,
+        description: `"${word}" sorts to "${key}" → group ["${map[key].join('", "')}"]`,
+        variables: { word, 'sorted key': key, 'group size': map[key].length },
+        operations: { processed: i + 1 },
+        phase: `Processing (${i + 1}/${words.length})`,
+        insight: `All words that sort to "${key}" are anagrams of each other.`
+      });
+    }
+    const groups = Object.values(map);
+    steps.push({
+      words, map: JSON.parse(JSON.stringify(map)), currentIndex: -1, found: true,
+      description: `✓ ${groups.length} group(s): ${groups.map(g => '[' + g.join(', ') + ']').join(' | ')}`,
+      variables: { groups: groups.length },
+      operations: { processed: words.length },
+      phase: 'Complete',
+      insight: `Grouped ${words.length} words into ${groups.length} anagram groups. Time: O(n·k·log k).`
+    });
+    return steps;
+  };
+
+  // ─── Non-overlapping Intervals ────────────────────────────────────────────
+  const generateNonOverlappingSteps = (intervals) => {
+    const steps = [];
+    const sorted = [...intervals].sort((a, b) => a[1] - b[1]);
+    steps.push({
+      intervals: sorted, kept: [], removed: [], endTime: -Infinity, currentIndex: -1,
+      description: `Sort ${intervals.length} intervals by end time: ${sorted.map(([a,b]) => `[${a},${b}]`).join(', ')}`,
+      variables: { 'interval count': sorted.length, 'removed count': 0 },
+      operations: { comparisons: 0 },
+      phase: 'Sort',
+      insight: 'Greedy: sort by end time. Keep intervals that end earliest — they leave the most room for others.'
+    });
+    const kept = [], removed = [];
+    let endTime = -Infinity, comps = 0;
+    for (let i = 0; i < sorted.length; i++) {
+      const [start, end] = sorted[i];
+      comps++;
+      const overlaps = start < endTime;
+      if (!overlaps) {
+        kept.push(sorted[i]);
+        endTime = end;
+        steps.push({
+          intervals: sorted, kept: [...kept], removed: [...removed],
+          currentIndex: i, endTime,
+          description: `[${start},${end}] starts at ${start} ≥ ${endTime === -Infinity ? '-∞' : endTime} → KEEP. New end = ${end}.`,
+          variables: { start, end, 'prev end': endTime === end ? 'updated' : endTime, 'removed': removed.length },
+          operations: { comparisons: comps },
+          phase: 'Keep',
+          insight: `No overlap — keep this interval. Update boundary to ${end}.`
+        });
+      } else {
+        removed.push(sorted[i]);
+        steps.push({
+          intervals: sorted, kept: [...kept], removed: [...removed],
+          currentIndex: i, endTime,
+          description: `[${start},${end}] starts at ${start} < ${endTime} → REMOVE (overlaps).`,
+          variables: { start, end, 'prev end': endTime, 'removed': removed.length },
+          operations: { comparisons: comps },
+          phase: 'Remove',
+          insight: `Overlaps with previous boundary. Remove this one — the earlier-ending interval is already kept.`
+        });
+      }
+    }
+    steps.push({
+      intervals: sorted, kept: [...kept], removed: [...removed],
+      currentIndex: -1, endTime, found: true,
+      description: `✓ Remove ${removed.length} interval(s): ${removed.map(([a,b]) => `[${a},${b}]`).join(', ') || 'none'}`,
+      variables: { 'removed count': removed.length, 'kept count': kept.length },
+      operations: { comparisons: comps },
+      phase: 'Complete',
+      insight: `Minimum removals = ${removed.length}. Time: O(n log n) for sort.`
+    });
+    return steps;
+  };
+
+  const generateInsertIntervalSteps = (intervals, toInsert) => {
+    const steps = [];
+    const result = [];
+    let i = 0;
+    const n = intervals.length;
+    const [newStart, newEnd] = toInsert;
+    steps.push({
+      intervals, toInsert, result: [], currentIndex: -1, phase: 'Start',
+      description: `Insert [${newStart},${newEnd}] into ${n} non-overlapping sorted intervals.`,
+      variables: { 'to insert': `[${newStart},${newEnd}]`, 'total intervals': n },
+      operations: { comparisons: 0 },
+      insight: 'Three phases: add non-overlapping left intervals, merge overlapping ones, add remaining right intervals.'
+    });
+    // Phase 1: add all intervals that come before new interval
+    while (i < n && intervals[i][1] < newStart) {
+      result.push(intervals[i]);
+      steps.push({
+        intervals, toInsert, result: [...result], currentIndex: i, phase: 'Skip Left',
+        description: `[${intervals[i][0]},${intervals[i][1]}] ends before ${newStart} → add to result as-is.`,
+        variables: { 'interval end': intervals[i][1], 'new start': newStart },
+        operations: { comparisons: i + 1 },
+        insight: `Interval ends at ${intervals[i][1]} < ${newStart}. No overlap — keep it.`
+      });
+      i++;
+    }
+    // Phase 2: merge all overlapping intervals
+    let mergedStart = newStart, mergedEnd = newEnd;
+    while (i < n && intervals[i][0] <= mergedEnd) {
+      mergedStart = Math.min(mergedStart, intervals[i][0]);
+      mergedEnd = Math.max(mergedEnd, intervals[i][1]);
+      steps.push({
+        intervals, toInsert, result: [...result], currentIndex: i, phase: 'Merge',
+        mergedSoFar: [mergedStart, mergedEnd],
+        description: `[${intervals[i][0]},${intervals[i][1]}] overlaps → merge into [${mergedStart},${mergedEnd}].`,
+        variables: { 'merged start': mergedStart, 'merged end': mergedEnd },
+        operations: { comparisons: i + 1 },
+        insight: `Overlap detected! Expand merged interval to encompass both.`
+      });
+      i++;
+    }
+    result.push([mergedStart, mergedEnd]);
+    steps.push({
+      intervals, toInsert, result: [...result], currentIndex: i, phase: 'Add Merged',
+      mergedSoFar: [mergedStart, mergedEnd],
+      description: `Add merged interval [${mergedStart},${mergedEnd}] to result.`,
+      variables: { 'merged': `[${mergedStart},${mergedEnd}]` },
+      operations: { comparisons: i },
+      insight: 'All overlapping intervals merged into one.'
+    });
+    // Phase 3: add remaining
+    while (i < n) {
+      result.push(intervals[i]);
+      steps.push({
+        intervals, toInsert, result: [...result], currentIndex: i, phase: 'Add Right',
+        description: `[${intervals[i][0]},${intervals[i][1]}] starts after merged end → add as-is.`,
+        variables: { 'interval start': intervals[i][0], 'merged end': mergedEnd },
+        operations: { comparisons: i + 1 },
+        insight: `No overlap with merged interval — append directly.`
+      });
+      i++;
+    }
+    steps.push({
+      intervals, toInsert, result: [...result], currentIndex: -1, phase: 'Complete', found: true,
+      description: `✓ Result: ${result.map(([a, b]) => `[${a},${b}]`).join(', ')}`,
+      variables: { 'output count': result.length },
+      operations: { comparisons: n },
+      insight: `Inserted [${newStart},${newEnd}]. Time: O(n).`
+    });
+    return steps;
+  };
+
+  const generatePalindromicSubstringsSteps = (str) => {
+    const steps = [];
+    let count = 0;
+    const found = [];
+    steps.push({
+      string: str, center: -1, left: -1, right: -1, count: 0, allPalindromes: [],
+      description: `Count palindromic substrings in "${str}" by expanding around each center.`,
+      variables: { 'string length': str.length, 'count': 0 },
+      operations: { comparisons: 0 },
+      insight: 'For each center (n odd centers + n-1 even centers), expand outward while chars match.'
+    });
+    let comps = 0;
+    for (let c = 0; c < 2 * str.length - 1; c++) {
+      let left = Math.floor(c / 2);
+      let right = left + (c % 2);
+      const centerDesc = c % 2 === 0 ? `char '${str[left]}'` : `between '${str[left]}' and '${str[right]}'`;
+      while (left >= 0 && right < str.length && str[left] === str[right]) {
+        comps++;
+        count++;
+        found.push(str.slice(left, right + 1));
+        steps.push({
+          string: str, center: c, left, right, count, allPalindromes: [...found],
+          description: `"${str.slice(left, right + 1)}" is palindrome (center ${centerDesc}). Count = ${count}.`,
+          variables: { left, right, 'substring': str.slice(left, right + 1), count },
+          operations: { comparisons: comps },
+          phase: 'Expand',
+          insight: `str[${left}]='${str[left]}' === str[${right}]='${str[right]}' → valid palindrome!`
+        });
+        left--;
+        right++;
+      }
+      if (left !== Math.floor(c / 2) - 1) {
+        comps++;
+        steps.push({
+          string: str, center: c, left: left + 1, right: right - 1, count, allPalindromes: [...found],
+          description: left < 0 || right >= str.length
+            ? `Expansion stopped (boundary reached).`
+            : `str[${left}]='${str[left]}' ≠ str[${right}]='${str[right]}' → stop expanding.`,
+          variables: { left: left + 1, right: right - 1, count },
+          operations: { comparisons: comps },
+          phase: 'Stop',
+          insight: 'Mismatch or boundary — move to next center.'
+        });
+      }
+    }
+    steps.push({
+      string: str, center: -1, left: -1, right: -1, count, allPalindromes: found, found: true,
+      description: `✓ Total palindromic substrings: ${count}`,
+      variables: { count, 'all found': found.join(', ') },
+      operations: { comparisons: comps },
+      phase: 'Complete',
+      insight: `Time: O(n²). Each expansion is O(n), done for O(n) centers.`
+    });
+    return steps;
+  };
+
+  const generateHouseRobber2Steps = (houses) => {
+    const steps = [];
+    const n = houses.length;
+    if (n === 0) return steps;
+    if (n === 1) {
+      steps.push({ houses, dp1: [houses[0]], dp2: [houses[0]], currentPass: 1, currentIndex: 0, result: houses[0],
+        description: `Only one house. Rob it: ${houses[0]}`, variables: { result: houses[0] }, operations: { comparisons: 0 }, phase: 'Complete', found: true, insight: 'Single house — just take it.' });
+      return steps;
+    }
+    steps.push({
+      houses, dp1: [], dp2: [], currentPass: 0, currentIndex: -1, result: null,
+      description: `Houses arranged in circle. Run House Robber twice: [0..${n-2}] and [1..${n-1}].`,
+      variables: { 'house count': n, strategy: 'two passes' },
+      operations: { comparisons: 0 },
+      phase: 'Start',
+      insight: 'Since houses form a circle, first and last are adjacent. Run DP twice excluding one end each time.'
+    });
+    // Pass 1: houses[0..n-2]
+    const dp1 = new Array(n - 1).fill(0);
+    const slice1 = houses.slice(0, n - 1);
+    dp1[0] = slice1[0];
+    steps.push({
+      houses, dp1: [...dp1], dp2: [], currentPass: 1, currentIndex: 0, result: null,
+      description: `Pass 1: house 0 only → dp[0] = ${slice1[0]}`,
+      variables: { 'dp[0]': slice1[0], 'pass': '1 (skip last house)' },
+      operations: { comparisons: 0 },
+      phase: 'Pass 1',
+      insight: 'Start DP on houses 0 to n-2.'
+    });
+    if (slice1.length > 1) dp1[1] = Math.max(slice1[0], slice1[1]);
+    for (let i = 1; i < slice1.length; i++) {
+      if (i === 1) dp1[1] = Math.max(slice1[0], slice1[1]);
+      else dp1[i] = Math.max(dp1[i - 1], dp1[i - 2] + slice1[i]);
+      steps.push({
+        houses, dp1: [...dp1], dp2: [], currentPass: 1, currentIndex: i, result: null,
+        description: `Pass 1, house ${i}: max(rob=${i >= 2 ? dp1[i-2] + '+'+ slice1[i] : slice1[i]}, skip=${dp1[i-1]}) = ${dp1[i]}`,
+        variables: { [`dp[${i}]`]: dp1[i], 'rob this': i >= 2 ? dp1[i - 2] + slice1[i] : slice1[i], 'skip this': dp1[i - 1] },
+        operations: { comparisons: i + 1 },
+        phase: 'Pass 1',
+        insight: `Best rob up to house ${i} = ${dp1[i]}`
+      });
+    }
+    // Pass 2: houses[1..n-1]
+    const slice2 = houses.slice(1);
+    const dp2 = new Array(n - 1).fill(0);
+    dp2[0] = slice2[0];
+    steps.push({
+      houses, dp1: [...dp1], dp2: [...dp2], currentPass: 2, currentIndex: 1, result: null,
+      description: `Pass 2: house 1 only → dp[0] = ${slice2[0]}`,
+      variables: { 'dp[0]': slice2[0], 'pass': '2 (skip first house)' },
+      operations: { comparisons: slice1.length },
+      phase: 'Pass 2',
+      insight: 'Now run DP on houses 1 to n-1 (skipping house 0).'
+    });
+    for (let i = 1; i < slice2.length; i++) {
+      if (i === 1) dp2[1] = Math.max(slice2[0], slice2[1]);
+      else dp2[i] = Math.max(dp2[i - 1], dp2[i - 2] + slice2[i]);
+      steps.push({
+        houses, dp1: [...dp1], dp2: [...dp2], currentPass: 2, currentIndex: i + 1, result: null,
+        description: `Pass 2, house ${i+1}: max(rob, skip) = ${dp2[i]}`,
+        variables: { [`dp[${i}]`]: dp2[i] },
+        operations: { comparisons: slice1.length + i + 1 },
+        phase: 'Pass 2',
+        insight: `Best rob up to house ${i+1} = ${dp2[i]}`
+      });
+    }
+    const res = Math.max(dp1[dp1.length - 1], dp2[dp2.length - 1]);
+    steps.push({
+      houses, dp1, dp2, currentPass: 3, currentIndex: -1, result: res, found: true,
+      description: `✓ max(Pass1=${dp1[dp1.length-1]}, Pass2=${dp2[dp2.length-1]}) = ${res}`,
+      variables: { 'pass 1 result': dp1[dp1.length - 1], 'pass 2 result': dp2[dp2.length - 1], 'answer': res },
+      operations: { comparisons: slice1.length + slice2.length },
+      phase: 'Complete',
+      insight: `Answer: ${res}. Time: O(n), Space: O(n).`
+    });
+    return steps;
+  };
+
+  const generateLongRepeatingSteps = (str, k) => {
+    const steps = [];
+    let left = 0, maxCount = 0, result = 0;
+    const counts = {};
+    steps.push({
+      string: str, left: 0, right: -1, maxCount: 0, charCounts: {}, result: 0,
+      description: `Find longest substring with at most ${k} replacements in "${str}".`,
+      variables: { k, 'string length': str.length },
+      operations: { comparisons: 0 },
+      phase: 'Start',
+      insight: 'Sliding window: window size - max char freq ≤ k means we can make it uniform with ≤ k replacements.'
+    });
+    for (let right = 0; right < str.length; right++) {
+      const ch = str[right];
+      counts[ch] = (counts[ch] || 0) + 1;
+      maxCount = Math.max(maxCount, counts[ch]);
+      const windowSize = right - left + 1;
+      if (windowSize - maxCount > k) {
+        counts[str[left]]--;
+        left++;
+      }
+      result = Math.max(result, right - left + 1);
+      steps.push({
+        string: str, left, right, maxCount, charCounts: { ...counts }, result,
+        description: `Window "${str.slice(left, right + 1)}" (size ${right-left+1}): max freq=${maxCount}, replacements needed=${right-left+1-maxCount}`,
+        variables: { left, right, 'window': str.slice(left, right + 1), maxCount, k, result },
+        operations: { comparisons: right + 1 },
+        phase: windowSize - maxCount > k ? 'Shrink' : 'Expand',
+        insight: windowSize - maxCount <= k
+          ? `${right-left+1} - ${maxCount} = ${right-left+1-maxCount} ≤ ${k} → valid window!`
+          : `Window too big: ${windowSize - maxCount} > ${k}. Shrink left.`
+      });
+    }
+    steps.push({
+      string: str, left, right: str.length - 1, maxCount, charCounts: counts, result, found: true,
+      description: `✓ Longest valid window length: ${result}`,
+      variables: { 'answer': result, k },
+      operations: { comparisons: str.length },
+      phase: 'Complete',
+      insight: `Time: O(n). Sliding window with character frequency tracking.`
+    });
+    return steps;
+  };
+
+  const generateMeetingRoomsSteps = (intervals) => {
+    const steps = [];
+    const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+    steps.push({
+      intervals: sorted, sorted: true, currentIndex: -1, hasConflict: false, conflictPair: null,
+      description: `Sort ${intervals.length} meetings by start time to detect overlaps.`,
+      variables: { 'meeting count': intervals.length },
+      operations: { comparisons: 0 },
+      phase: 'Sort',
+      insight: 'Sort by start. If any meeting starts before the previous one ends → conflict.'
+    });
+    let hasConflict = false;
+    for (let i = 1; i < sorted.length; i++) {
+      const prev = sorted[i - 1], curr = sorted[i];
+      const overlaps = curr[0] < prev[1];
+      if (overlaps) hasConflict = true;
+      steps.push({
+        intervals: sorted, sorted: true, currentIndex: i, hasConflict,
+        conflictPair: overlaps ? [i - 1, i] : null,
+        description: overlaps
+          ? `CONFLICT: meeting ${i} starts at ${curr[0]} < ${prev[1]} (prev ends). Cannot attend all!`
+          : `OK: meeting ${i} starts at ${curr[0]} ≥ ${prev[1]}. No overlap.`,
+        variables: { 'prev end': prev[1], 'curr start': curr[0] },
+        operations: { comparisons: i },
+        phase: overlaps ? 'Conflict' : 'OK',
+        insight: overlaps
+          ? `[${prev[0]},${prev[1]}] and [${curr[0]},${curr[1]}] overlap!`
+          : `Meetings don't overlap — can attend both.`
+      });
+      if (overlaps) break;
+    }
+    steps.push({
+      intervals: sorted, sorted: true, currentIndex: -1, hasConflict, found: true,
+      description: hasConflict
+        ? `✗ Cannot attend all meetings (conflicts found).`
+        : `✓ Can attend all meetings! No conflicts.`,
+      variables: { result: hasConflict ? 'false' : 'true' },
+      operations: { comparisons: sorted.length },
+      phase: 'Complete',
+      insight: `Answer: ${hasConflict ? 'false' : 'true'}. Time: O(n log n).`
+    });
+    return steps;
+  };
+
+  const generateMeetingRooms2Steps = (intervals) => {
+    const steps = [];
+    const sorted = [...intervals].sort((a, b) => a[0] - b[0]);
+    steps.push({
+      intervals: sorted, roomCount: 0, ends: [], currentIndex: -1, maxRooms: 0,
+      description: `Find minimum meeting rooms needed for ${intervals.length} meetings.`,
+      variables: { 'meeting count': intervals.length },
+      operations: { comparisons: 0 },
+      phase: 'Start',
+      insight: 'Sort by start. Track end times in a min-heap: if earliest end ≤ current start, reuse that room.'
+    });
+    const ends = [];
+    let maxRooms = 0;
+    for (let i = 0; i < sorted.length; i++) {
+      const [start, end] = sorted[i];
+      // Simple min-heap simulation: find earliest end
+      if (ends.length > 0 && ends[0] <= start) {
+        // Reuse room: remove earliest end
+        ends.shift();
+        ends.push(end);
+        ends.sort((a, b) => a - b);
+        steps.push({
+          intervals: sorted, roomCount: ends.length, ends: [...ends], currentIndex: i, maxRooms,
+          description: `Meeting [${start},${end}]: reuse room (prev ended at ${ends[0] || '?'} ≤ ${start}).`,
+          variables: { start, end, 'rooms in use': ends.length },
+          operations: { comparisons: i + 1 },
+          phase: 'Reuse',
+          insight: `Room freed up! Reuse it for [${start},${end}].`
+        });
+      } else {
+        ends.push(end);
+        ends.sort((a, b) => a - b);
+        maxRooms = Math.max(maxRooms, ends.length);
+        steps.push({
+          intervals: sorted, roomCount: ends.length, ends: [...ends], currentIndex: i, maxRooms,
+          description: `Meeting [${start},${end}]: need new room (${ends.length} rooms now active).`,
+          variables: { start, end, 'rooms in use': ends.length },
+          operations: { comparisons: i + 1 },
+          phase: 'New Room',
+          insight: `No room free. Open a new room. Total: ${ends.length}.`
+        });
+      }
+    }
+    steps.push({
+      intervals: sorted, roomCount: ends.length, ends: [...ends], currentIndex: -1, maxRooms, found: true,
+      description: `✓ Minimum rooms needed: ${maxRooms}`,
+      variables: { 'answer': maxRooms },
+      operations: { comparisons: sorted.length },
+      phase: 'Complete',
+      insight: `${maxRooms} meeting rooms required. Time: O(n log n).`
+    });
+    return steps;
+  };
+
+  const generateRemoveNthSteps = (arr, n) => {
+    const steps = [];
+    if (arr.length === 0) return steps;
+    steps.push({
+      list: arr, fast: 0, slow: -1, gap: 0, phase: 'Start',
+      description: `Remove ${n}th node from end of linked list [${arr.join(' → ')}].`,
+      variables: { n, 'list length': arr.length },
+      operations: { comparisons: 0 },
+      insight: 'Two pointers: advance fast n+1 steps, then move both until fast reaches end. Slow points to node before target.'
+    });
+    // Advance fast n+1 steps (using dummy head concept)
+    let fast = 0, slow = -1; // slow=-1 means dummy head
+    for (let i = 0; i <= n; i++) {
+      if (fast < arr.length) {
+        steps.push({
+          list: arr, fast, slow, gap: i, phase: 'Advance Fast',
+          description: `Advance fast to index ${fast}: value=${arr[fast]}. Gap = ${i}/${n+1}.`,
+          variables: { fast, slow: slow === -1 ? 'dummy' : slow, gap: i },
+          operations: { comparisons: i },
+          insight: `Need gap of n+1=${n+1} between slow (dummy) and fast.`
+        });
+        fast++;
+      }
+    }
+    // Move both
+    while (fast < arr.length) {
+      slow++;
+      steps.push({
+        list: arr, fast, slow, gap: n + 1, phase: 'Move Both',
+        description: `Move both: fast=${fast} (val=${arr[fast]}), slow=${slow} (val=${arr[slow]}).`,
+        variables: { fast, slow, 'fast value': arr[fast], 'slow value': arr[slow] },
+        operations: { comparisons: fast + 1 },
+        insight: `Maintaining gap of ${n+1}.`
+      });
+      fast++;
+    }
+    slow++;
+    const target = slow;
+    const newList = arr.filter((_, idx) => idx !== target);
+    steps.push({
+      list: arr, fast: arr.length, slow: target, gap: n + 1, phase: 'Remove', targetIndex: target,
+      description: `Remove node at index ${target} (value=${arr[target]}). slow points here.`,
+      variables: { 'remove index': target, 'remove value': arr[target] },
+      operations: { comparisons: arr.length },
+      insight: `slow.next is the ${n}th from end.`
+    });
+    steps.push({
+      list: newList, fast: -1, slow: -1, gap: n + 1, phase: 'Complete', found: true,
+      description: `✓ Result: [${newList.join(' → ')}]`,
+      variables: { 'removed': arr[target], 'new length': newList.length },
+      operations: { comparisons: arr.length },
+      insight: `Time: O(n) single pass. Two-pointer gap technique.`
+    });
+    return steps;
+  };
+
+  const generateReorderListSteps = (arr) => {
+    const steps = [];
+    const n = arr.length;
+    steps.push({
+      list: arr, phase: 'Start', left: 0, right: n - 1,
+      description: `Reorder [${arr.join('→')}] to: first, last, second, second-last, ...`,
+      variables: { 'list length': n },
+      operations: { comparisons: 0 },
+      insight: 'Strategy: find middle, reverse second half, merge two halves alternately.'
+    });
+    // Find middle
+    let slow = 0, fast = 0;
+    while (fast < n - 1 && fast + 1 < n - 1) {
+      slow++;
+      fast += 2;
+    }
+    const mid = slow;
+    steps.push({
+      list: arr, phase: 'Find Middle', left: mid, right: n - 1,
+      description: `Middle at index ${mid} (value=${arr[mid]}). First half: [0..${mid}], Second half: [${mid+1}..${n-1}].`,
+      variables: { 'mid index': mid, 'mid value': arr[mid] },
+      operations: { comparisons: mid },
+      insight: `Split list at midpoint.`
+    });
+    // Reverse second half
+    const secondHalf = arr.slice(mid + 1).reverse();
+    steps.push({
+      list: arr, phase: 'Reverse Second Half', left: 0, right: mid,
+      secondHalf,
+      description: `Reversed second half: [${secondHalf.join('→')}].`,
+      variables: { 'second half': secondHalf.join(', ') },
+      operations: { comparisons: mid + secondHalf.length },
+      insight: `Reversing [${arr.slice(mid+1).join('→')}] → [${secondHalf.join('→')}].`
+    });
+    // Merge
+    const firstHalf = arr.slice(0, mid + 1);
+    const result = [];
+    let l = 0, r = 0;
+    while (l < firstHalf.length || r < secondHalf.length) {
+      if (l < firstHalf.length) {
+        result.push(firstHalf[l]);
+        steps.push({
+          list: arr, phase: 'Merge', left: l, right: r, result: [...result], secondHalf,
+          description: `Take from first half: ${firstHalf[l]}. Result: [${result.join('→')}]`,
+          variables: { 'from first': firstHalf[l], 'result length': result.length },
+          operations: { comparisons: mid + secondHalf.length + result.length },
+          insight: `Alternating: pick from first half.`
+        });
+        l++;
+      }
+      if (r < secondHalf.length) {
+        result.push(secondHalf[r]);
+        steps.push({
+          list: arr, phase: 'Merge', left: l, right: r, result: [...result], secondHalf,
+          description: `Take from second half: ${secondHalf[r]}. Result: [${result.join('→')}]`,
+          variables: { 'from second': secondHalf[r], 'result length': result.length },
+          operations: { comparisons: mid + secondHalf.length + result.length },
+          insight: `Alternating: pick from second half (reversed).`
+        });
+        r++;
+      }
+    }
+    steps.push({
+      list: result, phase: 'Complete', left: 0, right: result.length - 1, found: true,
+      description: `✓ Reordered: [${result.join('→')}]`,
+      variables: { 'result': result.join('→') },
+      operations: { comparisons: n },
+      insight: `Time: O(n). Three steps: find middle, reverse, merge.`
+    });
+    return steps;
+  };
+
+  const generateCombinationSum4Steps = (nums, target) => {
+    const steps = [];
+    const dp = new Array(target + 1).fill(0);
+    dp[0] = 1;
+    steps.push({
+      dpArray: [...dp], targetAmt: target, nums, currentTarget: 0, currentNum: -1,
+      description: `Count combinations summing to ${target} using nums [${nums.join(', ')}].`,
+      variables: { target, 'dp[0]': 1, 'nums': nums.join(', ') },
+      operations: { comparisons: 0 },
+      phase: 'Init',
+      insight: 'dp[i] = number of ways to reach sum i. dp[0]=1 (empty combination). Order matters!'
+    });
+    for (let t = 1; t <= target; t++) {
+      for (const num of nums) {
+        if (t >= num) {
+          dp[t] += dp[t - num];
+          steps.push({
+            dpArray: [...dp], targetAmt: target, nums, currentTarget: t, currentNum: num,
+            description: `dp[${t}] += dp[${t}-${num}=dp[${t-num}]=${dp[t-num]}] → dp[${t}]=${dp[t]}`,
+            variables: { [`dp[${t}]`]: dp[t], [`dp[${t-num}]`]: dp[t - num], num },
+            operations: { comparisons: t * nums.length },
+            phase: 'Fill',
+            insight: `If we use ${num} last, remaining sum is ${t-num} with dp[${t-num}]=${dp[t-num]} ways.`
+          });
+        }
+      }
+    }
+    steps.push({
+      dpArray: [...dp], targetAmt: target, nums, currentTarget: target, currentNum: -1, found: true,
+      description: `✓ Combinations summing to ${target}: ${dp[target]}`,
+      variables: { 'answer': dp[target] },
+      operations: { comparisons: target * nums.length },
+      phase: 'Complete',
+      insight: `dp[${target}]=${dp[target]}. Time: O(target × n).`
+    });
+    return steps;
+  };
+
+  const generateLongestConsecutiveSteps = (nums) => {
+    const steps = [];
+    const hashSet = new Set(nums);
+    steps.push({
+      array: nums, hashSet: [...hashSet], currentNum: null, streak: 0, best: 0,
+      description: `Find longest consecutive sequence in [${nums.join(', ')}].`,
+      variables: { 'nums count': nums.length, 'set size': hashSet.size },
+      operations: { comparisons: 0 },
+      phase: 'Build Set',
+      insight: 'Build a hash set. For each num, only start counting if num-1 is NOT in set (start of sequence).'
+    });
+    let best = 0;
+    for (const num of nums) {
+      if (!hashSet.has(num - 1)) {
+        let cur = num, streak = 0;
+        steps.push({
+          array: nums, hashSet: [...hashSet], currentNum: num, streak: 0, best,
+          description: `${num}-1=${num-1} not in set → START sequence from ${num}.`,
+          variables: { 'start': num, best },
+          operations: { comparisons: 1 },
+          phase: 'New Sequence',
+          insight: `${num} is the beginning of a consecutive sequence.`
+        });
+        while (hashSet.has(cur)) {
+          streak++;
+          steps.push({
+            array: nums, hashSet: [...hashSet], currentNum: cur, streak, best,
+            description: `${cur} in set → streak = ${streak}. Check ${cur+1}...`,
+            variables: { current: cur, streak, best },
+            operations: { comparisons: streak + 1 },
+            phase: 'Count',
+            insight: `Found ${cur} in set. Streak grows to ${streak}.`
+          });
+          cur++;
+        }
+        best = Math.max(best, streak);
+        steps.push({
+          array: nums, hashSet: [...hashSet], currentNum: cur - 1, streak, best,
+          description: `${cur} not in set → sequence ends. Best = max(${best}, ${streak}) = ${best}.`,
+          variables: { streak, best },
+          operations: { comparisons: streak + 2 },
+          phase: 'Update Best',
+          insight: `Sequence [${num}..${cur-1}] has length ${streak}. Update best.`
+        });
+      } else {
+        steps.push({
+          array: nums, hashSet: [...hashSet], currentNum: num, streak: 0, best,
+          description: `${num}-1=${num-1} IS in set → skip (not a sequence start).`,
+          variables: { num, 'num-1': num - 1, best },
+          operations: { comparisons: 1 },
+          phase: 'Skip',
+          insight: `${num} is in the middle of a sequence — don't count from here.`
+        });
+      }
+    }
+    steps.push({
+      array: nums, hashSet: [...hashSet], currentNum: null, streak: 0, best, found: true,
+      description: `✓ Longest consecutive sequence: ${best}`,
+      variables: { answer: best },
+      operations: { comparisons: nums.length },
+      phase: 'Complete',
+      insight: `Time: O(n). Each number is only visited once per sequence.`
+    });
+    return steps;
+  };
+
+  const generateMergeKListsSteps = (listArrays) => {
+    const steps = [];
+    // Flatten to sorted pairs for visualization
+    const lists = listArrays.map((arr, i) => ({ arr: [...arr], ptr: 0, id: i }));
+    const merged = [];
+    steps.push({
+      lists: lists.map(l => ({ ...l })), merged: [], currentStep: 'init',
+      description: `Merge ${lists.length} sorted lists using min-heap approach.`,
+      variables: { 'list count': lists.length, 'total nodes': lists.reduce((s, l) => s + l.arr.length, 0) },
+      operations: { comparisons: 0 },
+      phase: 'Start',
+      insight: 'Maintain a min-heap of list heads. Repeatedly extract minimum, add to result, push next node of that list.'
+    });
+    let comps = 0;
+    // Simulate: always pick minimum from current heads
+    while (true) {
+      const active = lists.filter(l => l.ptr < l.arr.length);
+      if (active.length === 0) break;
+      // Find min
+      let minVal = Infinity, minList = null;
+      for (const l of active) {
+        comps++;
+        if (l.arr[l.ptr] < minVal) {
+          minVal = l.arr[l.ptr];
+          minList = l;
+        }
+      }
+      steps.push({
+        lists: lists.map(l => ({ ...l })), merged: [...merged], currentStep: `pick-${minVal}`,
+        description: `Heads: [${active.map(l => l.arr[l.ptr]).join(', ')}]. Min = ${minVal} from list ${minList.id}.`,
+        variables: { 'min value': minVal, 'from list': minList.id, 'merged so far': merged.join(', ') },
+        operations: { comparisons: comps },
+        phase: 'Pick Min',
+        insight: `Extract ${minVal} from list ${minList.id} into merged result.`
+      });
+      merged.push(minVal);
+      minList.ptr++;
+      steps.push({
+        lists: lists.map(l => ({ ...l })), merged: [...merged], currentStep: `add-${minVal}`,
+        description: `Added ${minVal} to merged. Advance pointer in list ${minList.id}.`,
+        variables: { 'merged': merged.join(' → '), 'merged length': merged.length },
+        operations: { comparisons: comps },
+        phase: 'Add',
+        insight: `Merged: [${merged.join(' → ')}]`
+      });
+    }
+    steps.push({
+      lists: lists.map(l => ({ ...l })), merged: [...merged], currentStep: 'complete', found: true,
+      description: `✓ Merged: [${merged.join(' → ')}]`,
+      variables: { 'answer': merged.join(' → '), 'total': merged.length },
+      operations: { comparisons: comps },
+      phase: 'Complete',
+      insight: `Time: O(N log k) where N=total nodes, k=list count.`
+    });
+    return steps;
+  };
+
   const handleVisualize = () => {
     setCurrentStep(0);
     setIsPlaying(false);
@@ -5067,6 +5965,79 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
     } else if (algorithm === 'longestpalindrome') {
       const str = input.trim();
       newSteps = generateLongestPalindromeSteps(str);
+    } else if (algorithm === 'detectcycle') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const cycleAt = parseInt(targetNode);
+      newSteps = generateDetectCycleSteps(arr, isNaN(cycleAt) ? -1 : cycleAt);
+    } else if (algorithm === 'mergetwolists') {
+      const parts = input.split('|');
+      const arr1 = (parts[0] || '').split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const arr2 = (parts[1] || '').split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateMergeTwoListsSteps(arr1, arr2);
+    } else if (algorithm === 'lcs') {
+      const parts = input.split('|');
+      const text1 = (parts[0] || 'abcde').trim();
+      const text2 = (parts[1] || 'ace').trim();
+      newSteps = generateLCSSteps(text1, text2);
+    } else if (algorithm === 'groupanagrams') {
+      const words = input.split(',').map(s => s.trim()).filter(Boolean);
+      newSteps = generateGroupAnagramsSteps(words);
+    } else if (algorithm === 'nonoverlapping') {
+      const intervals = input.split(',').map(s => {
+        const parts = s.trim().split('-');
+        return [parseInt(parts[0]), parseInt(parts[1])];
+      }).filter(iv => !isNaN(iv[0]) && !isNaN(iv[1]));
+      newSteps = generateNonOverlappingSteps(intervals);
+    } else if (algorithm === 'insertinterval') {
+      const parts = input.split('|');
+      const intervals = (parts[0] || '').split(',').map(s => {
+        const p = s.trim().split('-');
+        return [parseInt(p[0]), parseInt(p[1])];
+      }).filter(iv => !isNaN(iv[0]) && !isNaN(iv[1]));
+      const ins = (parts[1] || '').trim().split('-');
+      const toInsert = [parseInt(ins[0]) || 0, parseInt(ins[1]) || 0];
+      newSteps = generateInsertIntervalSteps(intervals, toInsert);
+    } else if (algorithm === 'palindromicsubstrings') {
+      const str = input.trim();
+      newSteps = generatePalindromicSubstringsSteps(str);
+    } else if (algorithm === 'houserobber2') {
+      const houses = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateHouseRobber2Steps(houses);
+    } else if (algorithm === 'longrepeating') {
+      const str = input.trim();
+      const k = parseInt(targetNode) || 2;
+      newSteps = generateLongRepeatingSteps(str, k);
+    } else if (algorithm === 'meetingrooms') {
+      const intervals = input.split(',').map(s => {
+        const p = s.trim().split('-');
+        return [parseInt(p[0]), parseInt(p[1])];
+      }).filter(iv => !isNaN(iv[0]) && !isNaN(iv[1]));
+      newSteps = generateMeetingRoomsSteps(intervals);
+    } else if (algorithm === 'meetingroomsii') {
+      const intervals = input.split(',').map(s => {
+        const p = s.trim().split('-');
+        return [parseInt(p[0]), parseInt(p[1])];
+      }).filter(iv => !isNaN(iv[0]) && !isNaN(iv[1]));
+      newSteps = generateMeetingRooms2Steps(intervals);
+    } else if (algorithm === 'removenth') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const nth = parseInt(targetNode) || 1;
+      newSteps = generateRemoveNthSteps(arr, nth);
+    } else if (algorithm === 'reorderlist') {
+      const arr = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateReorderListSteps(arr);
+    } else if (algorithm === 'combinationsumiv') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      const target = parseInt(targetNode) || 4;
+      newSteps = generateCombinationSum4Steps(nums, target);
+    } else if (algorithm === 'longestconsecutive') {
+      const nums = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      newSteps = generateLongestConsecutiveSteps(nums);
+    } else if (algorithm === 'mergeklists') {
+      // Parse pipe-separated lists: "1,4,5|1,3,4|2,6"
+      const parts = input.split('|');
+      const listArrays = parts.map(p => p.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)));
+      newSteps = generateMergeKListsSteps(listArrays);
     }
 
     // If onStartVisualization prop is provided, navigate to new visualizer
@@ -5088,12 +6059,24 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
         inputData = { type: 'array-target', array: input, target: targetNode, label: 'Coins / Amount' };
       } else if (algorithm === 'validanagram') {
         inputData = { type: 'two-strings', value: input, target: targetNode };
-      } else if (algorithm === 'mergeintervals') {
+      } else if (['mergeintervals', 'nonoverlapping', 'meetingrooms', 'meetingroomsii'].includes(algorithm)) {
         inputData = { type: 'intervals', value: input };
       } else if (algorithm === 'uniquepaths') {
         inputData = { type: 'grid-dimensions', value: input };
-      } else if (algorithm === 'wordbreak') {
+      } else if (['wordbreak', 'mergetwolists', 'lcs', 'insertinterval', 'mergeklists'].includes(algorithm)) {
         inputData = { type: 'string-dictionary', value: input };
+      } else if (algorithm === 'detectcycle') {
+        inputData = { type: 'array-search', array: input, target: targetNode, label: 'List / Cycle-at index (-1 = no cycle)' };
+      } else if (['groupanagrams', 'houserobber2', 'reorderlist', 'longestconsecutive'].includes(algorithm)) {
+        inputData = { type: 'array', value: input };
+      } else if (algorithm === 'palindromicsubstrings') {
+        inputData = { type: 'string', value: input };
+      } else if (algorithm === 'longrepeating') {
+        inputData = { type: 'array-target', array: input, target: targetNode, label: 'String / k (max replacements)' };
+      } else if (algorithm === 'removenth') {
+        inputData = { type: 'array-search', array: input, target: targetNode, label: 'List / n (from end)' };
+      } else if (algorithm === 'combinationsumiv') {
+        inputData = { type: 'array-target', array: input, target: targetNode, label: 'Nums / Target' };
       }
 
       onStartVisualization({
@@ -5688,11 +6671,11 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
     'climbing-stairs': { algo: 'fibonacci-dp', category: 'Dynamic Programming', available: true },
     'coin-change': { algo: 'coinchange', category: 'Dynamic Programming', available: true },
     'house-robber': { algo: 'houserobber', category: 'Dynamic Programming', available: true },
-    'house-robber-ii': { algo: 'houserobber', category: 'Dynamic Programming', available: false, note: 'Similar to House Robber' },
+    'house-robber-ii': { algo: 'houserobber2', category: 'Dynamic Programming', available: true },
     'longest-increasing-subsequence': { algo: 'longestincreasing', category: 'Dynamic Programming', available: true },
-    'longest-common-subsequence': { algo: null, category: 'Dynamic Programming', available: false },
+    'longest-common-subsequence': { algo: 'lcs', category: 'Dynamic Programming', available: true },
     'word-break': { algo: 'wordbreak', category: 'Dynamic Programming', available: true },
-    'combination-sum-iv': { algo: null, category: 'Dynamic Programming', available: false },
+    'combination-sum-iv': { algo: 'combinationsumiv', category: 'Dynamic Programming', available: true },
     'decode-ways': { algo: 'decodeways', category: 'Dynamic Programming', available: true },
     'unique-paths': { algo: 'uniquepaths', category: 'Dynamic Programming', available: true },
     'jump-game': { algo: 'jumpgame', category: 'Dynamic Programming', available: true },
@@ -5702,7 +6685,7 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
     'course-schedule': { algo: 'dfs', category: 'Graph', available: true },
     'pacific-atlantic': { algo: 'bfs', category: 'Graph', available: true },
     'number-of-islands': { algo: 'bfs', category: 'Graph', available: true },
-    'longest-consecutive': { algo: 'twosum', category: 'Graph', available: false, note: 'Hash set pattern' },
+    'longest-consecutive': { algo: 'longestconsecutive', category: 'Graph', available: true },
     'graph-valid-tree': { algo: 'dfs', category: 'Graph', available: true },
 
     // Tree
@@ -5720,25 +6703,25 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
 
     // String
     'longest-substring': { algo: 'longestsubstring', category: 'String', available: true },
-    'longest-repeating': { algo: null, category: 'String', available: false },
+    'longest-repeating': { algo: 'longrepeating', category: 'String', available: true },
     'valid-anagram': { algo: 'validanagram', category: 'String', available: true },
-    'group-anagrams': { algo: 'validanagram', category: 'String', available: false, note: 'Similar pattern' },
+    'group-anagrams': { algo: 'groupanagrams', category: 'String', available: true },
     'valid-parentheses': { algo: 'validparentheses', category: 'String', available: true },
     'valid-palindrome': { algo: 'validpalindrome', category: 'String', available: true },
-    'longest-palindrome': { algo: null, category: 'String', available: false },
-    'palindromic-substrings': { algo: null, category: 'String', available: false },
+    'longest-palindrome': { algo: 'longestpalindrome', category: 'String', available: true },
+    'palindromic-substrings': { algo: 'palindromicsubstrings', category: 'String', available: true },
 
     // Interval
-    'insert-interval': { algo: 'mergeintervals', category: 'Interval', available: false, note: 'Similar to merge intervals' },
+    'insert-interval': { algo: 'insertinterval', category: 'Interval', available: true },
     'merge-intervals': { algo: 'mergeintervals', category: 'Interval', available: true },
-    'non-overlapping-intervals': { algo: null, category: 'Interval', available: false },
-    'meeting-rooms': { algo: null, category: 'Interval', available: false },
-    'meeting-rooms-ii': { algo: null, category: 'Interval', available: false },
+    'non-overlapping-intervals': { algo: 'nonoverlapping', category: 'Interval', available: true },
+    'meeting-rooms': { algo: 'meetingrooms', category: 'Interval', available: true },
+    'meeting-rooms-ii': { algo: 'meetingroomsii', category: 'Interval', available: true },
 
     // Linked List
-    'reverse-list': { algo: null, category: 'Linked List', available: false },
-    'detect-cycle': { algo: null, category: 'Linked List', available: false },
-    'merge-two-lists': { algo: null, category: 'Linked List', available: false },
+    'reverse-list': { algo: 'reverselist', category: 'Linked List', available: true },
+    'detect-cycle': { algo: 'detectcycle', category: 'Linked List', available: true },
+    'merge-two-lists': { algo: 'mergetwolists', category: 'Linked List', available: true },
     'merge-k-lists': { algo: null, category: 'Linked List', available: false },
     'remove-nth': { algo: null, category: 'Linked List', available: false },
     'reorder-list': { algo: null, category: 'Linked List', available: false },
@@ -5746,26 +6729,29 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
 
   const [selectedBlind75, setSelectedBlind75] = useState('');
 
-  const isArrayAlgorithm = ['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'binary', 'linear', 'bst-insert', 'bst-search', 'productexceptself', 'containsduplicate', 'besttimestock', 'containermostwater', 'threesum', 'houserobber', 'longestincreasing', 'jumpgame', 'maxproductsubarray', 'findminrotated', 'missingnumber'].includes(algorithm);
+  const isArrayAlgorithm = ['bubble', 'merge', 'quick', 'insertion', 'selection', 'heap', 'binary', 'linear', 'bst-insert', 'bst-search', 'productexceptself', 'containsduplicate', 'besttimestock', 'containermostwater', 'threesum', 'houserobber', 'longestincreasing', 'jumpgame', 'maxproductsubarray', 'findminrotated', 'missingnumber', 'reverselist', 'groupanagrams', 'houserobber2', 'reorderlist', 'longestconsecutive', 'removenth', 'combinationsumiv'].includes(algorithm);
   const isGraphAlgorithm = ['bfs', 'dfs', 'dijkstra'].includes(algorithm);
   const isRecursionAlgorithm = ['recursion', 'fibonacci', 'fibonacci-dp', 'tower-hanoi'].includes(algorithm);
-  const isStringAlgorithm = ['validparentheses', 'longestsubstring', 'validpalindrome', 'decodeways'].includes(algorithm);
+  const isStringAlgorithm = ['validparentheses', 'longestsubstring', 'validpalindrome', 'decodeways', 'longestpalindrome', 'palindromicsubstrings', 'longrepeating'].includes(algorithm);
   const isCoinChange = algorithm === 'coinchange';
   const isValidAnagram = algorithm === 'validanagram';
-  const isIntervalAlgorithm = algorithm === 'mergeintervals';
+  const isIntervalAlgorithm = ['mergeintervals', 'nonoverlapping', 'meetingrooms', 'meetingroomsii', 'insertinterval'].includes(algorithm);
   const isUniquePaths = algorithm === 'uniquepaths';
   const isWordBreak = algorithm === 'wordbreak';
-  const needsTarget = ['binary', 'linear', 'bst-search', 'twosum', 'coinchange'].includes(algorithm);
+  const isDetectCycle = algorithm === 'detectcycle';
+  const isTwoPartInput = ['mergetwolists', 'lcs', 'mergeklists'].includes(algorithm);
+  const needsTarget = ['binary', 'linear', 'bst-search', 'twosum', 'coinchange', 'removenth', 'longrepeating', 'combinationsumiv'].includes(algorithm);
   const needsWeightedGraph = algorithm === 'dijkstra';
 
   return (
-    <div className="app-container">
+    <div className="visualizer-container">
       <div className="header">
         <h1>Algorithm Visualizer</h1>
         <p className="header-subtitle">Watch algorithms come to life step by step</p>
       </div>
 
       <div className="content">
+        <div className="setup-left">
         <div className="form-group">
           <label className="form-label" htmlFor="algorithm-select">Choose Algorithm</label>
           <select
@@ -5785,26 +6771,6 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
             <optgroup label="Search Algorithms">
               <option value="binary">Binary Search</option>
               <option value="linear">Linear Search</option>
-              <option value="twosum">Two Sum</option>
-            </optgroup>
-            <optgroup label="String Algorithms">
-              <option value="validparentheses">Valid Parentheses</option>
-              <option value="longestsubstring">Longest Substring Without Repeating</option>
-              <option value="validanagram">Valid Anagram</option>
-              <option value="validpalindrome">Valid Palindrome</option>
-            </optgroup>
-            <optgroup label="Array Patterns">
-              <option value="containsduplicate">Contains Duplicate</option>
-              <option value="besttimestock">Best Time to Buy and Sell Stock</option>
-              <option value="maxsubarray">Maximum Subarray (Kadane's)</option>
-              <option value="productexceptself">Product of Array Except Self</option>
-              <option value="containermostwater">Container With Most Water</option>
-              <option value="threesum">3Sum</option>
-              <option value="findminrotated">Find Minimum in Rotated Sorted Array</option>
-              <option value="missingnumber">Missing Number</option>
-            </optgroup>
-            <optgroup label="Interval Algorithms">
-              <option value="mergeintervals">Merge Intervals</option>
             </optgroup>
             <optgroup label="Graph Traversal">
               <option value="bfs">Breadth-First Search (BFS)</option>
@@ -5822,14 +6788,6 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
             </optgroup>
             <optgroup label="Dynamic Programming">
               <option value="fibonacci-dp">Fibonacci (DP)</option>
-              <option value="coinchange">Coin Change</option>
-              <option value="houserobber">House Robber</option>
-              <option value="longestincreasing">Longest Increasing Subsequence</option>
-              <option value="uniquepaths">Unique Paths</option>
-              <option value="jumpgame">Jump Game</option>
-              <option value="decodeways">Decode Ways</option>
-              <option value="wordbreak">Word Break</option>
-              <option value="maxproductsubarray">Maximum Product Subarray</option>
             </optgroup>
           </select>
         </div>
@@ -5890,7 +6848,7 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
               <option value="climbing-stairs">✅ Climbing Stairs</option>
               <option value="coin-change">✅ Coin Change</option>
               <option value="longest-increasing-subsequence">✅ Longest Increasing Subsequence</option>
-              <option value="longest-common-subsequence">📝 Longest Common Subsequence</option>
+              <option value="longest-common-subsequence">✅ Longest Common Subsequence</option>
               <option value="word-break">✅ Word Break</option>
               <option value="combination-sum-iv">📝 Combination Sum IV</option>
               <option value="house-robber">✅ House Robber</option>
@@ -5927,25 +6885,25 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
               <option value="longest-substring">✅ Longest Substring Without Repeating Characters</option>
               <option value="longest-repeating">📝 Longest Repeating Character Replacement</option>
               <option value="valid-anagram">✅ Valid Anagram</option>
-              <option value="group-anagrams">🔧 Group Anagrams</option>
+              <option value="group-anagrams">✅ Group Anagrams</option>
               <option value="valid-parentheses">✅ Valid Parentheses</option>
               <option value="valid-palindrome">✅ Valid Palindrome</option>
-              <option value="longest-palindrome">📝 Longest Palindromic Substring</option>
+              <option value="longest-palindrome">✅ Longest Palindromic Substring</option>
               <option value="palindromic-substrings">📝 Palindromic Substrings</option>
             </optgroup>
 
             <optgroup label="Interval (5 problems)">
               <option value="insert-interval">🔧 Insert Interval</option>
               <option value="merge-intervals">✅ Merge Intervals</option>
-              <option value="non-overlapping-intervals">📝 Non-overlapping Intervals</option>
+              <option value="non-overlapping-intervals">✅ Non-overlapping Intervals</option>
               <option value="meeting-rooms">📝 Meeting Rooms</option>
               <option value="meeting-rooms-ii">📝 Meeting Rooms II</option>
             </optgroup>
 
             <optgroup label="Linked List (6 problems)">
-              <option value="reverse-list">📝 Reverse Linked List</option>
-              <option value="detect-cycle">📝 Detect Cycle in Linked List</option>
-              <option value="merge-two-lists">📝 Merge Two Sorted Lists</option>
+              <option value="reverse-list">✅ Reverse Linked List</option>
+              <option value="detect-cycle">✅ Detect Cycle in Linked List</option>
+              <option value="merge-two-lists">✅ Merge Two Sorted Lists</option>
               <option value="merge-k-lists">📝 Merge K Sorted Lists</option>
               <option value="remove-nth">📝 Remove Nth Node From End</option>
               <option value="reorder-list">📝 Reorder List</option>
@@ -5978,7 +6936,9 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
             <strong>Legend:</strong> ✅ Available | 🔧 Similar Pattern | 📝 To Be Implemented
           </div>
         </div>
+        </div>{/* end setup-left */}
 
+        <div className="setup-right">
         {isArrayAlgorithm && (
           <div className="form-group">
             <label className="form-label" htmlFor="array-input">
@@ -6176,14 +7136,55 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
           </div>
         )}
 
-        <div className="code-detection-section" style={{ 
-          marginBottom: '1.5rem', 
-          padding: '1.5rem', 
-          backgroundColor: '#f9fafb', 
-          borderRadius: '0.5rem',
-          border: '2px dashed #d1d5db'
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '0.75rem', color: '#374151' }}>
+        {isDetectCycle && (
+          <>
+            <div className="form-group">
+              <label className="form-label" htmlFor="cycle-list-input">
+                Linked List Values (comma-separated)
+              </label>
+              <input
+                id="cycle-list-input"
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="input-field"
+                placeholder="e.g., 3, 2, 0, -4"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="cycle-at-input">
+                Cycle back to index (-1 for no cycle)
+              </label>
+              <input
+                id="cycle-at-input"
+                type="text"
+                value={targetNode}
+                onChange={(e) => setTargetNode(e.target.value)}
+                className="input-field"
+                placeholder="e.g., 1 (tail connects to index 1) or -1"
+              />
+            </div>
+          </>
+        )}
+
+        {isTwoPartInput && (
+          <div className="form-group">
+            <label className="form-label" htmlFor="twopart-input">
+              {algorithm === 'mergetwolists' ? 'List 1 | List 2 (pipe-separated)' : 'Text 1 | Text 2 (pipe-separated)'}
+            </label>
+            <input
+              id="twopart-input"
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="input-field"
+              placeholder={algorithm === 'mergetwolists' ? 'e.g., 1,2,4|1,3,4' : 'e.g., abcde|ace'}
+            />
+          </div>
+        )}
+
+        <div className="code-detection-section">
+          <h3 className="detection-title">
             🔍 Paste Your Code to Detect Algorithm
           </h3>
           <textarea
@@ -6191,84 +7192,36 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
             onChange={(e) => setUserCode(e.target.value)}
             rows={8}
             placeholder="Paste your algorithm code here..."
-            style={{ 
-              width: '100%', 
-              fontFamily: 'monospace',
-              padding: '0.75rem',
-              fontSize: '0.875rem',
-              borderRadius: '0.375rem',
-              border: '1px solid #d1d5db',
-              resize: 'vertical'
-            }}
+            className="detection-textarea"
           />
-          <button 
+          <button
             onClick={handleDetectAlgorithm}
-            style={{
-              marginTop: '0.75rem',
-              padding: '0.625rem 1.25rem',
-              backgroundColor: '#8b5cf6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.375rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              fontSize: '0.875rem'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#7c3aed'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#8b5cf6'}
+            className="detect-btn"
           >
             Detect Algorithm
           </button>
 
           {detected && (
-            <div style={{ 
-              marginTop: '1rem', 
-              padding: '1rem', 
-              backgroundColor: detected.confidence > 60 ? '#d1fae5' : '#fef3c7',
-              borderRadius: '0.375rem',
-              border: `2px solid ${detected.confidence > 60 ? '#6ee7b7' : '#fcd34d'}`
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '1.5rem' }}>
+            <div className={`detection-result ${detected.confidence > 60 ? 'result-high' : 'result-low'}`}>
+              <div className="detection-result-header">
+                <span className="detection-icon">
                   {detected.confidence > 80 ? '✅' : detected.confidence > 60 ? '✓' : '⚠️'}
                 </span>
-                <strong style={{ fontSize: '1.125rem', color: '#1f2937' }}>
-                  {detected.name}
-                </strong>
+                <strong className="detection-name">{detected.name}</strong>
               </div>
-              <div style={{ marginBottom: '0.5rem' }}>
-                <strong>Confidence:</strong> 
-                <span style={{ 
-                  marginLeft: '0.5rem',
-                  padding: '0.25rem 0.5rem',
-                  backgroundColor: detected.confidence > 80 ? '#10b981' : detected.confidence > 60 ? '#f59e0b' : '#ef4444',
-                  color: 'white',
-                  borderRadius: '0.25rem',
-                  fontWeight: 'bold',
-                  fontSize: '0.875rem'
-                }}>
+              <div className="detection-confidence-row">
+                <strong>Confidence:</strong>
+                <span className={`confidence-badge ${detected.confidence > 80 ? 'conf-high' : detected.confidence > 60 ? 'conf-medium' : 'conf-low'}`}>
                   {detected.confidence}%
                 </span>
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#4b5563', fontStyle: 'italic' }}>
-                {detected.explanation}
-              </div>
+              <div className="detection-explanation">{detected.explanation}</div>
               {detected.allMatches && detected.allMatches.length > 1 && (
-                <div style={{ marginTop: '0.75rem', fontSize: '0.875rem' }}>
+                <div className="detection-others">
                   <strong>Other possibilities:</strong>
-                  <div style={{ marginTop: '0.25rem' }}>
+                  <div className="match-tags">
                     {detected.allMatches.slice(1).map((match, idx) => (
-                      <span key={idx} style={{ 
-                        display: 'inline-block',
-                        marginRight: '0.5rem',
-                        marginTop: '0.25rem',
-                        padding: '0.25rem 0.5rem',
-                        backgroundColor: '#e5e7eb',
-                        borderRadius: '0.25rem',
-                        fontSize: '0.75rem'
-                      }}>
-                        {match.name}
-                      </span>
+                      <span key={idx} className="match-tag">{match.name}</span>
                     ))}
                   </div>
                 </div>
@@ -6281,6 +7234,7 @@ const AlgorithmVisualizer = ({ onStartVisualization, preselectedAlgorithm }) => 
         <button onClick={handleVisualize} className="btn-primary">
           Generate Visualization
         </button>
+        </div>{/* end setup-right */}
 
         {steps.length > 0 && (
           <>

@@ -1,106 +1,136 @@
 /* ============================================
-   DARK MYSTICAL GLASS-MORPHISM THEME
-   Inspired by "Rise of the Merlin" aesthetic
+   APP SHELL — matches landing page dark space aesthetic
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
 
 .app-container {
   min-height: 100vh;
-  background: radial-gradient(ellipse at 50% 30%, #1a1f3a 0%, #0d1117 40%, #080b12 100%);
+  background: #050508;
   padding: 2rem 0;
   position: relative;
   overflow: hidden;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Snowfall / particle effect */
+/* Static particle dots — matches landing page */
 .app-container::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.15) 0%, transparent 100%),
-    radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.1) 0%, transparent 100%),
-    radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.12) 0%, transparent 100%),
-    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.08) 0%, transparent 100%),
-    radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.1) 0%, transparent 100%),
-    radial-gradient(2px 2px at 15% 70%, rgba(200,210,230,0.06) 0%, transparent 100%),
-    radial-gradient(2px 2px at 45% 80%, rgba(200,210,230,0.05) 0%, transparent 100%),
-    radial-gradient(1px 1px at 80% 90%, rgba(255,255,255,0.08) 0%, transparent 100%),
-    radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.1) 0%, transparent 100%),
-    radial-gradient(1px 1px at 65% 45%, rgba(255,255,255,0.07) 0%, transparent 100%);
-  animation: snowDrift 20s linear infinite;
+    radial-gradient(1.5px 1.5px at  8% 15%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 22% 38%, rgba(255,255,255,0.20) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 38%  6%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 52% 27%, rgba(255,255,255,0.18) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 66% 48%, rgba(255,255,255,0.22) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 79% 12%, rgba(255,255,255,0.28) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 91% 36%, rgba(255,255,255,0.16) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 14% 62%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 33% 78%, rgba(255,255,255,0.20) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 57% 70%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 74% 84%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 46% 90%, rgba(255,255,255,0.10) 0%, transparent 100%);
+  animation: snowDrift 30s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Spotlight from top — mirrors landing page */
+.app-container::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 55vh;
+  background: conic-gradient(
+    from -8deg at 50% 0%,
+    transparent 0deg,
+    rgba(255,255,255,0.06) 7deg,
+    rgba(255,255,255,0.02) 10deg,
+    transparent 16deg
+  );
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+          mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
   pointer-events: none;
   z-index: 0;
 }
 
 @keyframes snowDrift {
   0%   { transform: translateY(0) translateX(0); }
-  50%  { transform: translateY(50vh) translateX(10px); }
-  100% { transform: translateY(100vh) translateX(-10px); }
+  50%  { transform: translateY(40vh) translateX(8px); }
+  100% { transform: translateY(80vh) translateX(-8px); }
 }
 
+/* ── View toggle nav ── */
 .view-toggle {
   max-width: 900px;
   margin: 0 auto 2rem auto;
   padding: 0 2rem;
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
 .toggle-btn {
   flex: 1;
-  max-width: 300px;
-  padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.04);
+  max-width: 280px;
+  padding: 0.85rem 1.4rem;
+  background: rgba(255,255,255,0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  color: rgba(200, 210, 230, 0.6);
-  font-family: 'Cinzel', 'Inter', serif;
-  font-size: 0.95rem;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.65);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.4s ease;
-  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
 }
 
 .toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: rgba(200, 210, 230, 0.9);
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.90);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 8px 24px rgba(0,0,0,0.4);
 }
 
 .toggle-btn.active {
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(220, 225, 240, 0.95);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.30);
   box-shadow:
-    0 0 30px rgba(140, 150, 180, 0.08),
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* ← Home button */
+.home-btn {
+  flex: 0;
+  max-width: 110px;
+  padding: 0.85rem 1.1rem;
+  color: rgba(255,255,255,0.50);
+  font-size: 0.82rem;
+  border-color: rgba(255,255,255,0.12);
+}
+
+.home-btn:hover {
+  color: rgba(255,255,255,0.80);
+  border-color: rgba(255,255,255,0.22);
 }
 
 @media (max-width: 768px) {
-  .app-container {
-    padding: 1rem 0;
-  }
-
-  .view-toggle {
-    flex-direction: column;
-    padding: 0 1rem;
-  }
-
-  .toggle-btn {
-    max-width: 100%;
-  }
+  .app-container { padding: 1rem 0; }
+  .view-toggle { flex-direction: column; padding: 0 1rem; }
+  .toggle-btn, .home-btn { max-width: 100%; }
 }
