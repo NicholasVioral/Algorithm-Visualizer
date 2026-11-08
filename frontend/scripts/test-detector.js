@@ -1,6 +1,6 @@
 // Quick sanity tests for the algorithm detector.
-// Run with: node test-detector.js
-import { detectAlgorithm } from './algorithmDetector.js';
+// Run with: npm test (from the frontend folder)
+import { detectAlgorithm } from '../src/codeAnalyzer.js';
 
 const cases = [
   {
