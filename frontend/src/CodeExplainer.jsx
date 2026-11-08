@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { API_BASE_URL } from './config';
+import { detectAlgorithm } from './codeAnalyzer';
 import './CodeExplainer.css';
 
 const CodeExplainer = ({ onAlgorithmDetected }) => {
@@ -27,27 +27,16 @@ const CodeExplainer = ({ onAlgorithmDetected }) => {
     setAlternatives([]);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/analyze`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
-      });
+      // Detection runs entirely in the browser; no backend needed.
+      const result = detectAlgorithm(code);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to analyze code');
-      }
-
-      setExplanation(data.explanation || 'Analysis complete');
-      setSuggestedAlgorithm(data.suggestedAlgorithm);
-      setAlgorithmName(data.algorithmName || data.suggestedAlgorithm || '');
-      setConfidence(typeof data.confidence === 'number' ? data.confidence : null);
-      setAlternatives(Array.isArray(data.alternatives) ? data.alternatives : []);
+      setExplanation(result.explanation || 'Analysis complete');
+      setSuggestedAlgorithm(result.key);
+      setAlgorithmName(result.name || result.key || '');
+      setConfidence(typeof result.confidence === 'number' ? result.confidence : null);
+      setAlternatives(Array.isArray(result.alternatives) ? result.alternatives : []);
     } catch (err) {
-      setError(err.message || 'Failed to connect to backend. Make sure the server is running on port 5000.');
+      setError(err.message || 'Failed to analyze code');
     } finally {
       setLoading(false);
     }
