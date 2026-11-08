@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from './config';
 import './CodeExplainer.css';
 
 const CodeExplainer = ({ onAlgorithmDetected }) => {
   const [code, setCode] = useState('');
   const [explanation, setExplanation] = useState('');
   const [suggestedAlgorithm, setSuggestedAlgorithm] = useState(null);
+  const [algorithmName, setAlgorithmName] = useState('');
+  const [confidence, setConfidence] = useState(null);
+  const [alternatives, setAlternatives] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,9 +22,12 @@ const CodeExplainer = ({ onAlgorithmDetected }) => {
     setError('');
     setExplanation('');
     setSuggestedAlgorithm(null);
+    setAlgorithmName('');
+    setConfidence(null);
+    setAlternatives([]);
 
     try {
-      const response = await fetch('http://localhost:5000/api/analyze', {
+      const response = await fetch(`${API_BASE_URL}/api/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,6 +43,9 @@ const CodeExplainer = ({ onAlgorithmDetected }) => {
 
       setExplanation(data.explanation || 'Analysis complete');
       setSuggestedAlgorithm(data.suggestedAlgorithm);
+      setAlgorithmName(data.algorithmName || data.suggestedAlgorithm || '');
+      setConfidence(typeof data.confidence === 'number' ? data.confidence : null);
+      setAlternatives(Array.isArray(data.alternatives) ? data.alternatives : []);
     } catch (err) {
       setError(err.message || 'Failed to connect to backend. Make sure the server is running on port 5000.');
     } finally {
@@ -114,8 +124,45 @@ const CodeExplainer = ({ onAlgorithmDetected }) => {
               <div className="algorithm-suggestion">
                 <h3>🎯 Detected Algorithm</h3>
                 <div className="algorithm-badge">
-                  {suggestedAlgorithm}
+                  {algorithmName || suggestedAlgorithm}
                 </div>
+
+                {confidence !== null && (
+                  <div className="confidence-meter">
+                    <div className="confidence-labels">
+                      <span>Confidence</span>
+                      <span>{confidence}%</span>
+                    </div>
+                    <div className="confidence-bar">
+                      <div
+                        className="confidence-fill"
+                        style={{
+                          width: `${confidence}%`,
+                          background:
+                            confidence >= 75
+                              ? '#22c55e'
+                              : confidence >= 50
+                              ? '#eab308'
+                              : '#ef4444',
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {alternatives.length > 0 && (
+                  <div className="alternatives">
+                    <span className="alternatives-label">Other possibilities:</span>
+                    <div className="alternatives-list">
+                      {alternatives.map((alt) => (
+                        <span key={alt.key} className="alternative-chip">
+                          {alt.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <button
                   className="use-algorithm-btn"
                   onClick={handleUseAlgorithm}

@@ -4,6 +4,7 @@ import './NewVisualizer.css';
 const NewVisualizer = ({ data, onBack }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   // Use data from props
   const steps = data?.steps || [];
@@ -57,48 +58,27 @@ const NewVisualizer = ({ data, onBack }) => {
         <p>Step {currentStep + 1} of {steps.length}</p>
       </div>
 
-      {/* Input Display */}
+      {/* Compact input summary (condensed from the old Input Data card) */}
       {data?.inputData && (
-        <div className="input-display">
-          <h3>📥 Input Data</h3>
-          <div className="input-content">
-            {data.inputData.type === 'array' && (
-              <div className="input-item">
-                <span className="input-label">Array:</span>
-                <span className="input-value">[{data.inputData.value}]</span>
-              </div>
-            )}
-            {data.inputData.type === 'array-search' && (
-              <>
-                <div className="input-item">
-                  <span className="input-label">Array:</span>
-                  <span className="input-value">[{data.inputData.array}]</span>
-                </div>
-                <div className="input-item">
-                  <span className="input-label">Target:</span>
-                  <span className="input-value target-highlight">{data.inputData.target}</span>
-                </div>
-              </>
-            )}
-            {data.inputData.type === 'graph' && (
-              <>
-                <div className="input-item">
-                  <span className="input-label">Edges:</span>
-                  <span className="input-value">{data.inputData.edges}</span>
-                </div>
-                <div className="input-item">
-                  <span className="input-label">Start Node:</span>
-                  <span className="input-value target-highlight">{data.inputData.startNode}</span>
-                </div>
-              </>
-            )}
-            {data.inputData.type === 'number' && (
-              <div className="input-item">
-                <span className="input-label">N:</span>
-                <span className="input-value target-highlight">{data.inputData.value}</span>
-              </div>
-            )}
-          </div>
+        <div className="input-summary">
+          {data.inputData.type === 'array' && (
+            <span><strong>Array</strong> [{data.inputData.value}]</span>
+          )}
+          {data.inputData.type === 'array-search' && (
+            <>
+              <span><strong>Array</strong> [{data.inputData.array}]</span>
+              <span><strong>Target</strong> {data.inputData.target}</span>
+            </>
+          )}
+          {data.inputData.type === 'graph' && (
+            <>
+              <span><strong>Edges</strong> {data.inputData.edges}</span>
+              <span><strong>Start</strong> {data.inputData.startNode}</span>
+            </>
+          )}
+          {data.inputData.type === 'number' && (
+            <span><strong>N</strong> {data.inputData.value}</span>
+          )}
         </div>
       )}
 
@@ -107,43 +87,18 @@ const NewVisualizer = ({ data, onBack }) => {
 
         {/* LEFT SIDE - What's Happening */}
         <div className="viz-explanation">
-          {/* Steps Summary */}
-          <div className="explanation-card steps-summary">
-            <h2>📝 Steps Summary</h2>
-            <div className="steps-list">
-              {steps.slice(0, currentStep + 1).map((step, index) => (
-                <div
-                  key={index}
-                  className={`step-item ${index === currentStep ? 'current-step' : 'completed-step'}`}
-                >
-                  <span className="step-number">{index + 1}</span>
-                  <span className="step-description">
-                    {index === currentStep ? '▶ ' : '✓ '}
-                    {step.description}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
+          {/* Current Action (primary) */}
           <div className="explanation-card">
-            <h2>📋 Current Action</h2>
+            <h2>
+              📋 Current Action
+              {currentState.phase && (
+                <span className="phase-badge">{currentState.phase}</span>
+              )}
+            </h2>
             <div className="action-description">
               {currentState.description}
             </div>
           </div>
-
-          {/* Phase */}
-          {currentState.phase && (
-            <div className="explanation-card">
-              <h2>🎯 Phase</h2>
-              <div className="detail-item">
-                <span className="detail-value phase-badge">
-                  {currentState.phase}
-                </span>
-              </div>
-            </div>
-          )}
 
           {/* Variables */}
           {currentState.variables && Object.keys(currentState.variables).length > 0 && (
@@ -151,21 +106,6 @@ const NewVisualizer = ({ data, onBack }) => {
               <h2>📊 Variables</h2>
               <div className="variables-grid">
                 {Object.entries(currentState.variables).map(([key, value]) => (
-                  <div key={key} className="var-item">
-                    <span className="var-name">{key}:</span>
-                    <span className="var-value">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Operations */}
-          {currentState.operations && Object.keys(currentState.operations).length > 0 && (
-            <div className="explanation-card">
-              <h2>🔢 Operations</h2>
-              <div className="variables-grid">
-                {Object.entries(currentState.operations).map(([key, value]) => (
                   <div key={key} className="var-item">
                     <span className="var-name">{key}:</span>
                     <span className="var-value">{value}</span>
@@ -183,6 +123,51 @@ const NewVisualizer = ({ data, onBack }) => {
                 {currentState.insight}
               </div>
             </div>
+          )}
+
+          {/* Secondary detail — collapsed by default to reduce clutter */}
+          <button
+            className="details-toggle"
+            onClick={() => setShowDetails((v) => !v)}
+            aria-expanded={showDetails}
+          >
+            {showDetails ? '▾ Hide step history' : '▸ Show step history'}
+          </button>
+
+          {showDetails && (
+            <>
+              {currentState.operations && Object.keys(currentState.operations).length > 0 && (
+                <div className="explanation-card">
+                  <h2>🔢 Operations</h2>
+                  <div className="variables-grid">
+                    {Object.entries(currentState.operations).map(([key, value]) => (
+                      <div key={key} className="var-item">
+                        <span className="var-name">{key}:</span>
+                        <span className="var-value">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="explanation-card steps-summary">
+                <h2>📝 Steps Summary</h2>
+                <div className="steps-list">
+                  {steps.slice(0, currentStep + 1).map((step, index) => (
+                    <div
+                      key={index}
+                      className={`step-item ${index === currentStep ? 'current-step' : 'completed-step'}`}
+                    >
+                      <span className="step-number">{index + 1}</span>
+                      <span className="step-description">
+                        {index === currentStep ? '▶ ' : '✓ '}
+                        {step.description}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
         </div>
 

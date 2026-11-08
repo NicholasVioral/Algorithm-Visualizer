@@ -90,7 +90,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.6rem 3.5rem;
+  padding: 1.25rem 3rem;
 }
 
 .landing-logo {
@@ -149,8 +149,8 @@
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: 11vh 2rem 8vh;
-  max-width: 860px;
+  padding: 3.25rem 2rem 2.75rem;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -166,7 +166,7 @@
   font-weight: 600;
   letter-spacing: 2.5px;
   color: rgba(255,255,255,0.75);
-  margin-bottom: 2.25rem;
+  margin-bottom: 1.4rem;
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(8px);
 }
@@ -187,11 +187,11 @@
 
 /* Headline */
 .hero-title {
-  font-size: clamp(2.8rem, 6.5vw, 5rem);
+  font-size: clamp(2.2rem, 4.6vw, 3.7rem);
   font-weight: 800;
-  line-height: 1.07;
+  line-height: 1.1;
   color: #ffffff;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.05rem;
   letter-spacing: -1.5px;
 }
 
@@ -199,9 +199,9 @@
 .hero-subtitle {
   font-size: clamp(1rem, 2vw, 1.15rem);
   color: rgba(255,255,255,0.70);
-  line-height: 1.75;
-  margin-bottom: 2.75rem;
-  max-width: 520px;
+  line-height: 1.6;
+  margin-bottom: 1.9rem;
+  max-width: 620px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -280,7 +280,7 @@
   z-index: 10;
   max-width: 1080px;
   margin: 0 auto;
-  padding: 6vh 2rem 5vh;
+  padding: 2.5rem 2rem 2rem;
   text-align: center;
 }
 
@@ -290,7 +290,7 @@
   font-weight: 600;
   letter-spacing: 3.5px;
   color: rgba(255,255,255,0.55);
-  margin-bottom: 2.75rem;
+  margin-bottom: 1.5rem;
   text-transform: uppercase;
 }
 
@@ -305,7 +305,7 @@
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 16px;
-  padding: 2.25rem 1.8rem;
+  padding: 1.6rem 1.5rem;
   text-align: left;
   backdrop-filter: blur(10px);
   transition: all 0.35s ease;
@@ -323,7 +323,12 @@
 }
 
 /* Step number — was 0.20, now 0.50 */
-.step-number {
+.landing-how .step-number {
+  /* Scoped: NewVisualizer.css also defines a global .step-number circle badge */
+  background: none;
+  border-radius: 0;
+  min-width: 0;
+  height: auto;
   font-family: 'Cinzel', serif;
   font-size: 0.7rem;
   font-weight: 600;
@@ -345,7 +350,7 @@
 .step-desc {
   font-size: 0.9rem;
   color: rgba(255,255,255,0.68);
-  line-height: 1.72;
+  line-height: 1.6;
 }
 
 /* ══════════════════════════════
@@ -357,7 +362,7 @@
   z-index: 10;
   max-width: 1080px;
   margin: 0 auto;
-  padding: 0 2rem 7vh;
+  padding: 0 2rem 2.5rem;
   text-align: center;
 }
 
@@ -395,14 +400,14 @@
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: 4vh 2rem 10vh;
+  padding: 2.25rem 2rem 2.75rem;
   border-top: 1px solid rgba(255,255,255,0.07);
 }
 
 .landing-bottom-cta p {
   font-size: 0.9rem;
   color: rgba(255,255,255,0.50);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .cta-large {
@@ -425,7 +430,7 @@
 @media (max-width: 640px) {
   .landing-nav  { padding: 1.25rem 1.5rem; }
   .logo-text    { display: none; }
-  .landing-hero { padding: 7vh 1.5rem 5vh; }
+  .landing-hero { padding: 2.5rem 1.5rem 2rem; }
 
   .hero-ctas { flex-direction: column; align-items: center; }
   .cta-primary,

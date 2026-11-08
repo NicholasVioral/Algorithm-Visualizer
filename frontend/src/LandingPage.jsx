@@ -103,7 +103,7 @@ export default function LandingPage({ onNavigate }) {
         </h1>
 
         <p className="hero-subtitle">
-          Step through sorting, searching, and graph algorithms in real time.<br />
+          Step through sorting, searching, and graph algorithms in real time.
           Paste your code and watch it come alive — one operation at a time.
         </p>
 
