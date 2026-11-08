@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm Visualizer — Complete Project Documentation</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --border: #30363d;
+    --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff;
+    --accent2: #bc8cff; --code-bg: #1f2530; --green: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65; font-size: 16px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 48px 28px 96px; }
+  header.hero {
+    border-bottom: 1px solid var(--border); padding-bottom: 28px; margin-bottom: 36px;
+  }
+  header.hero h1 {
+    font-size: 2.1rem; line-height: 1.2; margin: 0 0 12px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header.hero p.sub { color: var(--muted); font-style: italic; margin: 0; font-size: 1.05rem; }
+  h2 {
+    margin: 48px 0 16px; padding-bottom: 8px; font-size: 1.5rem;
+    border-bottom: 1px solid var(--border); scroll-margin-top: 20px;
+  }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; }
+  h3 { margin: 28px 0 10px; font-size: 1.15rem; color: var(--accent2); }
+  h4 { margin: 20px 0 8px; font-size: 1rem; color: var(--text); }
+  p { margin: 12px 0; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 6px 0; }
+  strong { color: #fff; }
+  em { color: var(--muted); }
+  code {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 5px;
+    padding: 1px 6px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.86em; color: #ffa657;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 18px; overflow-x: auto; line-height: 1.45;
+  }
+  pre code {
+    background: none; border: none; padding: 0; color: var(--text); font-size: 0.82rem; white-space: pre;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem;
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  th, td { text-align: left; padding: 9px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--panel); color: var(--accent); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  nav.toc {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 24px; margin-bottom: 8px;
+  }
+  nav.toc h2 { border: none; margin: 0 0 12px; font-size: 1.1rem; padding: 0; }
+  nav.toc ol { margin: 0; }
+  nav.toc li { margin: 4px 0; }
+  .footer-note { color: var(--muted); font-size: 0.88rem; font-style: italic; margin-top: 8px; }
+  .green { color: var(--green); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Algorithm Visualizer — Complete Project Documentation</h1>
+  <p class="sub">An interactive, step-by-step algorithm visualization tool with in-browser code analysis, covering 60+ classic algorithms and the full Blind 75 LeetCode list.</p>
+</header>
+
+<nav class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#s1">What the Project Is</a></li>
+    <li><a href="#s2">What It Does (Feature Walkthrough)</a></li>
+    <li><a href="#s3">Technology Stack</a></li>
+    <li><a href="#s4">Architecture &amp; How It Works</a></li>
+    <li><a href="#s5">Frontend File-by-File Breakdown</a></li>
+    <li><a href="#s6">Deployment &amp; Hosting</a></li>
+    <li><a href="#s7">The Algorithm Catalog</a></li>
+    <li><a href="#s8">The Algorithm Detection System</a></li>
+    <li><a href="#s9">How It Was Built — Development Timeline</a></li>
+    <li><a href="#s10">Running the Project Locally</a></li>
+    <li><a href="#s11">Current State &amp; Notable Details</a></li>
+    <li><a href="#s12">Project Metrics</a></li>
+  </ol>
+</nav>
+
+<h2 id="s1"><span class="num">1.</span> What the Project Is</h2>
+<p><strong>Algorithm Visualizer</strong> (branded in-app as <strong>&quot;AlgoViz&quot;</strong>) is a web application that lets you <em>watch algorithms run one operation at a time</em>. Instead of reading static pseudocode, you pick an algorithm (or paste your own code), give it input, and step through the execution while the UI shows pointers, comparisons, swaps, data-structure state, and a plain-English explanation at every step.</p>
+<p>It has two complementary entry points:</p>
+<ul>
+<li><strong>Manual Setup</strong> — choose from a categorized dropdown of 60+ algorithms, supply input (an array, graph edges, a target, a string, etc.), and launch a full visualization.</li>
+<li><strong>AI Code Analyzer</strong> — paste a snippet of code; the app detects which algorithm it most likely is, explains it, and offers a one-click jump straight into the matching visualizer.</li>
+</ul>
+<p>The project&#39;s stated goal (from its README and the <code>BLIND_75_MAPPING.md</code> planning doc) is <strong>full visual coverage of the Blind 75</strong> — the well-known curated list of 75 LeetCode problems used for interview prep — plus the foundational sorting/searching/graph/tree algorithms those problems build on.</p>
+<p>It is a <strong>static, frontend-only web app</strong>: a Vite + React single-page app with code analysis running entirely in the browser. There is no backend, database, auth, or API key. It is hosted on Vercel at <strong><a href="https://algorithm-visualizer-lac.vercel.app">https://algorithm-visualizer-lac.vercel.app</a></strong>.</p>
+<h2 id="s2"><span class="num">2.</span> What It Does (Feature Walkthrough)</h2>
+<h3>The landing page</h3>
+<p>A polished marketing-style landing screen (&quot;See every step, understand every move&quot;) with:</p>
+<ul>
+<li>An animated background of 48 falling particles (a mix of dots and squares) generated once so they don&#39;t re-randomize on re-render.</li>
+<li>A spotlight ray and a soft center glow.</li>
+<li>A &quot;How It Works&quot; three-step section: <em>Choose an Algorithm → Configure Your Input → Watch It Execute</em>.</li>
+<li>A row of algorithm &quot;chips&quot; (Bubble Sort, Merge Sort, Binary Search, BFS/DFS, Dijkstra&#39;s, Two Sum, Sliding Window, etc.).</li>
+<li>Two CTAs: <strong>Explore Algorithms</strong> (→ Manual Setup) and <strong>Try AI Analyzer</strong> (→ AI Code Analyzer).</li>
+</ul>
+<h3>Manual Setup</h3>
+<ul>
+<li>A grouped <code>&lt;select&gt;</code> dropdown organized into optgroups: <em>Sorting Algorithms, Search Algorithms, Graph Traversal, Tree Algorithms, Recursion &amp; Backtracking, Dynamic Programming</em>, plus Blind-75 category groups (<em>Array, DP, Graph, Tree, String, Interval, Linked List</em>).</li>
+<li>Input fields that <strong>adapt to the selected algorithm</strong> — an array box for sorting, edge list + start node for graphs, a target value for searches, two strings for anagram checks, intervals for interval problems, and so on.</li>
+<li>A <strong>&quot;Start Full Visualization&quot;</strong> button that hands off to the full-screen player.</li>
+</ul>
+<h3>The visualization player (full screen)</h3>
+<ul>
+<li><strong>Play / Pause / Step-forward / Step-back / Reset</strong> transport controls.</li>
+<li>A <strong>speed control</strong> for autoplay.</li>
+<li>A large visual canvas that renders the data structure appropriate to the algorithm: bars for sorting, nodes/edges for graphs, a tree for BST/tree problems, a call-stack panel for recursion, a DP table/grid for dynamic-programming problems, pointers for two-pointer/sliding-window problems, a stack for parentheses matching, etc.</li>
+<li>A <strong>step explanation</strong> panel describing what just happened in plain English.</li>
+<li>Highlighting of the active elements (compared, swapped, visited, current pointer, etc.).</li>
+</ul>
+<h3>AI Code Analyzer</h3>
+<ul>
+<li>A code textarea (with a &quot;Load Example&quot; button that drops in a Python bubble-sort sample).</li>
+<li>An <strong>&quot;✨ Analyze with AI&quot;</strong> button that runs the detector in <code>codeAnalyzer.js</code> directly in the browser (no network call).</li>
+<li>Results panel showing the <strong>detected algorithm</strong> as a badge, a <strong>confidence score</strong> (0–99%), <strong>close alternatives</strong>, an <strong>explanation</strong> (with Big-O time complexity), and a <strong>&quot;Visualize This Algorithm →&quot;</strong> button that routes you into the corresponding visualizer with the algorithm preselected.</li>
+</ul>
+<h2 id="s3"><span class="num">3.</span> Technology Stack</h2>
+<h3>Frontend</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Version</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>React</strong></td>
+<td>^19.2.0</td>
+<td>UI library (uses StrictMode, hooks)</td>
+</tr>
+<tr>
+<td><strong>react-dom</strong></td>
+<td>^19.2.0</td>
+<td>DOM renderer</td>
+</tr>
+<tr>
+<td><strong>Vite</strong></td>
+<td>^7.2.4</td>
+<td>Dev server + build tool</td>
+</tr>
+<tr>
+<td><strong>@vitejs/plugin-react</strong></td>
+<td>^5.1.1</td>
+<td>React fast-refresh / JSX transform</td>
+</tr>
+<tr>
+<td><strong>lucide-react</strong></td>
+<td>^0.562.0</td>
+<td>Icon set (note: the visualizer also hand-rolls its own inline SVG icons)</td>
+</tr>
+<tr>
+<td><strong>ESLint</strong></td>
+<td>^9.39.1</td>
+<td>Linting, with <code>eslint-plugin-react-hooks</code> and <code>eslint-plugin-react-refresh</code></td>
+</tr>
+<tr>
+<td><strong>@types/react / @types/react-dom</strong></td>
+<td>^19.x</td>
+<td>Type definitions</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Module type: ESM (<code>&quot;type&quot;: &quot;module&quot;</code>).</li>
+<li>No CSS framework — all styling is hand-written CSS (one stylesheet per major component).</li>
+<li>No router library — view switching is done with a single <code>useState</code> (&quot;landing&quot; | &quot;setup&quot; | &quot;ai-explainer&quot; | &quot;visualize&quot;) in <code>App.jsx</code>.</li>
+<li>No state-management library — local component state only.</li>
+</ul>
+<h3>Hosting</h3>
+<ul>
+<li><strong>Vercel</strong> serves the static <code>vite build</code> output (framework preset: Vite).</li>
+<li>No server-side code. An Express backend existed earlier but was removed once detection moved into the browser (see the timeline).</li>
+</ul>
+<h2 id="s4"><span class="num">4.</span> Architecture &amp; How It Works</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────┐
+│  Browser (static site on Vercel, or Vite dev server :5173)    │
+│                                                               │
+│  App.jsx  ── currentView state ──┬─ LandingPage.jsx           │
+│                                  ├─ AlgorithmVisualizer.jsx   │
+│                                  │     (Manual Setup +        │
+│                                  │      ~45 step-generators)  │
+│                                  │     uses algorithmDetector │
+│                                  ├─ CodeExplainer.jsx         │
+│                                  │     uses codeAnalyzer.js   │
+│                                  │     (weighted scoring)     │
+│                                  └─ NewVisualizer.jsx         │
+│                                        (full-screen player)   │
+└──────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3>Core design ideas</h3>
+<ol>
+<li><p><strong>Step-list model.</strong> Every algorithm is implemented as a <em>step generator</em> — a pure function such as <code>generateBubbleSortSteps(arr)</code> that runs the algorithm once and records an array of &quot;step&quot; snapshots (the array state, which indices are active, a description string, pointers, etc.). The player then simply indexes through that array forward/backward. This decouples <em>computing</em> the algorithm from <em>rendering</em> it and makes step-back trivial.</p>
+</li>
+<li><p><strong>View routing without a router.</strong> <code>App.jsx</code> holds <code>currentView</code> and swaps top-level components. Visualization data and a preselected algorithm are passed down as props; the AI analyzer&#39;s &quot;detected algorithm&quot; flows back up via an <code>onAlgorithmDetected</code> callback that switches to Manual Setup with the algorithm chosen.</p>
+</li>
+<li><p><strong>Two independent detectors, both in the browser.</strong></p>
+<ul>
+<li><code>frontend/src/algorithmDetector.jsx</code> (~1,600 lines) with rich <code>algorithmPatterns</code> plus an <code>analyzeStructuralSignatures()</code> pass, used by Manual Setup.</li>
+<li><code>frontend/src/codeAnalyzer.js</code> (~630 lines), a weighted-scoring detector covering 52 algorithms, used by the Code Analyzer tab.</li>
+</ul>
+</li>
+<li><p><strong>Adaptive input + adaptive rendering.</strong> The Manual Setup form and the player both branch on the selected algorithm id (e.g. <code>&quot;bubble&quot;</code>, <code>&quot;dijkstra&quot;</code>, <code>&quot;two-sum&quot;</code>, <code>&quot;merge-intervals&quot;</code>) to show the right inputs and the right visualization.</p>
+</li>
+</ol>
+<h2 id="s5"><span class="num">5.</span> Frontend File-by-File Breakdown</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th align="right">Lines</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>main.jsx</code></td>
+<td align="right">10</td>
+<td>React entry point; mounts <code>&lt;App/&gt;</code> in StrictMode.</td>
+</tr>
+<tr>
+<td><code>App.jsx</code></td>
+<td align="right">84</td>
+<td>Top-level view router (<code>landing</code>/<code>setup</code>/<code>ai-explainer</code>/<code>visualize</code>); wires callbacks between the analyzer and the visualizer.</td>
+</tr>
+<tr>
+<td><code>LandingPage.jsx</code></td>
+<td align="right">156</td>
+<td>Marketing landing page; particle field, hero, &quot;how it works&quot;, algorithm chips, CTAs.</td>
+</tr>
+<tr>
+<td><code>AlgorithmVisualizer.jsx</code></td>
+<td align="right"><strong>7,434</strong></td>
+<td>The heart of the app. Contains ~45 <code>generate…Steps</code> functions (one per algorithm), the <code>algorithmSummaries</code> metadata map, inline SVG control icons, the Manual Setup form with adaptive inputs, and the grouped algorithm dropdown.</td>
+</tr>
+<tr>
+<td><code>NewVisualizer.jsx</code></td>
+<td align="right">1,264</td>
+<td>The full-screen visualization player — transport controls, speed, the rendering canvas for each data-structure type, and the step-explanation panel.</td>
+</tr>
+<tr>
+<td><code>CodeExplainer.jsx</code></td>
+<td align="right">186</td>
+<td>Code Analyzer tab; textarea, &quot;Load Example&quot;, runs <code>detectAlgorithm()</code> from <code>codeAnalyzer.js</code>, renders detected algorithm, confidence, alternatives and explanation, &quot;Visualize This Algorithm →&quot;.</td>
+</tr>
+<tr>
+<td><code>codeAnalyzer.js</code></td>
+<td align="right">627</td>
+<td>Weighted detector: an <code>ALGORITHMS</code> table of 52 entries, each with weighted regex signals; the highest score wins and returns <code>{ key, name, explanation, confidence, alternatives }</code>.</td>
+</tr>
+<tr>
+<td><code>algorithmDetector.jsx</code></td>
+<td align="right">1,594</td>
+<td>Client-side detection library: <code>algorithmPatterns</code> (30+ named patterns), <code>analyzeStructuralSignatures()</code>, and the exported <code>detectAlgorithm()</code>.</td>
+</tr>
+<tr>
+<td><code>App.css</code></td>
+<td align="right">136</td>
+<td>App shell + view-toggle styling.</td>
+</tr>
+<tr>
+<td><code>AlgorithmVisualizer.css</code></td>
+<td align="right">1,436</td>
+<td>Styling for the setup form and visualizer canvases.</td>
+</tr>
+<tr>
+<td><code>NewVisualizer.css</code></td>
+<td align="right">2,428</td>
+<td>Styling for the full-screen player (largest stylesheet).</td>
+</tr>
+<tr>
+<td><code>CodeExplainer.css</code></td>
+<td align="right">357</td>
+<td>Analyzer tab styling.</td>
+</tr>
+<tr>
+<td><code>LandingPage.css</code></td>
+<td align="right">443</td>
+<td>Landing page styling, particle animation keyframes.</td>
+</tr>
+<tr>
+<td><code>index.css</code></td>
+<td align="right">0</td>
+<td>Empty (reset slot).</td>
+</tr>
+<tr>
+<td><code>scripts/test-detector.js</code></td>
+<td align="right">149</td>
+<td>11 detection test cases for <code>codeAnalyzer.js</code>; run with <code>npm test</code>.</td>
+</tr>
+</tbody></table>
+<h3>Detected-algorithm step generators (in <code>AlgorithmVisualizer.jsx</code>)</h3>
+<p>A representative list of the <code>generate…Steps</code> functions present:</p>
+<p><code>generateBubbleSortSteps</code>, <code>generateInsertionSortSteps</code>, <code>generateSelectionSortSteps</code>, <code>generateHeapSortSteps</code>, <code>generateMergeSortSteps</code>, <code>generateQuickSortSteps</code>, <code>generateLinearSearchSteps</code>, <code>generateBinarySearchSteps</code>, <code>generateBFSSteps</code>, <code>generateDFSSteps</code>, <code>generateDijkstraSteps</code>, <code>generateRecursionSteps</code> (factorial call stack), <code>generateBSTInsertSteps</code>, <code>generateBSTSearchSteps</code>, <code>generateFibonacciSteps</code>, <code>generateFibonacciDPSteps</code>, <code>generateTowerHanoiSteps</code>, <code>generateTwoSumSteps</code>, <code>generateMaxSubarraySteps</code> (Kadane&#39;s), <code>generateValidParenthesesSteps</code>, <code>generateLongestSubstringSteps</code>, <code>generateCoinChangeSteps</code>, <code>generateProductExceptSelfSteps</code>, <code>generateMergeIntervalsSteps</code>, <code>generateContainsDuplicateSteps</code>, <code>generateBestTimeStockSteps</code>, <code>generateValidAnagramSteps</code>, <code>generateValidPalindromeSteps</code>, <code>generateContainerMostWaterSteps</code>, <code>generateThreeSumSteps</code>, <code>generateHouseRobberSteps</code>, <code>generateLongestIncreasingSubsequenceSteps</code>, <code>generateUniquePathsSteps</code>, <code>generateJumpGameSteps</code>, <code>generateMissingNumberSteps</code>, <code>generateDecodeWaysSteps</code>, <code>generateWordBreakSteps</code>, <code>generateMaxProductSubarraySteps</code>, <code>generateFindMinRotatedSteps</code>, <code>generateReverseListSteps</code>, <code>generateTopKFrequentSteps</code>, <code>generateLongestPalindromeSteps</code>.</p>
+<h2 id="s6"><span class="num">6.</span> Deployment &amp; Hosting</h2>
+<ul>
+<li><strong>Host:</strong> Vercel project <code>algorithm-visualizer</code>, live at <strong><a href="https://algorithm-visualizer-lac.vercel.app">https://algorithm-visualizer-lac.vercel.app</a></strong>.</li>
+<li><strong>Build:</strong> Vercel detects Vite, runs <code>npm run build</code>, and serves <code>dist/</code>.</li>
+<li><strong>Deploy manually:</strong> <code>cd frontend &amp;&amp; npx vercel deploy --prod</code>.</li>
+<li><strong>Auto-deploy (optional):</strong> connect the GitHub repo in the Vercel dashboard (Settings → Git) with root directory <code>frontend</code>, and every push to <code>master</code> deploys.</li>
+<li><strong>Config:</strong> none needed. There are no environment variables or secrets.</li>
+</ul>
+<h2 id="s7"><span class="num">7.</span> The Algorithm Catalog</h2>
+<h3>Foundational algorithms (Manual Setup groups)</h3>
+<ul>
+<li><strong>Sorting:</strong> Bubble Sort, Merge Sort, Quick Sort, Insertion Sort, Selection Sort, Heap Sort</li>
+<li><strong>Search:</strong> Binary Search, Linear Search</li>
+<li><strong>Graph Traversal:</strong> BFS, DFS, Dijkstra&#39;s Algorithm (the client detector also knows Bellman-Ford, Topological Sort, Union-Find)</li>
+<li><strong>Tree:</strong> BST Insert, BST Search (plus the Blind-75 tree problems below)</li>
+<li><strong>Recursion &amp; Backtracking:</strong> Factorial (call stack), Fibonacci (recursion), Tower of Hanoi, generic Backtracking</li>
+<li><strong>Dynamic Programming:</strong> Fibonacci (DP), and the DP Blind-75 problems below</li>
+</ul>
+<h3>Blind 75 coverage (✅ = full visualizer in the dropdown)</h3>
+<ul>
+<li><strong>Array:</strong> Two Sum ✅, Best Time to Buy/Sell Stock ✅, Contains Duplicate ✅, Product of Array Except Self ✅, Maximum Subarray (Kadane&#39;s) ✅, Maximum Product Subarray ✅, Find Minimum in Rotated Sorted Array ✅, Search in Rotated Sorted Array ✅, 3Sum ✅, Container With Most Water ✅</li>
+<li><strong>Dynamic Programming:</strong> Climbing Stairs ✅, Coin Change ✅, Longest Increasing Subsequence ✅, Longest Common Subsequence ✅, Word Break ✅, House Robber ✅, Decode Ways ✅, Unique Paths ✅, Jump Game ✅</li>
+<li><strong>Graph:</strong> Clone Graph ✅, Course Schedule ✅, Pacific Atlantic Water Flow ✅, Number of Islands ✅, Graph Valid Tree ✅</li>
+<li><strong>Tree:</strong> Maximum Depth ✅, Same Tree ✅, Invert Binary Tree ✅, Binary Tree Maximum Path Sum ✅, Level Order Traversal ✅, Serialize/Deserialize ✅, Subtree of Another Tree ✅, Construct from Preorder/Inorder ✅, Validate BST ✅, Kth Smallest in BST ✅, Lowest Common Ancestor of BST ✅</li>
+<li><strong>String:</strong> Longest Substring Without Repeating ✅, Valid Anagram ✅, Group Anagrams ✅, Valid Parentheses ✅, Valid Palindrome ✅, Longest Palindromic Substring ✅</li>
+<li><strong>Interval:</strong> Merge Intervals ✅, Non-overlapping Intervals ✅</li>
+<li><strong>Linked List:</strong> Reverse Linked List ✅, Detect Cycle ✅, Merge Two Sorted Lists ✅</li>
+</ul>
+<p>The dropdown&#39;s optgroup labels show the intended Blind-75 tallies: Array (10), DP (11), Graph (6), Tree (11), String (8), Interval (5), Linked List (6).</p>
+<h3>The planning document — <code>BLIND_75_MAPPING.md</code></h3>
+<p>A 424-line living spec that maps <strong>all 75</strong> Blind-75 problems to a status (✅ Full Visualizer / 🔧 Related pattern / 📝 To be implemented), records the pattern each problem uses, and describes <em>what the user should see</em> in the visualization. It also tracks a &quot;Currently Available (18 visualizers)&quot; baseline and a &quot;High Priority To Add (Top 10)&quot; list — i.e. it&#39;s the project&#39;s roadmap/checklist that drove the build-out.</p>
+<h2 id="s8"><span class="num">8.</span> The Algorithm Detection System</h2>
+<p>There are two detectors, both heuristic (no ML at runtime despite the &quot;AI&quot; branding):</p>
+<h3>Client-side — <code>algorithmDetector.jsx</code></h3>
+<ul>
+<li><strong><code>algorithmPatterns</code></strong> — a large object keyed by algorithm name (<code>&quot;Bubble Sort&quot;</code>, <code>&quot;Merge Sort&quot;</code>, <code>&quot;Quick Sort&quot;</code>, <code>&quot;Binary Search&quot;</code>, <code>&quot;Breadth-First Search&quot;</code>, <code>&quot;Dijkstra&#39;s Algorithm&quot;</code>, <code>&quot;Bellman-Ford Algorithm&quot;</code>, <code>&quot;BST Insert&quot;</code>, <code>&quot;Two Pointers&quot;</code>, <code>&quot;Sliding Window&quot;</code>, <code>&quot;Fast &amp; Slow Pointers (Floyd&#39;s Cycle)&quot;</code>, <code>&quot;Kadane&#39;s Algorithm&quot;</code>, <code>&quot;Topological Sort&quot;</code>, <code>&quot;Union Find (Disjoint Set)&quot;</code>, <code>&quot;0/1 Knapsack&quot;</code>, <code>&quot;Longest Increasing Subsequence&quot;</code>, <code>&quot;Monotonic Stack&quot;</code>, <code>&quot;Backtracking&quot;</code>, <code>&quot;Prefix Sum&quot;</code>, and more). Each entry carries keyword/regex signals and metadata.</li>
+<li><strong><code>analyzeStructuralSignatures(code)</code></strong> — a second pass that looks at structural cues (nested loops, <code>while left &lt;= right</code>, queue/stack usage, recursion shape) rather than just keywords, to disambiguate.</li>
+<li><strong><code>detectAlgorithm(code)</code></strong> — the exported entry that combines the above and returns a best-guess algorithm (with graceful &quot;No code provided&quot; / &quot;Unknown Algorithm&quot; fallbacks).</li>
+</ul>
+<h3>Code Analyzer — <code>codeAnalyzer.js</code></h3>
+<p>Each of 52 algorithms defines weighted signals (<code>[weight, RegExp]</code>). The code is scored against every algorithm and the highest total wins, which fixes the old first-match-wins problem with overlapping names (e.g. memoized Fibonacci vs. plain recursion). Confidence follows a diminishing-returns curve capped at 99%, and the next-best matches are returned as alternatives. Covered by <code>scripts/test-detector.js</code>.</p>
+<p>The detection rules were iterated repeatedly to handle both Python and JavaScript idioms (e.g. <code>for…in</code> vs <code>for…for</code>, <code>def merge_sort</code> vs <code>function mergeSort</code> vs <code>const merge =</code>, and binary-search bounds written as <code>left/right</code>, <code>l/r</code>, <code>lo/hi</code>, or <code>low/high</code>).</p>
+<h2 id="s9"><span class="num">9.</span> How It Was Built — Development Timeline</h2>
+<p>The project&#39;s git history tells a clear, incremental story: ~5 weeks of building (Jan 22 → Feb 21, 2026), then a cleanup and deployment pass on Nov 8, 2026.</p>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Commit</th>
+<th>What happened</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jan 22, 2026</strong></td>
+<td><code>dc145db</code> — <em>&quot;Algorithm Visualizer&quot;</em></td>
+<td><strong>Initial scaffold.</strong> Vite+React frontend and Express backend created from scratch (18 files, ~4,500 lines incl. lock files). First version shipped with <code>CodeExplainer.jsx</code>/<code>.css</code>, a 42-line <code>backend.js</code>, and <code>.env</code>. The seed of the AI-analyzer idea.</td>
+</tr>
+<tr>
+<td><strong>Feb 4, 2026</strong></td>
+<td><code>b0749eb</code> — <em>&quot;Making massive changes&quot;</em></td>
+<td><strong>The pivot to a real visualizer.</strong> Introduced <code>AlgorithmVisualizer.jsx</code> (+732 lines) and its CSS (+359), reworked <code>App.jsx</code>, and <em>removed</em> the old <code>CodeExplainer</code> files — refocusing from &quot;explain code&quot; to &quot;visualize algorithms.&quot; Backend tweaked.</td>
+</tr>
+<tr>
+<td><strong>Feb 5, 2026</strong></td>
+<td><code>cb2aef8</code> — <em>&quot;Added more algorithms&quot;</em></td>
+<td>Big expansion of <code>AlgorithmVisualizer.jsx</code> (+1,035 lines); first real growth of <code>algorithmDetector.jsx</code>.</td>
+</tr>
+<tr>
+<td><strong>Feb 7, 2026</strong></td>
+<td><code>ca5813a</code> — <em>&quot;Updated algorithm detector&quot;</em></td>
+<td>Detector overhauled (+462 lines) with richer patterns.</td>
+</tr>
+<tr>
+<td><strong>Feb 8, 2026</strong></td>
+<td><code>ae0109c</code> — <em>&quot;Added better rules for detecting algorithms&quot;</em></td>
+<td>Detection accuracy pass (+198 lines in detector).</td>
+</tr>
+<tr>
+<td><strong>Feb 9, 2026</strong></td>
+<td><code>7ed6b06</code> — <em>&quot;Added way more algorithms and making detection system better&quot;</em></td>
+<td>Largest single jump: detector +1,334 lines, visualizer +664, CSS +814. Detection became <code>algorithmPatterns</code> + structural-signature analysis.</td>
+</tr>
+<tr>
+<td><strong>Feb 10, 2026</strong></td>
+<td><code>20bbc64</code> — <em>&quot;Made new page for full visualizer&quot;</em></td>
+<td><strong>The player is born.</strong> Created <code>NewVisualizer.jsx</code> (+271) and <code>NewVisualizer.css</code> (+554); visualizer logic grew +960 lines. Split &quot;setup&quot; from &quot;full-screen playback.&quot;</td>
+</tr>
+<tr>
+<td><strong>Feb 11, 2026</strong></td>
+<td><code>310eec0</code> — <em>&quot;Added more visualizers from blind 75&quot;</em></td>
+<td>Authored the <strong><code>BLIND_75_MAPPING.md</code></strong> roadmap (+423) and a huge Blind-75 build-out: visualizer +1,230, NewVisualizer +862, its CSS +1,541.</td>
+</tr>
+<tr>
+<td><strong>Feb 12, 2026</strong></td>
+<td><code>fa7a99b</code> — <em>&quot;Adding backend and more visualizers&quot;</em></td>
+<td>Re-introduced an AI tab: brought back <code>CodeExplainer.jsx</code>/<code>.css</code>, wrote the project <strong>README</strong> (+160), and added a massive +2,810 lines to the visualizer. Backend reworked toward the analyze endpoint.</td>
+</tr>
+<tr>
+<td><strong>Feb 14, 2026</strong></td>
+<td><code>e459d90</code> — <em>&quot;Changed css&quot;</em></td>
+<td>Major styling overhaul across all stylesheets (NewVisualizer.css ±805, AlgorithmVisualizer.css ±643). Backend refactored (+253/−). Added <code>test-backend.js</code> and <code>.claude/settings.local.json</code>.</td>
+</tr>
+<tr>
+<td><strong>Feb 21, 2026</strong></td>
+<td><code>30b30ee</code> — <em>&quot;Fixed css and added more algorithms&quot;</em></td>
+<td>Added the <strong><code>LandingPage.jsx</code>/<code>.css</code></strong> (+156/+438) marketing page, big visualizer expansion (+1,210), and broad CSS polish. App became the four-view experience it is today.</td>
+</tr>
+<tr>
+<td><strong>Nov 8, 2026</strong></td>
+<td><code>15c9aa7</code> — <em>&quot;Remove Hugging Face integration and untracked .env&quot;</em></td>
+<td>Removed the committed <code>backend/.env</code> (unused Hugging Face key) and unused <code>node-fetch</code>; added a root <code>.gitignore</code>.</td>
+</tr>
+<tr>
+<td><strong>Nov 8, 2026</strong></td>
+<td><code>6e402a3</code>, <code>e5b29f4</code></td>
+<td>New weighted detector with confidence + alternatives, <code>/health</code> endpoint, detector tests; UI shows confidence and alternatives.</td>
+</tr>
+<tr>
+<td><strong>Nov 8, 2026</strong></td>
+<td><code>d6fdcc2</code> and follow-up</td>
+<td><strong>Went frontend-only.</strong> Detector moved into the browser as <code>codeAnalyzer.js</code>, the Express backend was deleted, tests moved to <code>frontend/scripts/</code>, and the site was deployed to Vercel.</td>
+</tr>
+</tbody></table>
+<p><strong>Narrative arc:</strong> the project started as an <em>AI code-explainer</em>, pivoted hard into a <em>step-by-step algorithm visualizer</em>, then systematically expanded to cover the Blind 75 (driven by the mapping doc), grew a dedicated full-screen player, folded the AI analyzer back in as a secondary feature, got a landing page and a visual polish pass, and was finally simplified into a static site and deployed.</p>
+<h2 id="s10"><span class="num">10.</span> Running the Project Locally</h2>
+<p><strong>Prerequisites:</strong> Node.js 18+ and npm.</p>
+<pre><code class="language-bash">cd frontend
+npm install
+npm run dev          # → http://localhost:5173
+npm test             # detection tests
+</code></pre>
+<p><strong>Using the AI Analyzer:</strong> open the <em>🤖 AI Code Analyzer</em> tab → paste code (or &quot;Load Example&quot;) → <em>✨ Analyze with AI</em> → review the detected algorithm + explanation → <em>Visualize This Algorithm →</em>.</p>
+<p><strong>Using Manual Setup:</strong> open <em>📊 Manual Setup</em> → pick an algorithm → fill the adaptive input fields → <em>Start Full Visualization</em>.</p>
+<p><strong>Troubleshooting:</strong></p>
+<ul>
+<li><em>Port 5173 in use</em> → <code>npm run dev -- --port 3000</code>.</li>
+</ul>
+<h2 id="s11"><span class="num">11.</span> Current State &amp; Notable Details</h2>
+<ul>
+<li><strong>&quot;AI&quot; is heuristic, not ML.</strong> Despite the branding, detection is fast deterministic pattern-matching, which makes the analyzer instant and offline-capable. The original Hugging Face integration has been fully removed.</li>
+<li><strong>One giant component.</strong> <code>AlgorithmVisualizer.jsx</code> is ~7,400 lines and holds nearly all algorithm logic. This is the natural place to split/refactor if the project grows.</li>
+<li><strong>Two detectors to keep in sync.</strong> <code>algorithmDetector.jsx</code> (Manual Setup) and <code>codeAnalyzer.js</code> (Code Analyzer) are independent; a pattern improvement in one doesn&#39;t automatically apply to the other. Merging them is a natural next step.</li>
+<li><strong>Old secret in history.</strong> <code>backend/.env</code> (an unused Hugging Face key) was removed from the repo, but it remains in older commits, so the key should be revoked on Hugging Face.</li>
+<li><strong>Light testing, no CI.</strong> <code>npm test</code> runs 11 detection cases; there&#39;s no CI pipeline. ESLint reports 10 pre-existing errors in older files that don&#39;t affect the build.</li>
+<li><strong>No router/state lib by design.</strong> View routing is a single <code>useState</code>; state is local. Lightweight and dependency-free.</li>
+<li><strong>Blind 75 not 100% complete.</strong> The mapping doc still lists 📝 &quot;to be implemented&quot; items (e.g. several backtracking, trie, heap, and matrix problems), so the catalog is intentionally a work in progress.</li>
+</ul>
+<h2 id="s12"><span class="num">12.</span> Project Metrics</h2>
+<ul>
+<li><strong>Total source (excluding lock files / node_modules):</strong> ~15,900 lines across JSX + CSS + JS.</li>
+<li><strong>Largest files:</strong> <code>AlgorithmVisualizer.jsx</code> (7,434), <code>NewVisualizer.css</code> (2,428), <code>algorithmDetector.jsx</code> (1,594), <code>AlgorithmVisualizer.css</code> (1,436), <code>NewVisualizer.jsx</code> (1,264).</li>
+<li><strong>Algorithms with full visualizers:</strong> 60+ entries in the dropdown (foundational + Blind 75).</li>
+<li><strong>Step generators:</strong> ~45 distinct <code>generate…Steps</code> functions.</li>
+<li><strong>Commits:</strong> 16, spanning Jan 22 – Nov 8, 2026.</li>
+<li><strong>License:</strong> ISC.</li>
+</ul>
+
+<p class="footer-note">Document generated from a full read of the repository: source files, <code>README.md</code>, <code>BLIND_75_MAPPING.md</code>, <code>package.json</code> manifests, and the complete git history. Last updated Nov 8, 2026.</p>
+
+</div>
+</body>
+</html>

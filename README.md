@@ -1,157 +1,125 @@
-# Algorithm Visualizer with AI Code Analyzer
+# Algorithm Visualizer with Code Analyzer
 
-An interactive algorithm visualization tool with AI-powered code analysis. Visualize algorithms step-by-step, or let AI analyze your code and suggest which algorithm to visualize!
+An interactive algorithm visualization tool. Visualize algorithms step-by-step, or paste your code and let the analyzer detect which algorithm it is and open the matching visualizer.
+
+**Live site:** https://algorithm-visualizer-lac.vercel.app
 
 ## Features
 
-- 📊 **Manual Algorithm Setup**: Choose from 40+ algorithms and visualize them step-by-step
-- 🤖 **AI Code Analyzer**: Paste your code and get AI-powered explanations and algorithm suggestions
-- 🎯 **Blind 75 Coverage**: All Blind 75 LeetCode problems have visualizers
+- 📊 **Manual Algorithm Setup**: Choose from 60+ algorithms and visualize them step-by-step
+- 🤖 **Code Analyzer**: Paste your code to get the detected algorithm, a confidence score, close alternatives, and a short explanation
+- 🎯 **Blind 75 Coverage**: Visualizers for the Blind 75 LeetCode problems
 - 📈 **Real-time Visualization**: Watch algorithms execute with detailed insights at each step
-- 🎨 **Beautiful UI**: Modern, responsive design with smooth animations
+- 🎨 **Modern UI**: Responsive design with smooth animations
+
+Everything runs in the browser. There is no backend, database, or API key.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
+- Node.js 18 or higher
+- npm
 
-### Installation
-
-1. **Clone the repository** (if you haven't already)
-   ```bash
-   git clone <your-repo-url>
-   cd visualizer
-   ```
-
-2. **Install frontend dependencies**
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-3. **Install backend dependencies**
-   ```bash
-   cd ../backend
-   npm install
-   ```
-
-### Running the Application
-
-You need to run **both** the frontend and backend servers:
-
-#### Terminal 1: Start the Backend (AI Service)
+### Install and run
 
 ```bash
-cd backend
-npm start
-```
-
-The backend will start on **http://localhost:5000**
-
-#### Terminal 2: Start the Frontend
-
-```bash
-cd frontend
+git clone https://github.com/NicholasVioral/Algorithm-Visualizer.git
+cd Algorithm-Visualizer/frontend
+npm install
 npm run dev
 ```
 
-The frontend will start on **http://localhost:5173** (or another port if 5173 is busy)
+The app starts on **http://localhost:5173** (or another port if 5173 is busy).
 
-### Using the AI Code Analyzer
+### Other commands (run from `frontend/`)
 
-1. Click the **"🤖 AI Code Analyzer"** tab at the top
-2. Paste your algorithm code into the text area
+| Command | What it does |
+|---------|--------------|
+| `npm run build` | Production build into `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm test` | Run the code-analyzer detection tests |
+| `npm run lint` | Run ESLint |
+
+## Using the App
+
+### Code Analyzer
+
+1. Click the **"🤖 AI Code Analyzer"** tab
+2. Paste your algorithm code (or click **Load Example**)
 3. Click **"✨ Analyze with AI"**
-4. The AI will:
-   - Explain what your code does
-   - Identify the algorithm
-   - Suggest which visualizer to use
-5. Click **"Visualize This Algorithm →"** to automatically set up the visualizer
+4. Review the detected algorithm, confidence, alternatives, and explanation
+5. Click **"Visualize This Algorithm →"** to open it in the visualizer
+
+The analyzer uses weighted pattern scoring (`frontend/src/codeAnalyzer.js`), not a machine-learning model, so results are instant and work offline.
 
 ### Manual Algorithm Selection
 
 1. Click the **"📊 Manual Setup"** tab
 2. Select an algorithm from the dropdown
 3. Enter input data (arrays, graphs, strings, etc.)
-4. Click **"Start Full Visualization"** to see it in action
+4. Click **"Start Full Visualization"**
 
 ## Supported Algorithms
 
-### Sorting Algorithms
+### Sorting
 - Bubble Sort, Merge Sort, Quick Sort, Insertion Sort, Selection Sort, Heap Sort
 
-### Search Algorithms
+### Search
 - Binary Search, Linear Search
 
-### Graph Algorithms
+### Graph
 - BFS, DFS, Dijkstra's Algorithm
 
 ### Blind 75 Problems
 - Two Sum, Maximum Subarray, Valid Parentheses, Longest Substring, Reverse Linked List
 - Merge Intervals, Product Except Self, Contains Duplicate, Best Time to Buy/Sell Stock
 - Valid Anagram, Valid Palindrome, Container With Most Water, 3Sum, House Robber
-- Longest Increasing Subsequence, Unique Paths, Jump Game, Coin Change, and more!
+- Longest Increasing Subsequence, Unique Paths, Jump Game, Coin Change, and more
 
 ### Data Structures & Patterns
 - BST Insert/Search, Recursion (Factorial, Fibonacci, Tower of Hanoi)
 - Two Pointers, Sliding Window, Fast & Slow Pointers
 
-## Environment Variables
-
-The backend uses Hugging Face's API for AI code analysis. The API key is already configured in `backend/.env`:
-
-```
-HF_API_KEY=<your-api-key-here>
-```
-
-**Note**: The included API key is for demonstration purposes. For production use, get your own API key from [Hugging Face](https://huggingface.co/settings/tokens).
-
 ## Project Structure
 
 ```
-visualizer/
-├── frontend/          # React frontend
+Algorithm-Visualizer/
+├── frontend/
 │   ├── src/
-│   │   ├── App.jsx              # Main app with view routing
-│   │   ├── AlgorithmVisualizer.jsx  # Manual algorithm setup
-│   │   ├── CodeExplainer.jsx        # AI code analyzer
-│   │   ├── NewVisualizer.jsx        # Visualization display
-│   │   └── algorithmDetector.jsx    # Pattern-based algorithm detection
+│   │   ├── App.jsx                  # Main app with view routing
+│   │   ├── LandingPage.jsx          # Landing page
+│   │   ├── AlgorithmVisualizer.jsx  # Manual setup + step generators
+│   │   ├── CodeExplainer.jsx        # Code analyzer tab
+│   │   ├── codeAnalyzer.js          # Weighted detector used by the analyzer tab
+│   │   ├── algorithmDetector.jsx    # Older detector used by Manual Setup
+│   │   └── NewVisualizer.jsx        # Full-screen visualization player
+│   ├── scripts/test-detector.js     # Detection tests (npm test)
 │   └── package.json
-└── backend/           # Express backend for AI
-    ├── backend.js     # AI code analysis endpoint
-    ├── .env           # Environment variables
-    └── package.json
+├── BLIND_75_MAPPING.md              # Blind 75 coverage roadmap
+└── README.md
+```
+
+## Deployment
+
+The site is a static Vite build hosted on Vercel. To deploy from your machine:
+
+```bash
+cd frontend
+npx vercel deploy --prod
 ```
 
 ## Troubleshooting
 
-### Backend not connecting
-
-**Error**: "Failed to connect to backend. Make sure the server is running on port 5000."
-
-**Solution**:
-1. Make sure the backend is running: `cd backend && npm start`
-2. Check that port 5000 is not being used by another application
-3. Verify the `.env` file exists in the backend folder with `HF_API_KEY` set
-
-### AI responses are slow
-
-The Hugging Face API can take 5-15 seconds to respond, especially on first use (model loading). This is normal behavior for the free tier.
-
-### Frontend won't start
-
-If you see "Port 5173 is already in use":
-- Close any other Vite/React dev servers
-- Or use the port Vite suggests: `npm run dev -- --port 3000`
+### Port 5173 is already in use
+- Close other Vite/React dev servers
+- Or pick another port: `npm run dev -- --port 3000`
 
 ## Contributing
 
-Contributions are welcome! Feel free to:
+Contributions are welcome:
 - Add more algorithm visualizations
-- Improve the AI prompts for better detection
+- Improve detection rules in `codeAnalyzer.js` (and add a case to `scripts/test-detector.js`)
 - Enhance the UI/UX
 - Fix bugs or add features
 
